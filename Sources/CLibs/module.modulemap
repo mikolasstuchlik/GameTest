@@ -1,0 +1,7 @@
+module CLibs [system] {
+    header "shims.h"
+    link "png16"
+    link "SDL2"
+    link "SDL2_image"
+    export *
+}
