@@ -10,8 +10,16 @@ try game.startWindow(
 
 let player = Entity()
 try! player.assign(
-    component: MovementComponent.self, 
-    arguments: (position: .zero, velocity: .zero, maxVelocity: 1.0)
+    component: PhysicsComponent.self, 
+    arguments: (
+        positionCenter: .zero,
+        squareRadius: Size(width: 32, height: 32),
+        categoryBitmask: 0,
+        collisionBitmask: 0,
+        notificationBitmask: 0,
+        velocity: .zero, 
+        maxVelocity: 1.0
+    )
 )
 try! player.assign(
     component: SpriteComponent.self, 
@@ -29,8 +37,16 @@ try! player.assign(
 
 let evilPlayer = Entity()
 try! evilPlayer.assign(
-    component: MovementComponent.self, 
-    arguments: (position: Point(x: 20, y: 20), velocity: Vector(x: 1, y: 0), maxVelocity: 10.0)
+    component: PhysicsComponent.self, 
+    arguments: (
+        positionCenter: Point(x: 20, y: 20), 
+        squareRadius: Size(width: 32, height: 32), 
+        categoryBitmask: 0,
+        collisionBitmask: 0,
+        notificationBitmask: 0,
+        velocity: Vector(x: 1, y: 0), 
+        maxVelocity: 10.0
+    )
 )
 try! evilPlayer.assign(
     component: SpriteComponent.self, 

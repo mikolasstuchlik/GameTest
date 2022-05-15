@@ -25,7 +25,7 @@ final class UserInputSystem: System {
                 continue
             }
 
-            entity.access(component: MovementComponent.self) { positionComponent in
+            entity.access(component: PhysicsComponent.self) { positionComponent in
                 guard let positionComponent = positionComponent else { return }
 
                 let controller = ControllerComponent.storage[i]
@@ -43,8 +43,6 @@ final class UserInputSystem: System {
                 let magnitude = positionComponent.pointee.velocity.magnitude
                 let adjust = min(1.0, positionComponent.pointee.maxVelocity / magnitude)
                 positionComponent.pointee.velocity = positionComponent.pointee.velocity * adjust
-
-                print(magnitude, adjust, positionComponent.pointee.velocity.magnitude)
             }
         }
     }

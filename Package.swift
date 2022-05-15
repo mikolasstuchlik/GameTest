@@ -10,8 +10,8 @@ let package = Package(
     targets: [
         .systemLibrary(
             name: "CLibs",
-            pkgConfig: "libpng sdl2 SDL2_image",
-            providers: [.apt(["libpng-dev", "libsdl2-dev", "libsdl2-image-dev"])]
+            pkgConfig: "libpng sdl2 SDL2_image adplug",
+            providers: [.apt(["libadplug-dev", "libsdl2-dev", "libsdl2-image-dev"])]
         ),
         .executableTarget(
             name: "GameTest", 
