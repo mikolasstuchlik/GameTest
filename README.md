@@ -1,11 +1,11 @@
 # GameTest
 
-Demonstrator for simle game in Swift using SDL2
+Demonstrator for simle game in Swift using SDL2.
 
 ## TODO
 - General Refactoring:
-  - Use single SystemLibrary for SDL
-  - Use separate module for SDL extensions with inlining
+  - DONE Use single SystemLibrary for SDL
+  - CANT Use separate module for SDL extensions with inlining - We want extensions on Pointers
 - Audio:
   - Wrap AdPlug and use it to play sound
   - Use SDL Mixer to finalize output

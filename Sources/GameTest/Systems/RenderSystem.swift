@@ -1,4 +1,4 @@
-import CLibs
+import CSDL2
 
 final class RenderSystem: System {
     var renderer: SDLRendererPtr!

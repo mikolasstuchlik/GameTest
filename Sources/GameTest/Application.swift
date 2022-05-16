@@ -1,4 +1,4 @@
-import CLibs
+import CSDL2
 import Foundation
 
 final class Application {

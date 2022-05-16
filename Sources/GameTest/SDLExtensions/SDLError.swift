@@ -1,4 +1,4 @@
-import CLibs
+import CSDL2
 
 enum SDLError: Error {
     case sdlError(message: String)

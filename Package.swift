@@ -9,14 +9,17 @@ let package = Package(
     ],
     targets: [
         .systemLibrary(
-            name: "CLibs",
-            pkgConfig: "libpng sdl2 SDL2_image adplug",
-            providers: [.apt(["libadplug-dev", "libsdl2-dev", "libsdl2-image-dev"])]
+            name: "CSDL2",
+            pkgConfig: "sdl2 SDL2_image",
+            providers: [
+                .apt(["libsdl2-dev", "libsdl2-image-dev"]),
+                .brew(["sdl2", "sdl2_image"])
+            ]
         ),
         .executableTarget(
             name: "GameTest", 
             dependencies: [
-                "CLibs"
+                "CSDL2"
             ],
             resources: [
                 .process("Resources")

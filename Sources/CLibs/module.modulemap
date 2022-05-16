@@ -1,4 +1,0 @@
-module CLibs [system] {
-    header "shims.h"
-    export *
-}

@@ -1,4 +1,4 @@
-import CLibs
+import CSDL2
 
 extension SDL_Rect {
     init<T: SignedInteger>(_ rect: Rect<T>) {

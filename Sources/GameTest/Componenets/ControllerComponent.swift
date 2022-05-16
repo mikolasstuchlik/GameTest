@@ -1,4 +1,4 @@
-import CLibs
+import CSDL2
 
 struct ControllerComponent: Component {
     static var storage: [Self] = []

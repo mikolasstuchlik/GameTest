@@ -1,4 +1,4 @@
-import CLibs
+import CSDL2
 
 let game = Application()
 
