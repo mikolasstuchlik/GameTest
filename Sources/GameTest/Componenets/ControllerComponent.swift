@@ -1,10 +1,6 @@
 import CSDL2
 
 struct ControllerComponent: Component {
-    static var storage: [Self] = []
-    static var freedIndicies: [Int] = []
-
-    // this could be unowned(unsafe) reference
     unowned(unsafe) var entity: Entity?
 
     var moveTopKey: SDL_Scancode

@@ -1,6 +1,11 @@
 import CSDL2
 
 final class UserInputSystem: System {
+    unowned(unsafe) let pool: Pool
+
+    init(pool: Pool) {
+        self.pool = pool
+    }
 
     func update(with context: UpdateContext) throws {
         let pressed: Bool
@@ -16,18 +21,20 @@ final class UserInputSystem: System {
             return
         }
 
-        for i in 0..<ControllerComponent.storage.count where ControllerComponent.storage[i].isValid {
+        let storage = pool.storage(for: ControllerComponent.self)
+
+        for i in 0..<storage.buffer.count where storage.buffer[i].isValid {
             guard 
-                ControllerComponent.storage[i].respondsTo(key: key, pressed: pressed)
+                storage.buffer[i].respondsTo(key: key, pressed: pressed)
             else {
                 continue
             }
 
-            let entity = ControllerComponent.storage[i].entity!
+            let entity = storage.buffer[i].entity!
 
             entity.access(component: MovableObjectComponent.self) { positionComponent in
 
-                let controller = ControllerComponent.storage[i]
+                let controller = storage.buffer[i]
 
                 positionComponent.velocity.x = 
                     controller.isLeftPressed == controller.isRightPressed ? 0

@@ -1,7 +1,4 @@
 struct MovableObjectComponent: Component {
-    static var storage: [Self] = []
-    static var freedIndicies: [Int] = []
-
     unowned(unsafe) var entity: Entity?
 
     var startingPosition: Point<Float>

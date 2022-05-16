@@ -30,16 +30,24 @@ final class AABBCollisionSystem: System {
         }
     }
 
+    unowned(unsafe) let pool: Pool
     weak var delegate: CollisionSystemDelegate?
 
+    init(pool: Pool) {
+        self.pool = pool
+    }
+
     func update(with context: UpdateContext) throws {
-        for i in 0..<MovableObjectComponent.storage.count where MovableObjectComponent.storage[i].isValid {
-            for other in 0..<ImmovableObjectComponent.storage.count where ImmovableObjectComponent.storage[i].isValid {
+        let movable = pool.storage(for: MovableObjectComponent.self)
+        let immovable = pool.storage(for: ImmovableObjectComponent.self)
+
+        for i in 0..<movable.buffer.count where movable.buffer[i].isValid {
+            for other in 0..<immovable.buffer.count where immovable.buffer[i].isValid {
                 let collisionType = CollisionType(
-                    lCategory: MovableObjectComponent.storage[i].categoryBitmask, 
-                    lCollision: MovableObjectComponent.storage[i].collisionBitmask, 
-                    lNotify: MovableObjectComponent.storage[i].notificationBitmask, 
-                    rCategory: ImmovableObjectComponent.storage[other].categoryBitmask, 
+                    lCategory: movable.buffer[i].categoryBitmask, 
+                    lCollision: movable.buffer[i].collisionBitmask, 
+                    lNotify: movable.buffer[i].notificationBitmask, 
+                    rCategory: immovable.buffer[other].categoryBitmask, 
                     rCollision: 0, 
                     rNotify: 0
                 )
@@ -47,10 +55,10 @@ final class AABBCollisionSystem: System {
                 if 
                     collisionType == .none
                     || determineCollision(
-                        lCenter: MovableObjectComponent.storage[i].positionCenter, 
-                        lRadius: MovableObjectComponent.storage[i].squareRadius, 
-                        rCenter: ImmovableObjectComponent.storage[other].positionCenter, 
-                        rRadius: ImmovableObjectComponent.storage[other].squareRadius
+                        lCenter: movable.buffer[i].positionCenter, 
+                        lRadius: movable.buffer[i].squareRadius, 
+                        rCenter: immovable.buffer[other].positionCenter, 
+                        rRadius: immovable.buffer[other].squareRadius
                     ) == false
                 {
                     continue
@@ -59,31 +67,31 @@ final class AABBCollisionSystem: System {
                 switch collisionType {
                 case .notify:
                     delegate?.notifyCollisionOf(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: ImmovableObjectComponent.storage[other].entity!
+                        firstEntity: movable.buffer[i].entity!, 
+                        secondEntity: immovable.buffer[other].entity!
                     )
                 case .collide:
                     resolveCollision(movableIndex: i, immovableIndex: other)
                 case .collideNotify:
                     delegate?.notifyCollisionOf(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: ImmovableObjectComponent.storage[other].entity!
+                        firstEntity: movable.buffer[i].entity!, 
+                        secondEntity: immovable.buffer[other].entity!
                     )
                     resolveCollision(movableIndex: i, immovableIndex: other)
                 case .none: break
                 }
             }
 
-            guard i < MovableObjectComponent.storage.count - 1 else {
+            guard i < movable.buffer.count - 1 else {
                 continue
             }
 
-            for other in (i + 1)..<MovableObjectComponent.storage.count where MovableObjectComponent.storage[other].isValid {
+            for other in (i + 1)..<movable.buffer.count where movable.buffer[other].isValid {
                 let collisionType = CollisionType(
-                    lCategory: MovableObjectComponent.storage[i].categoryBitmask, 
-                    lCollision: MovableObjectComponent.storage[i].collisionBitmask, 
-                    lNotify: MovableObjectComponent.storage[i].notificationBitmask, 
-                    rCategory: MovableObjectComponent.storage[other].categoryBitmask, 
+                    lCategory: movable.buffer[i].categoryBitmask, 
+                    lCollision: movable.buffer[i].collisionBitmask, 
+                    lNotify: movable.buffer[i].notificationBitmask, 
+                    rCategory: movable.buffer[other].categoryBitmask, 
                     rCollision: 0, 
                     rNotify: 0
                 )
@@ -91,10 +99,10 @@ final class AABBCollisionSystem: System {
                 if 
                     collisionType == .none
                     || determineCollision(
-                        lCenter: MovableObjectComponent.storage[i].positionCenter, 
-                        lRadius: MovableObjectComponent.storage[i].squareRadius, 
-                        rCenter: MovableObjectComponent.storage[other].positionCenter, 
-                        rRadius: MovableObjectComponent.storage[other].squareRadius
+                        lCenter: movable.buffer[i].positionCenter, 
+                        lRadius: movable.buffer[i].squareRadius, 
+                        rCenter: movable.buffer[other].positionCenter, 
+                        rRadius: movable.buffer[other].squareRadius
                     ) == false
                 {
                     continue
@@ -103,15 +111,15 @@ final class AABBCollisionSystem: System {
                 switch collisionType {
                 case .notify:
                     delegate?.notifyCollisionOf(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: MovableObjectComponent.storage[other].entity!
+                        firstEntity: movable.buffer[i].entity!, 
+                        secondEntity: movable.buffer[other].entity!
                     )
                 case .collide:
                     resolveCollision(movableIndex: i, secondMovableIndex: other)
                 case .collideNotify:
                     delegate?.notifyCollisionOf(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: MovableObjectComponent.storage[other].entity!
+                        firstEntity: movable.buffer[i].entity!, 
+                        secondEntity: movable.buffer[other].entity!
                     )
                     resolveCollision(movableIndex: i, secondMovableIndex: other)
                 case .none: break

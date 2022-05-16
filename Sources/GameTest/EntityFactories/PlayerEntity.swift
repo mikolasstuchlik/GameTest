@@ -3,6 +3,7 @@ import CSDL2
 extension EntityFactory {
     @discardableResult
     static func player(
+        pool: Pool,
         asset: Assets.Image, 
         controllable: Bool,
         position: Point<Float>,
@@ -10,7 +11,7 @@ extension EntityFactory {
         collisionBitmask: UInt32,
         initialVelocity: Vector<Float>
     ) -> Entity {
-        let player = Entity()
+        let player = Entity(pool: pool)
         try! player.assign(
             component: MovableObjectComponent.self, 
             arguments: (
@@ -25,7 +26,11 @@ extension EntityFactory {
         )
         try! player.assign(
             component: SpriteComponent.self, 
-            arguments: (asset: asset, size: squareRadius * 2, layer: 1)
+            arguments: (
+                unownedTexture: try! pool.textureBuffer.texture(for: asset), 
+                size: squareRadius * 2, 
+                layer: 1
+            )
         )
         if controllable {
             try! player.assign(

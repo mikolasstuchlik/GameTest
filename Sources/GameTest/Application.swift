@@ -8,8 +8,8 @@ final class Application {
     }
 
     deinit {
-        assert(Application.window == nil)
-        assert(Application.renderer == nil)
+        assert(window == nil)
+        assert(renderer == nil)
     }
 
     func startWindow(title: String, dimension: Rect<CInt>, fullscreen: Bool) throws {
@@ -21,21 +21,18 @@ final class Application {
             ? SDL_WINDOW_FULLSCREEN
             : SDL_WindowFlags(0)
 
-        Application.window = try sdlException {
+        window = try sdlException {
             SDL_CreateWindow(title, dimension.x , dimension.y, dimension.width, dimension.height, flags.rawValue)
         }
 
-        Application.renderer = try sdlException {
-            SDL_CreateRenderer(Application.window, -1, 0)
+        renderer = try sdlException {
+            SDL_CreateRenderer(window, -1, 0)
         }
 
-        systems = [
-            MovementSystem(),
-            AABBCollisionSystem(),
-            UserInputSystem(),
-            RenderSystem(renderer: Application.renderer),
-        ]
+        let newPool = DefaultPool(application: self)
+        newPool.setup()
 
+        replaceCurrentPool(by: newPool)
         isRunning = true
     }
 
@@ -63,40 +60,48 @@ final class Application {
 
     func update(events: EnputEvents) { 
         let context = UpdateContext(events: events)
-        systems.forEach { system in
-            measure(String(describing: system.self)) {
-                try! system.update(with: context)
-            }
-        }
+        try! currentPool?.update(with: context)
     }
 
     func render() throws {
-        try! Application.renderer!.renderClear()
+        try! renderer!.renderClear()
 
         let context = RenderContext()
 
         measure("rendering") {
-            systems.forEach { try! $0.render(with: context) }
+            try! currentPool?.render(with: context)
         }
 
-        Application.renderer!.renderPresent()
+        renderer!.renderPresent()
     }
 
     func clean() {
-        Entity.clean()
-        systems.removeAll()
+        replaceCurrentPool(by: nil)
 
-        SDL_DestroyWindow(Application.window)
-        Application.window = nil
-        SDL_DestroyRenderer(Application.renderer)
-        Application.renderer = nil
+        SDL_DestroyWindow(window)
+        window = nil
+        SDL_DestroyRenderer(renderer)
+        renderer = nil
 
         SDL_Quit()
     }
 
-    private(set) var systems: [System] = []
+    private func replaceCurrentPool(by newPool: Pool?) {
+        #if DEBUG
+        weak var pool = currentPool
+        #endif
+
+        currentPool = newPool
+
+        #if DEBUG
+        assert(pool == nil, "Removed pool should deallocate!")
+        #endif
+    }
+
+    private(set) var currentPool: Pool?
+
     private(set) var isRunning: Bool = false
 
-    private(set) static var window: SDLWindowPtr?
-    private(set) static var renderer: SDLRendererPtr?
+    private(set) var window: SDLWindowPtr!
+    private(set) var renderer: SDLRendererPtr!
 }

@@ -14,7 +14,11 @@ struct RenderContext {
 
 }
 
-protocol System: AnyObject {
+protocol LoopItem {
     func update(with context: UpdateContext) throws
     func render(with context: RenderContext) throws
+}
+
+protocol System: AnyObject, LoopItem {
+    var pool: Pool { get }
 }

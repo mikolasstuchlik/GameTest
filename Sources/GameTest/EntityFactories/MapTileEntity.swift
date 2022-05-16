@@ -1,10 +1,14 @@
 extension EntityFactory {
     @discardableResult
-    static func mapTile(asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, categoryBitmask: UInt32) -> Entity {
-        let newTile = Entity()
+    static func mapTile(pool: Pool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, categoryBitmask: UInt32) -> Entity {
+        let newTile = Entity(pool: pool)
         try! newTile.assign(
             component: SpriteComponent.self, 
-            arguments: (asset: asset, size: squareRadius * 2, layer: 0)
+            arguments: (
+                unownedTexture: try! pool.textureBuffer.texture(for: asset),
+                size: squareRadius * 2,
+                layer: 0
+            )
         )
         try! newTile.assign(
             component: ImmovableObjectComponent.self, 

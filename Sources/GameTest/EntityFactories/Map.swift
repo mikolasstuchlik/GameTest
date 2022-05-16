@@ -1,8 +1,11 @@
 import CSDL2
 
 final class Map {
+    private unowned(unsafe) let pool: Pool
 
-    init(loadFrom file: Assets.Map) throws {
+    init(pool: Pool, loadFrom file: Assets.Map) throws {
+        self.pool = pool
+
         let parsed = try String.init(contentsOf: file.url)
             .components(separatedBy: "\n")
             .map { $0.components(separatedBy: " ") }
@@ -33,6 +36,7 @@ final class Map {
                 }
 
                 EntityFactory.mapTile(
+                    pool: pool,
                     asset: image, 
                     center: tile.center, 
                     squareRadius: tile.size * 0.5, 

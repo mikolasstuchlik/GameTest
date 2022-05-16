@@ -1,10 +1,10 @@
 import CSDL2
 
 final class RenderSystem: System {
-    var renderer: SDLRendererPtr!
+    unowned(unsafe) let pool: Pool
 
-    init(renderer: SDLRendererPtr!) {
-        self.renderer = renderer
+    init(pool: Pool) {
+        self.pool = pool
     }
 
     func update(with context: UpdateContext) throws {
@@ -12,16 +12,19 @@ final class RenderSystem: System {
     }
 
     func render(with context: RenderContext) throws {
+        let spriteStore = pool.storage(for: SpriteComponent.self)
+        let renderer = pool.application.renderer!
+
         // Determine how many layers there are and how many items are in them
         var layers: [UInt: Int] = [:]
-        for i in 0..<SpriteComponent.storage.count where SpriteComponent.storage[i].isValid {
-            let entity = SpriteComponent.storage[i].entity!
-            layers[SpriteComponent.storage[i].layer, default: 0] += 1
+        for i in 0..<spriteStore.buffer.count where spriteStore.buffer[i].isValid {
+            let entity = spriteStore.buffer[i].entity!
+            layers[spriteStore.buffer[i].layer, default: 0] += 1
             entity.access(component: ImmovableObjectComponent.self) { immovable in
-                SpriteComponent.storage[i].rendererAssignedCenter = immovable.positionCenter
+                spriteStore.buffer[i].rendererAssignedCenter = immovable.positionCenter
             }
             entity.access(component: MovableObjectComponent.self) { movable in
-                SpriteComponent.storage[i].rendererAssignedCenter = movable.positionCenter
+                spriteStore.buffer[i].rendererAssignedCenter = movable.positionCenter
             }
         }
 
@@ -34,23 +37,23 @@ final class RenderSystem: System {
         var startingOffsetMap = Dictionary(offsets) { $1 }
 
         // Allocate efficiently render queue
-        var renderOrder: [Int] = .init(repeating: 0, count: SpriteComponent.storage.count - SpriteComponent.freedIndicies.count)
+        var renderOrder: [Int] = .init(repeating: 0, count: spriteStore.buffer.count - spriteStore.freedIndicies.count)
 
         // Fill the render queue (update offsets so the map is always up-to-date)
-        for i in 0..<SpriteComponent.storage.count where SpriteComponent.storage[i].isValid {
-            let offset = startingOffsetMap[SpriteComponent.storage[i].layer]!
-            startingOffsetMap[SpriteComponent.storage[i].layer]! += 1
+        for i in 0..<spriteStore.buffer.count where spriteStore.buffer[i].isValid {
+            let offset = startingOffsetMap[spriteStore.buffer[i].layer]!
+            startingOffsetMap[spriteStore.buffer[i].layer]! += 1
             renderOrder[offset] = i
         }
 
         // Render
         for i in renderOrder {
             try! renderer.render(
-                SpriteComponent.storage[i].texture, 
+                spriteStore.buffer[i].unownedTexture, 
                 source: nil, 
                 destination: SDL_Rect(Rect(
-                    center: SpriteComponent.storage[i].rendererAssignedCenter, 
-                    size: SpriteComponent.storage[i].size
+                    center: spriteStore.buffer[i].rendererAssignedCenter, 
+                    size: spriteStore.buffer[i].size
                 ))
             )
         }

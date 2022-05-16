@@ -5,26 +5,23 @@ enum EntityFactory { }
 final class Entity: Hashable {
     struct ComponentReference {
         let type: OpaqueComponent.Type
-        let storage: Int
+        var storage: Int
     }
 
     // Should not be static
-    private(set) static var entities = Set<Entity>()
+    unowned(unsafe) let pool: Pool
     private(set) var componentReferences: [ComponentReference] = []
 
     var developerLabel: String?
 
-    init(developerLabel: String? = nil) {
+    init(pool: Pool, developerLabel: String? = nil) {
+        self.pool = pool
         self.developerLabel = developerLabel
-        Entity.entities.insert(self)
+        pool.entities.insert(self)
     }
 
     static func == (lhs: Entity, rhs: Entity) -> Bool {
         lhs === rhs
-    }
-
-    static func clean() {
-        entities.removeAll()
     }
 
     func hash(into hasher: inout Hasher) {
@@ -36,17 +33,18 @@ final class Entity: Hashable {
     }
 
     func assign<C: Component>(component: C.Type, arguments: C.InitArguments) throws {
+        let storage = pool.storage(for: C.self)
         if let index = index(of: C.self) {
             let old = componentReferences[index]
-            C.storage[old.storage].destroy()
-            C.storage[old.storage] = try C.init(entity: self, arguments: arguments)
+            storage.buffer[old.storage].destroy()
+            storage.buffer[old.storage] = try C.init(entity: self, arguments: arguments)
             return
         }
 
         componentReferences.append(
             ComponentReference(
                 type: C.self, 
-                storage: try C.allocInit(for: self, with: arguments)
+                storage: try storage.allocInit(for: self, with: arguments)
             )
         )
     }
@@ -56,7 +54,7 @@ final class Entity: Hashable {
             return nil
         }
 
-        return try accessBlock(&C.storage[componentReferences[index].storage])
+        return try accessBlock(&pool.storage(for: C.self).buffer[componentReferences[index].storage])
     }
 
     @discardableResult
@@ -66,8 +64,16 @@ final class Entity: Hashable {
         }
 
         let old = componentReferences.remove(at: index)
-        old.type.destroy(at: old.storage)
+        pool.storage(for: C.self).destroy(at: old.storage)
         return true
+    }
+
+    func relocated<C: Component>(component: C.Type, to newIndex: Int) {
+        guard let index = index(of: C.self) else {
+            return
+        }
+
+        componentReferences[index].storage = newIndex
     }
 
     private func index<C: Component>(of component: C.Type) -> Int? {
@@ -75,6 +81,8 @@ final class Entity: Hashable {
     }
 
     deinit {
-        componentReferences.forEach { $0.type.destroy(at: $0.storage) }
+        componentReferences.forEach { 
+            pool.destroy(opaque: $0.type, at: $0.storage)
+        }
     }
 }
