@@ -1,6 +1,6 @@
 # GameTest
 
-Demonstrator for simle game in Swift using SDL2.
+Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux.
 
 ## TODO
 - General Refactoring:
