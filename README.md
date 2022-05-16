@@ -15,10 +15,10 @@ Demonstrator for simle game in Swift using SDL2
   - Implement collision resolution
 - Sprites:
   - Implement animation
-  - Implement custom color
   - Implement layers
   - Use shared texture instances (avoid superfluous texture loadings)
 - System:
+  - Use RTC based system to compute movements
   - Remove static collections and references
   - Use Entity pools
   - DONE Use unowned(unsafe)
