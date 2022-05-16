@@ -63,19 +63,13 @@ final class AABBCollisionSystem: System {
                         secondEntity: ImmovableObjectComponent.storage[other].entity!
                     )
                 case .collide:
-                    resolveCollision(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: ImmovableObjectComponent.storage[other].entity!
-                    )
+                    resolveCollision(movableIndex: i, immovableIndex: other)
                 case .collideNotify:
                     delegate?.notifyCollisionOf(
                         firstEntity: MovableObjectComponent.storage[i].entity!, 
                         secondEntity: ImmovableObjectComponent.storage[other].entity!
                     )
-                    resolveCollision(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: ImmovableObjectComponent.storage[other].entity!
-                    )
+                    resolveCollision(movableIndex: i, immovableIndex: other)
                 case .none: break
                 }
             }
@@ -113,19 +107,13 @@ final class AABBCollisionSystem: System {
                         secondEntity: MovableObjectComponent.storage[other].entity!
                     )
                 case .collide:
-                    resolveCollision(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: MovableObjectComponent.storage[other].entity!
-                    )
+                    resolveCollision(movableIndex: i, secondMovableIndex: other)
                 case .collideNotify:
                     delegate?.notifyCollisionOf(
                         firstEntity: MovableObjectComponent.storage[i].entity!, 
                         secondEntity: MovableObjectComponent.storage[other].entity!
                     )
-                    resolveCollision(
-                        firstEntity: MovableObjectComponent.storage[i].entity!, 
-                        secondEntity: MovableObjectComponent.storage[other].entity!
-                    )
+                    resolveCollision(movableIndex: i, secondMovableIndex: other)
                 case .none: break
                 }
             }
@@ -147,9 +135,12 @@ final class AABBCollisionSystem: System {
         && lCenter.y + lRadius.height > rCenter.y - rRadius.height
     }
 
-    private func resolveCollision(firstEntity: Entity, secondEntity: Entity) { 
-        secondEntity.access(component: MovableObjectComponent.self) { secondMove in
-            secondMove.positionCenter = secondMove.positionCenter - Vector(x: 1, y: 1)
-        }
+    // first entity is always movable
+    private func resolveCollision(movableIndex: Int, secondMovableIndex: Int) { 
+        
+    }
+
+    private func resolveCollision(movableIndex: Int, immovableIndex: Int) { 
+        
     }
 }

@@ -4,6 +4,7 @@ struct MovableObjectComponent: Component {
 
     unowned(unsafe) var entity: Entity?
 
+    var startingPosition: Point<Float>
     var positionCenter: Point<Float>
     var squareRadius: Size<Float> 
 
@@ -27,6 +28,7 @@ struct MovableObjectComponent: Component {
         )
     ) {
         self.entity = entity
+        self.startingPosition = arguments.positionCenter
         self.positionCenter = arguments.positionCenter
         self.squareRadius = arguments.squareRadius
         self.categoryBitmask = arguments.categoryBitmask

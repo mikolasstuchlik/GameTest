@@ -1,0 +1,4 @@
+module CppAdPlug [system] [extern_c] {
+    umbrella header "CppAdPlug.hpp"
+    export *
+}
