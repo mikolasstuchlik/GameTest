@@ -63,7 +63,11 @@ final class Application {
 
     func update(events: EnputEvents) { 
         let context = UpdateContext(events: events)
-        systems.forEach { try! $0.update(with: context) }
+        systems.forEach { system in
+            measure(String(describing: system.self)) {
+                try! system.update(with: context)
+            }
+        }
     }
 
     func render() throws {
@@ -71,7 +75,9 @@ final class Application {
 
         let context = RenderContext()
 
-        systems.forEach { try! $0.render(with: context) }
+        measure("rendering") {
+            systems.forEach { try! $0.render(with: context) }
+        }
 
         Application.renderer!.renderPresent()
     }
