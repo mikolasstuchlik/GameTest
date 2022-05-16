@@ -10,7 +10,7 @@ Demonstrator for simle game in Swift using SDL2
   - Wrap AdPlug and use it to play sound
   - Use SDL Mixer to finalize output
 - Collision:
-  - Implement AABB
+  - DONE Implement AABB
   - DONE Implement immovable items
   - Implement collision resolution
 - Sprites:

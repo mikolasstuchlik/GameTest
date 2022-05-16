@@ -13,11 +13,11 @@ try! Map(loadFrom: .main).summonEntities()
 EntityFactory.player(
     asset: .fish, 
     controllable: true, 
-    position: Point(x: 32, y: 32), 
+    position: Point(x: 32, y: 256), 
     squareRadius: Size(width: 32, height: 32), 
-    collisionBitmask: 0, 
+    collisionBitmask: 0b1, 
     initialVelocity: .zero
-)
+).developerLabel = "player"
 
 EntityFactory.player(
     asset: .evilFish, 
@@ -26,7 +26,7 @@ EntityFactory.player(
     squareRadius: Size(width: 32, height: 32), 
     collisionBitmask: 0, 
     initialVelocity: Vector(x: 0.25, y: 0.25)
-)
+).developerLabel = "enemy"
 
 let frameCap: UInt32 = 240
 let frameDelay: UInt32 = 1000 / frameCap

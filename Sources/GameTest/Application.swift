@@ -30,6 +30,7 @@ final class Application {
         }
 
         systems = [
+            AABBCollisionSystem(),
             MovementSystem(),
             UserInputSystem(),
             RenderSystem(renderer: Application.renderer),

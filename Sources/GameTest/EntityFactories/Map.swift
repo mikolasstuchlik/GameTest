@@ -37,7 +37,7 @@ final class Map {
                     center: tile.center, 
                     squareRadius: tile.size * 0.5, 
                     categoryBitmask: 0
-                )
+                ).developerLabel = "mapTile"
             }
         }
     }

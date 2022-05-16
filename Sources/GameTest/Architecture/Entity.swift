@@ -12,7 +12,10 @@ final class Entity: Hashable {
     private(set) static var entities = Set<Entity>()
     private(set) var componentReferences: [ComponentReference] = []
 
-    init() {
+    var developerLabel: String?
+
+    init(developerLabel: String? = nil) {
+        self.developerLabel = developerLabel
         Entity.entities.insert(self)
     }
 

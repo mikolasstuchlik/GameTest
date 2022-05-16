@@ -16,7 +16,7 @@ extension EntityFactory {
             arguments: (
                 positionCenter: position,
                 squareRadius: squareRadius,
-                categoryBitmask: 0,
+                categoryBitmask: 0b1,
                 collisionBitmask: collisionBitmask,
                 notificationBitmask: 0,
                 velocity: initialVelocity, 
