@@ -25,7 +25,7 @@ final class UserInputSystem: System {
                 continue
             }
 
-            entity.access(component: PhysicsComponent.self) { positionComponent in
+            entity.access(component: MovableObjectComponent.self) { positionComponent in
                 guard let positionComponent = positionComponent else { return }
 
                 let controller = ControllerComponent.storage[i]

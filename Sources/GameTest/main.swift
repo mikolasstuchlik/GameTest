@@ -10,7 +10,7 @@ try game.startWindow(
 
 let player = Entity()
 try! player.assign(
-    component: PhysicsComponent.self, 
+    component: MovableObjectComponent.self, 
     arguments: (
         positionCenter: .zero,
         squareRadius: Size(width: 32, height: 32),
@@ -37,7 +37,7 @@ try! player.assign(
 
 let evilPlayer = Entity()
 try! evilPlayer.assign(
-    component: PhysicsComponent.self, 
+    component: MovableObjectComponent.self, 
     arguments: (
         positionCenter: Point(x: 20, y: 20), 
         squareRadius: Size(width: 32, height: 32), 

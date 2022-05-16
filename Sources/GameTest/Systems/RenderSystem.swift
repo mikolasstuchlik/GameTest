@@ -13,10 +13,10 @@ final class RenderSystem: System {
 
     func render(with context: RenderContext) throws {
         try Entity.entities.lazy.filter { 
-            $0.has(component: PhysicsComponent.self) 
+            $0.has(component: MovableObjectComponent.self) 
             && $0.has(component: SpriteComponent.self)
         }.forEach { entity in
-            try entity.access(component: PhysicsComponent.self) { position in
+            try entity.access(component: MovableObjectComponent.self) { position in
                 try entity.access(component: SpriteComponent.self) { sprite in
                     try renderer.render(
                         sprite!.pointee.texture, 
