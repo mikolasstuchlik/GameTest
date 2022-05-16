@@ -4,7 +4,7 @@ extension EntityFactory {
         let newTile = Entity()
         try! newTile.assign(
             component: SpriteComponent.self, 
-            arguments: (asset: asset, size: squareRadius * 2)
+            arguments: (asset: asset, size: squareRadius * 2, layer: 0)
         )
         try! newTile.assign(
             component: ImmovableObjectComponent.self, 

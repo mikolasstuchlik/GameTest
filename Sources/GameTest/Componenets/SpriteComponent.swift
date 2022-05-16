@@ -7,11 +7,14 @@ struct SpriteComponent: Component {
     unowned(unsafe) var entity: Entity?
     var texture: SDLTexturePtr
     var size: Size<Float>
+    var layer: UInt
+    var rendererAssignedCenter: Point<Float> = .zero
 
-    init(entity: Entity, arguments: (asset: Assets.Image, size: Size<Float>)) throws {
+    init(entity: Entity, arguments: (asset: Assets.Image, size: Size<Float>, layer: UInt)) throws {
         self.entity = entity
-        texture = try SDLTexturePtr.init(for: arguments.asset)
-        size = arguments.size
+        self.texture = try SDLTexturePtr.init(for: arguments.asset)
+        self.size = arguments.size
+        self.layer = arguments.layer
     }
 
     func destroy() {

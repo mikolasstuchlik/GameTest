@@ -25,7 +25,7 @@ extension EntityFactory {
         )
         try! player.assign(
             component: SpriteComponent.self, 
-            arguments: (asset: asset, size: squareRadius * 2)
+            arguments: (asset: asset, size: squareRadius * 2, layer: 1)
         )
         if controllable {
             try! player.assign(
