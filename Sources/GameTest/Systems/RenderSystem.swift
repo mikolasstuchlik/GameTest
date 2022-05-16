@@ -19,13 +19,13 @@ final class RenderSystem: System {
             try entity.access(component: MovableObjectComponent.self) { position in
                 try entity.access(component: SpriteComponent.self) { sprite in
                     try renderer.render(
-                        sprite!.pointee.texture, 
+                        sprite.texture, 
                         source: nil, 
                         destination: SDL_Rect(
-                            x: CInt(position!.pointee.positionCenter.x),
-                            y: CInt(position!.pointee.positionCenter.y),
-                            w: CInt(sprite!.pointee.size.width),
-                            h: CInt(sprite!.pointee.size.height)
+                            x: CInt(position.positionCenter.x),
+                            y: CInt(position.positionCenter.y),
+                            w: CInt(sprite.size.width),
+                            h: CInt(sprite.size.height)
                         )
                     )
                 }

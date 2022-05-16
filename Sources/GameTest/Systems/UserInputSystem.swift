@@ -26,23 +26,22 @@ final class UserInputSystem: System {
             let entity = ControllerComponent.storage[i].entity!
 
             entity.access(component: MovableObjectComponent.self) { positionComponent in
-                guard let positionComponent = positionComponent else { return }
 
                 let controller = ControllerComponent.storage[i]
 
-                positionComponent.pointee.velocity.x = 
+                positionComponent.velocity.x = 
                     controller.isLeftPressed == controller.isRightPressed ? 0
                     : controller.isRightPressed ? 1.0
                     : -1.0
 
-                positionComponent.pointee.velocity.y = 
+                positionComponent.velocity.y = 
                     controller.isTopPressed == controller.isBottomPressed ? 0
                     : controller.isBottomPressed ? 1.0
                     : -1.0
 
-                let magnitude = positionComponent.pointee.velocity.magnitude
-                let adjust = min(1.0, positionComponent.pointee.maxVelocity / magnitude)
-                positionComponent.pointee.velocity = positionComponent.pointee.velocity * adjust
+                let magnitude = positionComponent.velocity.magnitude
+                let adjust = min(1.0, positionComponent.maxVelocity / magnitude)
+                positionComponent.velocity = positionComponent.velocity * adjust
             }
         }
     }

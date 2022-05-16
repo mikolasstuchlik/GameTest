@@ -20,4 +20,5 @@ Demonstrator for simle game in Swift using SDL2
 - System:
   - Remove static collections and references
   - Use Entity pools
-  - Use unowned(unsafe)
+  - DONE Use unowned(unsafe)
+  - DONE Use inout instead of pointers

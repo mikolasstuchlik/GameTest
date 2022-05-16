@@ -46,15 +46,12 @@ final class Entity: Hashable {
         )
     }
 
-    func access<C: Component, R>(component: C.Type, _ accessBlock: (UnsafeMutablePointer<C>?) throws -> R ) rethrows -> R {
+    func access<C: Component, R>(component: C.Type, _ accessBlock: (inout C) throws -> R ) rethrows -> R? {
         guard let index = index(of: C.self) else {
-            return try accessBlock(nil)
+            return nil
         }
 
-        return try withUnsafeMutablePointer(
-            to: &C.storage[componentReferences[index].storage], 
-            accessBlock
-        )
+        return try accessBlock(&C.storage[componentReferences[index].storage])
     }
 
     @discardableResult
