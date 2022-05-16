@@ -1,5 +1,5 @@
 final class MovementSystem: System {
-    unowned(unsafe) let pool: Pool
+    weak var pool: Pool!
 
     init(pool: Pool) {
         self.pool = pool
@@ -10,7 +10,10 @@ final class MovementSystem: System {
 
         for i in 0..<storage.buffer.count where storage.buffer[i].isValid {
             storage.buffer[i].startingPosition = storage.buffer[i].positionCenter
-            storage.buffer[i].positionCenter = storage.buffer[i].positionCenter + storage.buffer[i].velocity
+
+            storage.buffer[i].positionCenter = storage.buffer[i].positionCenter 
+                + storage.buffer[i].velocity
+                * ( Float(context.timePassedInMs) / 1000.0)  
         }
     }
 

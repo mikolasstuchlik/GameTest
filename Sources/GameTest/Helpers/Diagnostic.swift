@@ -72,12 +72,18 @@ func measure(_ named: String, _ block: () -> Void) {
     let startTime = DispatchTime.now()
     block()
     let endTime = DispatchTime.now()
+    report(name: named, measured: startTime.distance(to: endTime).prettyPrint)
+    #endif
+}
+
+func report(name: String, measured: String) {
+    #if MEASURE
     DispatchQueue.global(qos: .userInteractive).async {
         print(String(
-            format:"Task: %@%@%@", 
-            named, 
-            String(repeating: " ", count: max(1, 30 - named.count)), 
-            startTime.distance(to: endTime).prettyPrint
+            format:"Reporting: %@%@%@", 
+            name, 
+            String(repeating: " ", count: max(1, 30 - name.count)), 
+            measured
         ))
     }
     #endif

@@ -8,20 +8,14 @@ try game.startWindow(
     fullscreen: false
 )
 
-let frameCap: UInt32 = 240
-let frameDelay: UInt32 = 1000 / frameCap
+let frameCap = FrameCapCount(frameCap: 120)
+var rtcCounter = PassedTimeCount()
 
 while game.isRunning {
-    let frameStart = SDL_GetTicks()
-
-    let events = game.handleEvents()
-    game.update(events: events)
-    try game.render()
-
-    let frameTime = SDL_GetTicks() - frameStart
-
-    if frameDelay > frameTime {
-        SDL_Delay(frameDelay - frameTime)
+    frameCap.delayAfter {
+        let events = game.handleEvents()
+        game.update(events: events, timePassedInMs: rtcCounter.nextFrame())
+        try! game.render()
     }
 }
 

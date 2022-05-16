@@ -1,7 +1,7 @@
 import CSDL2
 
 final class RenderSystem: System {
-    unowned(unsafe) let pool: Pool
+    weak var pool: Pool!
 
     init(pool: Pool) {
         self.pool = pool

@@ -36,30 +36,27 @@ final class Application {
         isRunning = true
     }
 
-    func handleEvents() -> EnputEvents { 
+    func handleEvents() -> [InputEvent] { 
+        var result: [InputEvent] = []
         var event = SDL_Event()
-        let eventPending = withUnsafeMutablePointer(to: &event, SDL_PollEvent(_:)) == 1
-            ? true
-            : false
-
-        guard eventPending else { return .none }
-
-        switch SDL_EventType(event.type) {
-        case SDL_QUIT:
-            isRunning = false
-        case SDL_KEYDOWN:
-            return .keyDown(event.key)
-        case SDL_KEYUP:
-            return .keyUp(event.key)
-        default:
-            break
+        while withUnsafeMutablePointer(to: &event, SDL_PollEvent(_:)) == 1 {
+            switch SDL_EventType(event.type) {
+            case SDL_QUIT:
+                isRunning = false
+            case SDL_KEYDOWN:
+                result.append(.keyDown(event.key))
+            case SDL_KEYUP:
+                result.append(.keyUp(event.key))
+            default:
+                break
+            }
         }
 
-        return .none
+        return result
     }
 
-    func update(events: EnputEvents) { 
-        let context = UpdateContext(events: events)
+    func update(events: [InputEvent], timePassedInMs: UInt32) { 
+        let context = UpdateContext(timePassedInMs: timePassedInMs, events: events)
         try! currentPool?.update(with: context)
     }
 

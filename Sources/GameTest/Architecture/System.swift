@@ -1,13 +1,13 @@
 import CSDL2
 
-enum EnputEvents {
-    case none
+enum InputEvent {
     case keyDown(SDL_KeyboardEvent)
     case keyUp(SDL_KeyboardEvent)
 }
 
 struct UpdateContext {
-    let events: EnputEvents
+    let timePassedInMs: UInt32
+    let events: [InputEvent]
 }
 
 struct RenderContext {
@@ -20,5 +20,5 @@ protocol LoopItem {
 }
 
 protocol System: AnyObject, LoopItem {
-    var pool: Pool { get }
+    var pool: Pool! { get }
 }

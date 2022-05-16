@@ -21,7 +21,7 @@ extension EntityFactory {
                 collisionBitmask: collisionBitmask,
                 notificationBitmask: 0,
                 velocity: initialVelocity, 
-                maxVelocity: 1.0
+                maxVelocity: 100.0
             )
         )
         try! player.assign(

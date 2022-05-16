@@ -30,7 +30,7 @@ final class AABBCollisionSystem: System {
         }
     }
 
-    unowned(unsafe) let pool: Pool
+    weak var pool: Pool!
     weak var delegate: CollisionSystemDelegate?
 
     init(pool: Pool) {

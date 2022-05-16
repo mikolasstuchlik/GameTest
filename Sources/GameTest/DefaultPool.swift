@@ -33,7 +33,7 @@ final class DefaultPool: BasePool {
             position: .zero, 
             squareRadius: Size(width: 32, height: 32), 
             collisionBitmask: 0, 
-            initialVelocity: Vector(x: 0.25, y: 0.25)
+            initialVelocity: Vector(x: 75, y: 75)
         ).developerLabel = "enemy"
 
     }

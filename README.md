@@ -18,7 +18,7 @@ Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux
   - DONE Implement layers
   - DONE Use shared texture instances (avoid superfluous texture loadings)
 - System:
-  - Use RTC based system to compute movements
+  - DONE Use RTC based system to compute movements
   - DONE Remove static collections and references
   - DONE Use Entity pools
   - DONE Use unowned(unsafe)

@@ -1,24 +1,29 @@
 import CSDL2
 
 final class UserInputSystem: System {
-    unowned(unsafe) let pool: Pool
+    weak var pool: Pool!
 
     init(pool: Pool) {
         self.pool = pool
     }
 
     func update(with context: UpdateContext) throws {
+        context.events.forEach(handle(event:))
+    }
+
+    func render(with context: RenderContext) throws {
+    }
+
+    private func handle(event: InputEvent) {
         let pressed: Bool
         let key: SDL_Scancode
-        switch context.events {
+        switch event {
         case let .keyDown(aKey):
             pressed = true
             key = aKey.keysym.scancode
         case let .keyUp(aKey):
             pressed = false
             key = aKey.keysym.scancode
-        case .none:
-            return
         }
 
         let storage = pool.storage(for: ControllerComponent.self)
@@ -38,21 +43,18 @@ final class UserInputSystem: System {
 
                 positionComponent.velocity.x = 
                     controller.isLeftPressed == controller.isRightPressed ? 0
-                    : controller.isRightPressed ? 1.0
-                    : -1.0
+                    : controller.isRightPressed ? 100.0
+                    : -100.0
 
                 positionComponent.velocity.y = 
                     controller.isTopPressed == controller.isBottomPressed ? 0
-                    : controller.isBottomPressed ? 1.0
-                    : -1.0
+                    : controller.isBottomPressed ? 100.0
+                    : -100.0
 
                 let magnitude = positionComponent.velocity.magnitude
                 let adjust = min(1.0, positionComponent.maxVelocity / magnitude)
                 positionComponent.velocity = positionComponent.velocity * adjust
             }
         }
-    }
-
-    func render(with context: RenderContext) throws {
     }
 }
