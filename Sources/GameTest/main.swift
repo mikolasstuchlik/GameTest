@@ -8,49 +8,24 @@ try game.startWindow(
     fullscreen: false
 )
 
-let player = Entity()
-try! player.assign(
-    component: MovableObjectComponent.self, 
-    arguments: (
-        positionCenter: .zero,
-        squareRadius: Size(width: 32, height: 32),
-        categoryBitmask: 0,
-        collisionBitmask: 0,
-        notificationBitmask: 0,
-        velocity: .zero, 
-        maxVelocity: 1.0
-    )
-)
-try! player.assign(
-    component: SpriteComponent.self, 
-    arguments: (asset: .fish, size: Size(width: 64, height: 64))
-)
-try! player.assign(
-    component: ControllerComponent.self, 
-    arguments: (
-        moveTopKey: SDL_SCANCODE_W, 
-        moveRightKey: SDL_SCANCODE_D, 
-        moveBottomKey: SDL_SCANCODE_S, 
-        moveLeftKey: SDL_SCANCODE_A
-    )
+try! Map(loadFrom: .main).summonEntities()
+
+EntityFactory.player(
+    asset: .fish, 
+    controllable: true, 
+    position: Point(x: 32, y: 32), 
+    squareRadius: Size(width: 32, height: 32), 
+    collisionBitmask: 0, 
+    initialVelocity: .zero
 )
 
-let evilPlayer = Entity()
-try! evilPlayer.assign(
-    component: MovableObjectComponent.self, 
-    arguments: (
-        positionCenter: Point(x: 20, y: 20), 
-        squareRadius: Size(width: 32, height: 32), 
-        categoryBitmask: 0,
-        collisionBitmask: 0,
-        notificationBitmask: 0,
-        velocity: Vector(x: 1, y: 0), 
-        maxVelocity: 10.0
-    )
-)
-try! evilPlayer.assign(
-    component: SpriteComponent.self, 
-    arguments: (asset: .evilFish, size: Size(width: 64, height: 64))
+EntityFactory.player(
+    asset: .evilFish, 
+    controllable: false, 
+    position: .zero, 
+    squareRadius: Size(width: 32, height: 32), 
+    collisionBitmask: 0, 
+    initialVelocity: Vector(x: 0.25, y: 0.25)
 )
 
 let frameCap: UInt32 = 240

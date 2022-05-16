@@ -29,8 +29,6 @@ final class Application {
             SDL_CreateRenderer(Application.window, -1, 0)
         }
 
-        try! Application.renderer?.setDrawColor(red: 125, green: 125, blue: 255, alpha: 255)
-
         systems = [
             MovementSystem(),
             UserInputSystem(),
@@ -72,7 +70,6 @@ final class Application {
 
         let context = RenderContext()
 
-        map.drawMap()
         systems.forEach { try! $0.render(with: context) }
 
         Application.renderer!.renderPresent()
@@ -89,12 +86,6 @@ final class Application {
 
         SDL_Quit()
     }
-
-    var map: Map = {
-        let map = Map()
-        try! map.loadFrom(file: .main)
-        return map
-    }()
 
     private(set) var systems: [System] = []
     private(set) var isRunning: Bool = false

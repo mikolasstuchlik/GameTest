@@ -1,5 +1,7 @@
 import Foundation
 
+enum EntityFactory { }
+
 final class Entity: Hashable {
     struct ComponentReference {
         let type: OpaqueComponent.Type

@@ -11,12 +11,13 @@ Demonstrator for simle game in Swift using SDL2
   - Use SDL Mixer to finalize output
 - Collision:
   - Implement AABB
-  - Implement immovable items
+  - DONE Implement immovable items
   - Implement collision resolution
 - Sprites:
   - Implement animation
   - Implement custom color
   - Implement layers
+  - Use shared texture instances (avoid superfluous texture loadings)
 - System:
   - Remove static collections and references
   - Use Entity pools
