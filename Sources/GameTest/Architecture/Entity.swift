@@ -1,33 +1,21 @@
 import Foundation
 
 final class Entity: Hashable {
-    typealias Identifier = UInt
-
     struct ComponentReference {
         let type: OpaqueComponent.Type
         let storage: Int
     }
 
-    static let notAnIdentifier: Identifier = 0
-
     // Should not be static
     private(set) static var entities = Set<Entity>()
     private(set) var componentReferences: [ComponentReference] = []
-
-    lazy var identifier: Identifier = Identifier(bitPattern: Unmanaged.passUnretained(self).toOpaque())
 
     init() {
         Entity.entities.insert(self)
     }
 
     static func == (lhs: Entity, rhs: Entity) -> Bool {
-        lhs.identifier == rhs.identifier
-    }
-
-    static func unpackUnownedEntity(from identifier: Identifier) -> Entity? {
-        UnsafeRawPointer(bitPattern: identifier)
-            .flatMap(Unmanaged<Entity>.fromOpaque(_:))?
-            .takeUnretainedValue()
+        lhs === rhs
     }
 
     static func clean() {
@@ -35,7 +23,7 @@ final class Entity: Hashable {
     }
 
     func hash(into hasher: inout Hasher) {
-        identifier.hash(into: &hasher)
+        ObjectIdentifier(self).hash(into: &hasher)
     }
 
     func has<C: Component>(component: C.Type) -> Bool {
@@ -46,14 +34,14 @@ final class Entity: Hashable {
         if let index = index(of: C.self) {
             let old = componentReferences[index]
             C.storage[old.storage].destroy()
-            C.storage[old.storage] = try C.init(entity: identifier, arguments: arguments)
+            C.storage[old.storage] = try C.init(entity: self, arguments: arguments)
             return
         }
 
         componentReferences.append(
             ComponentReference(
                 type: C.self, 
-                storage: try C.allocInit(for: identifier, with: arguments)
+                storage: try C.allocInit(for: self, with: arguments)
             )
         )
     }

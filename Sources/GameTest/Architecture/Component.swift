@@ -3,7 +3,6 @@ typealias ComponentIdentifier = Int
 
 protocol OpaqueComponent {
     static func destroy(at index: Int)
-    static var componentIdentifier: ComponentIdentifier { get }
     func destroy()
 }
 
@@ -15,19 +14,18 @@ protocol Component: OpaqueComponent {
     static var storage: [Self] { get set }
     static var freedIndicies: [Int] { get set }
 
-    static func allocInit(for entity: Entity.Identifier, with arguments: InitArguments) throws -> Int
+    static func allocInit(for entity: Entity, with arguments: InitArguments) throws -> Int
 
-    var entity: Entity.Identifier { get set }
+    /// MUST be unowned(unsafe)
+    var entity: Entity? { get set }
 
-    init(entity: Entity.Identifier, arguments: InitArguments) throws
+    init(entity: Entity, arguments: InitArguments) throws
 }
 
 extension Component {
-    static func makeIdentifier() -> ComponentIdentifier {
-        String(describing: Self.self).hash
-    }
+    var isValid: Bool { entity != nil }
 
-    static func allocInit(for entity: Entity.Identifier, with arguments: InitArguments) throws -> Int {
+    static func allocInit(for entity: Entity, with arguments: InitArguments) throws -> Int {
         let new = try Self.init(entity: entity, arguments: arguments)
         if let allocated = freedIndicies.popLast() {
             storage[allocated] = new
@@ -40,7 +38,7 @@ extension Component {
 
     static func destroy(at index: Int) {
         storage[index].destroy()
-        storage[index].entity = Entity.notAnIdentifier
+        storage[index].entity = nil
         freedIndicies.append(index)
     }
 }

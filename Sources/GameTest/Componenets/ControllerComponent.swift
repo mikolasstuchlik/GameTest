@@ -3,10 +3,9 @@ import CLibs
 struct ControllerComponent: Component {
     static var storage: [Self] = []
     static var freedIndicies: [Int] = []
-    static var componentIdentifier = makeIdentifier()
 
     // this could be unowned(unsafe) reference
-    var entity: Entity.Identifier
+    unowned(unsafe) var entity: Entity?
 
     var moveTopKey: SDL_Scancode
     var moveRightKey: SDL_Scancode
@@ -43,7 +42,7 @@ struct ControllerComponent: Component {
     }
 
     init(
-        entity: Entity.Identifier, 
+        entity: Entity, 
         arguments: (
             moveTopKey: SDL_Scancode,
             moveRightKey: SDL_Scancode,

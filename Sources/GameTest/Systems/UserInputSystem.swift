@@ -16,14 +16,14 @@ final class UserInputSystem: System {
             return
         }
 
-        for i in 0..<ControllerComponent.storage.count {
+        for i in 0..<ControllerComponent.storage.count where ControllerComponent.storage[i].isValid {
             guard 
-                ControllerComponent.storage[i].entity != Entity.notAnIdentifier,
-                ControllerComponent.storage[i].respondsTo(key: key, pressed: pressed),
-                let entity = Entity.unpackUnownedEntity(from: ControllerComponent.storage[i].entity)
+                ControllerComponent.storage[i].respondsTo(key: key, pressed: pressed)
             else {
                 continue
             }
+
+            let entity = ControllerComponent.storage[i].entity!
 
             entity.access(component: MovableObjectComponent.self) { positionComponent in
                 guard let positionComponent = positionComponent else { return }

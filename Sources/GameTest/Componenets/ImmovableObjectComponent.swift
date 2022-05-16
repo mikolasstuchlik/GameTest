@@ -1,10 +1,8 @@
 struct ImmovableObjectComponent: Component {
     static var storage: [Self] = []
     static var freedIndicies: [Int] = []
-    static var componentIdentifier = makeIdentifier()
 
-    // this could be unowned(unsafe) reference
-    var entity: Entity.Identifier
+    unowned(unsafe) var entity: Entity?
 
     var positionCenter: Point<Float>
     var squareRadius: Size<Float>
@@ -12,7 +10,7 @@ struct ImmovableObjectComponent: Component {
     var categoryBitmask: UInt32
 
     init(
-        entity: Entity.Identifier, 
+        entity: Entity, 
         arguments: (
             positionCenter: Point<Float>,
             squareRadius: Size<Float>,
