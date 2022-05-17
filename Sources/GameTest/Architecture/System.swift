@@ -6,6 +6,7 @@ enum InputEvent {
 }
 
 struct UpdateContext {
+    let currentTime: UInt32
     let timePassedInMs: UInt32
     let events: [InputEvent]
 }

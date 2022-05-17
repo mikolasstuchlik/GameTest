@@ -6,6 +6,7 @@ extension EntityFactory {
             component: SpriteComponent.self, 
             arguments: (
                 unownedTexture: try! pool.textureBuffer.texture(for: asset),
+                sourceRect: nil,
                 size: squareRadius * 2,
                 layer: 0
             )

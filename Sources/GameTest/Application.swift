@@ -55,8 +55,12 @@ final class Application {
         return result
     }
 
-    func update(events: [InputEvent], timePassedInMs: UInt32) { 
-        let context = UpdateContext(timePassedInMs: timePassedInMs, events: events)
+    func update(currentTime: UInt32, timePassedInMs: UInt32, events: [InputEvent]) { 
+        let context = UpdateContext(
+            currentTime: currentTime,
+            timePassedInMs: timePassedInMs,
+            events: events
+        )
         try! currentPool?.update(with: context)
     }
 

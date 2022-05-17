@@ -50,7 +50,7 @@ final class RenderSystem: System {
         for i in renderOrder {
             try! renderer.render(
                 spriteStore.buffer[i].unownedTexture, 
-                source: nil, 
+                source: spriteStore.buffer[i].sourceRect, 
                 destination: SDL_Rect(Rect(
                     center: spriteStore.buffer[i].rendererAssignedCenter, 
                     size: spriteStore.buffer[i].size

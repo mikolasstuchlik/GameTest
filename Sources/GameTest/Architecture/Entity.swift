@@ -49,7 +49,7 @@ final class Entity: Hashable {
         )
     }
 
-    func access<C: Component, R>(component: C.Type, _ accessBlock: (inout C) throws -> R ) rethrows -> R? {
+    func access<C: Component, R>(component: C.Type, accessBlock: (inout C) throws -> R ) rethrows -> R? {
         guard let index = index(of: C.self) else {
             return nil
         }

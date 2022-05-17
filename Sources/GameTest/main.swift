@@ -14,7 +14,12 @@ var rtcCounter = PassedTimeCount()
 while game.isRunning {
     frameCap.delayAfter {
         let events = game.handleEvents()
-        game.update(events: events, timePassedInMs: rtcCounter.nextFrame())
+        let (currentTime, delatInMs) = rtcCounter.nextFrame()
+        game.update(
+            currentTime: currentTime,
+            timePassedInMs: delatInMs, 
+            events: events
+        )
         try! game.render()
     }
 }

@@ -3,11 +3,11 @@ import CSDL2
 struct PassedTimeCount {
     private var lastTickInMs: UInt32 = 0
 
-    mutating func nextFrame() -> UInt32 {
+    mutating func nextFrame() -> (current: UInt32, delta: UInt32) {
         let currentTickInMs = SDL_GetTicks()
         let ticksInMsDelta = currentTickInMs - lastTickInMs
         lastTickInMs = currentTickInMs
-        return ticksInMsDelta
+        return (currentTickInMs, ticksInMsDelta)
     }
 }
 

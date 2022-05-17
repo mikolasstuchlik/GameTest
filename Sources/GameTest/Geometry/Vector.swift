@@ -24,6 +24,12 @@ extension Vector where Number: FloatingPoint {
     }
 }
 
+extension Vector where Number == Float {
+    var degreees: Float {
+        (atan2(y, x) + Float.pi) * 180 / Float.pi 
+    }
+}
+
 func +<Number: Numeric>(_ lhs: Vector<Number>, _ rhs: Vector<Number>) -> Vector<Number> {
     Vector(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }

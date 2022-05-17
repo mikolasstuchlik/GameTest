@@ -11,6 +11,7 @@ final class DefaultPool: BasePool {
             UserInputSystem(pool: self),
             MovementSystem(pool: self),
             collisionSystem,
+            AnimationSystem(pool: self),
             RenderSystem(pool: self),
         ]
 
@@ -18,18 +19,16 @@ final class DefaultPool: BasePool {
 
         EntityFactory.player(
             pool: self,
-            asset: .fish, 
-            controllable: true, 
+            asset: .dyna, 
+            spriteSheet: DynaSheet.self,
             position: Point(x: 32, y: 256), 
             squareRadius: Size(width: 32, height: 32), 
-            collisionBitmask: 0b1, 
-            initialVelocity: .zero
+            collisionBitmask: 0b1
         ).developerLabel = "player"
 
-        EntityFactory.player(
+        EntityFactory.mob(
             pool: self,
             asset: .evilFish, 
-            controllable: false, 
             position: .zero, 
             squareRadius: Size(width: 32, height: 32), 
             collisionBitmask: 0, 
