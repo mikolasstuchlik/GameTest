@@ -27,9 +27,9 @@ final class Map {
                 let image: Assets.Image
                 switch content {
                 case 0:
-                    image = .water
-                case 1:
                     image = .plains
+                case 1:
+                    image = .water
                 case 2:
                     image = .sand
                 default: continue
@@ -40,7 +40,7 @@ final class Map {
                     asset: image, 
                     center: tile.center, 
                     squareRadius: tile.size * 0.5, 
-                    categoryBitmask: 0
+                    categoryBitmask: image == .water ? 0b1 : 0
                 ).developerLabel = "mapTile"
             }
         }
@@ -60,5 +60,5 @@ final class Map {
     private var map: [Int] = Array(repeating: -1, count: mapDimensions.width * mapDimensions.height)
 
     static let mapDimensions = Size(width: 25, height: 20)
-    static let tileDimensions = Size<Float>(width: 32, height: 32)
+    static let tileDimensions = Size<Float>(width: 64, height: 64)
 }

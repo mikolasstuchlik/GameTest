@@ -11,6 +11,14 @@ extension Size where Number: ExpressibleByFloatLiteral {
     static var zero: Self { .init(width: 0, height: 0) }
 }
 
+func +<Number: Numeric>(_ lhs: Size<Number>, _ rhs: Size<Number>) -> Size<Number> {
+    Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
+}
+
+func -<Number: Numeric>(_ lhs: Size<Number>, _ rhs: Size<Number>) -> Size<Number> {
+    Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
+}
+
 func *<Number: Numeric>(_ lhs: Number, _ rhs: Size<Number>) -> Size<Number> {
     Size(width: rhs.width * lhs, height: rhs.height * lhs)
 }

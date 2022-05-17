@@ -19,21 +19,30 @@ final class DefaultPool: BasePool {
 
         EntityFactory.player(
             pool: self,
-            asset: .dyna, 
+            asset: .dyna,
             spriteSheet: DynaSheet.self,
-            position: Point(x: 32, y: 256), 
-            squareRadius: Size(width: 32, height: 32), 
+            position: Point(x: 32, y: 256),
+            squareRadius: Size(width: 30, height: 30),
             collisionBitmask: 0b1
         ).developerLabel = "player"
 
-        EntityFactory.mob(
+        EntityFactory.player(
             pool: self,
-            asset: .evilFish, 
-            position: .zero, 
-            squareRadius: Size(width: 32, height: 32), 
-            collisionBitmask: 0, 
-            initialVelocity: Vector(x: 75, y: 75)
-        ).developerLabel = "enemy"
+            asset: .dyna,
+            spriteSheet: DynaSheet.self,
+            position: Point(x: 32, y: 180),
+            squareRadius: Size(width: 30, height: 30),
+            collisionBitmask: 0b1
+        ).developerLabel = "player2"
+
+        // EntityFactory.mob(
+        //     pool: self,
+        //     asset: .evilFish, 
+        //     position: .zero, 
+        //     squareRadius: Size(width: 32, height: 32), 
+        //     collisionBitmask: 0, 
+        //     initialVelocity: Vector(x: 75, y: 75)
+        // ).developerLabel = "enemy"
 
     }
 

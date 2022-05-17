@@ -43,13 +43,13 @@ final class UserInputSystem: System {
 
                 positionComponent.velocity.x = 
                     controller.isLeftPressed == controller.isRightPressed ? 0
-                    : controller.isRightPressed ? 100.0
-                    : -100.0
+                    : controller.isRightPressed ? 200.0
+                    : -200.0
 
                 positionComponent.velocity.y = 
                     controller.isTopPressed == controller.isBottomPressed ? 0
-                    : controller.isBottomPressed ? 100.0
-                    : -100.0
+                    : controller.isBottomPressed ? 200.0
+                    : -200.0
 
                 let magnitude = positionComponent.velocity.magnitude
                 let adjust = min(1.0, positionComponent.maxVelocity / magnitude)

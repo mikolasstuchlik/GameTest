@@ -149,6 +149,35 @@ final class AABBCollisionSystem: System {
     }
 
     private func resolveCollision(movableIndex: Int, immovableIndex: Int) { 
-        
+        let movable = pool.storage(for: MovableObjectComponent.self)
+        let immovable = pool.storage(for: ImmovableObjectComponent.self).buffer[immovableIndex]
+
+        let movementLine = Line(
+            from: movable.buffer[movableIndex].startingPosition,
+            to: movable.buffer[movableIndex].positionCenter
+        )
+        let immovableBoundingLines = Rect(
+            center: immovable.positionCenter,
+            size: immovable.squareRadius * 2 + movable.buffer[movableIndex].squareRadius * 2
+        ).lines
+
+        let intersection = immovableBoundingLines
+            .map(movementLine.intersection(with:))
+            .enumerated()
+            .filter { _, mul in (0...1.0).contains(mul) }
+            .min { abs($0.element) < abs($1.element) }
+
+        guard let (side, intersection) = intersection else {
+            assertionFailure("Collision resolution didn't find collision")
+            return
+        }
+
+        let newPosition = movementLine.origin + movementLine.vector * intersection
+
+        if side % 2 == 0 {
+            movable.buffer[movableIndex].positionCenter.y = newPosition.y
+        } else {
+            movable.buffer[movableIndex].positionCenter.x = newPosition.x
+        }
     }
 }

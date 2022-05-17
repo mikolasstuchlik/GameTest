@@ -1,4 +1,0 @@
-module CSDL [system] {
-    header "shims.h"
-    export *
-}

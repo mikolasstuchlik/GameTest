@@ -14,7 +14,7 @@ Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux
   - DONE Implement immovable items
   - Implement collision resolution
 - Sprites:
-  - Implement animation
+  - DONE Implement animation
   - DONE Implement layers
   - DONE Use shared texture instances (avoid superfluous texture loadings)
 - System:
