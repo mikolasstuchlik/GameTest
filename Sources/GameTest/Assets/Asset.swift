@@ -48,7 +48,7 @@ enum Assets {
     }
 
     enum Sheet: String {
-        case dyna
+        case blue, green, red, white
 
         var url: URL {
             Bundle.module.url(forResource: self.rawValue, withExtension: "png")!

@@ -10,16 +10,17 @@ final class DefaultPool: BasePool {
         systems = [
             UserInputSystem(pool: self),
             MovementSystem(pool: self),
-            collisionSystem,
             AnimationSystem(pool: self),
+            collisionSystem,
             RenderSystem(pool: self),
         ]
 
         try! Map(pool: self, loadFrom: .main).summonEntities()
 
         EntityFactory.player(
+            schemeArrows: false,
             pool: self,
-            asset: .dyna,
+            asset: .white,
             spriteSheet: DynaSheet.self,
             position: Point(x: 32, y: 256),
             squareRadius: Size(width: 30, height: 30),
@@ -27,8 +28,9 @@ final class DefaultPool: BasePool {
         ).developerLabel = "player"
 
         EntityFactory.player(
+            schemeArrows: true,
             pool: self,
-            asset: .dyna,
+            asset: .green,
             spriteSheet: DynaSheet.self,
             position: Point(x: 32, y: 180),
             squareRadius: Size(width: 30, height: 30),

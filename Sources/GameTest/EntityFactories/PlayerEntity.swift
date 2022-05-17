@@ -3,6 +3,7 @@ import CSDL2
 extension EntityFactory {
     @discardableResult
     static func player(
+        schemeArrows: Bool,
         pool: Pool,
         asset: Assets.Sheet,
         spriteSheet: SpriteSheet.Type,
@@ -43,10 +44,10 @@ extension EntityFactory {
         try! player.assign(
                 component: ControllerComponent.self, 
                 arguments: (
-                    moveTopKey: SDL_SCANCODE_W, 
-                    moveRightKey: SDL_SCANCODE_D, 
-                    moveBottomKey: SDL_SCANCODE_S, 
-                    moveLeftKey: SDL_SCANCODE_A
+                    moveTopKey:     !schemeArrows ? SDL_SCANCODE_W : SDL_SCANCODE_UP, 
+                    moveRightKey:   !schemeArrows ? SDL_SCANCODE_D : SDL_SCANCODE_RIGHT, 
+                    moveBottomKey:  !schemeArrows ? SDL_SCANCODE_S : SDL_SCANCODE_DOWN, 
+                    moveLeftKey:    !schemeArrows ? SDL_SCANCODE_A : SDL_SCANCODE_LEFT
                 )
             )
         return player

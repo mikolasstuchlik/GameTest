@@ -12,7 +12,9 @@ Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux
 - Collision:
   - DONE Implement AABB
   - DONE Implement immovable items
-  - Implement collision resolution
+  - DONE Implement collision resolution for stacionary targets
+  - Implement collision resolution for movable targets
+  - Implement one-side-collidables
 - Sprites:
   - DONE Implement animation
   - DONE Implement layers

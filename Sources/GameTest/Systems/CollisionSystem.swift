@@ -144,8 +144,9 @@ final class AABBCollisionSystem: System {
     }
 
     // first entity is always movable
-    private func resolveCollision(movableIndex: Int, secondMovableIndex: Int) { 
-        
+    private func resolveCollision(movableIndex first: Int, secondMovableIndex second: Int) { 
+        let movable = pool.storage(for: MovableObjectComponent.self)
+        print("Collision \(movable.buffer[first].entity?.developerLabel) and \(movable.buffer[second].entity?.developerLabel): 2 movable not implemented")
     }
 
     private func resolveCollision(movableIndex: Int, immovableIndex: Int) { 
@@ -158,13 +159,15 @@ final class AABBCollisionSystem: System {
         )
         let immovableBoundingLines = Rect(
             center: immovable.positionCenter,
-            size: immovable.squareRadius * 2 + movable.buffer[movableIndex].squareRadius * 2
+            size: 
+                immovable.squareRadius * 2 
+                + movable.buffer[movableIndex].squareRadius * 2
         ).lines
 
         let intersection = immovableBoundingLines
             .map(movementLine.intersection(with:))
             .enumerated()
-            .filter { _, mul in (0...1.0).contains(mul) }
+            .filter { (0...1.0).contains($1) }
             .min { abs($0.element) < abs($1.element) }
 
         guard let (side, intersection) = intersection else {
