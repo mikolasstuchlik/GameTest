@@ -1,6 +1,7 @@
 import CSDL2
 
 struct SpriteComponent: Component {
+    typealias Categories = Never
     unowned(unsafe) var entity: Entity?
 
     var unownedTexture: SDLTexturePtr

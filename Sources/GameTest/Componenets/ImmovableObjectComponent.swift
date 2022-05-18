@@ -1,4 +1,5 @@
 struct ImmovableObjectComponent: Component {
+    typealias Categories = Never
     unowned(unsafe) var entity: Entity?
 
     var positionCenter: Point<Float>

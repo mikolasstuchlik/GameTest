@@ -42,14 +42,14 @@ enum DynaSheet: SpriteSheet {
         }
 
         switch degrees {
-        case 0.0..<46.0, 315...361.0:
-            return "goLeft"
-        case 46.0..<136.0:
-            return "goUp"
-        case 136.0..<226.0:
+        case 316...361, 0..<46:
             return "goRight"
-        case 226.0..<316.0:
+        case 46.0..<136.0:
             return "goDown"
+        case 136.0..<226.0:
+            return "goLeft"
+        case 226.0..<316.0:
+            return "goUp"
         default:
             return nil
         }

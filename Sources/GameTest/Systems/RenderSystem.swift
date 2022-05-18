@@ -37,7 +37,7 @@ final class RenderSystem: System {
         var startingOffsetMap = Dictionary(offsets) { $1 }
 
         // Allocate efficiently render queue
-        var renderOrder: [Int] = .init(repeating: 0, count: spriteStore.buffer.count - spriteStore.freedIndicies.count)
+        var renderOrder: [Int] = .init(repeating: 0, count: spriteStore.buffer.count)
 
         // Fill the render queue (update offsets so the map is always up-to-date)
         for i in 0..<spriteStore.buffer.count where spriteStore.buffer[i].isValid {

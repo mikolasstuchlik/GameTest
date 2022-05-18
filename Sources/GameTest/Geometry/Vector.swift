@@ -26,7 +26,8 @@ extension Vector where Number: FloatingPoint {
 
 extension Vector where Number == Float {
     var degreees: Float {
-        (atan2(y, x) + Float.pi) * 180 / Float.pi 
+        let deg = atan2(y, x) * 180 / Float.pi
+        return deg < 0 ? deg + 360 : deg 
     }
 }
 

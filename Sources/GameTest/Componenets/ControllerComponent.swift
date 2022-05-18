@@ -1,6 +1,7 @@
 import CSDL2
 
 struct ControllerComponent: Component {
+    typealias Categories = Never
     unowned(unsafe) var entity: Entity?
 
     var moveTopKey: SDL_Scancode
