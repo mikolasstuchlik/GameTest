@@ -1,17 +1,8 @@
 import CSDL2
 
-final class UserInputSystem: System {
-    weak var pool: Pool!
-
-    init(pool: Pool) {
-        self.pool = pool
-    }
-
-    func update(with context: UpdateContext) throws {
+final class UserInputSystem: SDLSystem {
+    override func update(with context: UpdateContext) throws {
         context.events.forEach(handle(event:))
-    }
-
-    func render(with context: RenderContext) throws {
     }
 
     private func handle(event: InputEvent) {

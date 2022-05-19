@@ -1,5 +1,6 @@
 struct MovableObjectComponent: Component {
-    typealias Categories = Never
+    typealias Store = VectorStorage<Self>
+
     unowned(unsafe) var entity: Entity?
 
     var startingPosition: Point<Float>

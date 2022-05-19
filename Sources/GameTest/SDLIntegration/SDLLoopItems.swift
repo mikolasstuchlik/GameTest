@@ -1,5 +1,20 @@
 import CSDL2
 
+enum InputEvent {
+    case keyDown(SDL_KeyboardEvent)
+    case keyUp(SDL_KeyboardEvent)
+}
+
+struct SDLUpdateContext {
+    let currentTime: UInt32
+    let timePassedInMs: UInt32
+    let events: [InputEvent]
+}
+
+struct SDLRenderContext {
+    let renderer: SDLRendererPtr
+}
+
 struct PassedTimeCount {
     private var lastTickInMs: UInt32 = 0
 

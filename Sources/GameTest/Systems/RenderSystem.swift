@@ -1,19 +1,9 @@
 import CSDL2
 
-final class RenderSystem: System {
-    weak var pool: Pool!
-
-    init(pool: Pool) {
-        self.pool = pool
-    }
-
-    func update(with context: UpdateContext) throws {
-        
-    }
-
-    func render(with context: RenderContext) throws {
+final class RenderSystem: SDLSystem {
+    override func render(with context: RenderContext) throws {
         let spriteStore = pool.storage(for: SpriteComponent.self)
-        let renderer = pool.application.renderer!
+        let renderer = context.renderer
 
         // Determine how many layers there are and how many items are in them
         var layers: [UInt: Int] = [:]

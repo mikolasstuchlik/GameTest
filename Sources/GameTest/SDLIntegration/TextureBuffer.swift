@@ -1,11 +1,11 @@
 import CSDL2
 
 final class TextureBuffer {
-    private weak var pool: Pool?
+    private weak var pool: SDLPool?
     private var imageBuffer: [Assets.Image: SDLTexturePtr] = [:]
     private var sheetBuffer: [Assets.Sheet: SDLTexturePtr] = [:]
 
-    init(pool: Pool) {
+    init(pool: SDLPool) {
         self.pool = pool
     }
 
@@ -14,7 +14,7 @@ final class TextureBuffer {
             return result
         }
 
-        let new = try SDLTexturePtr(for: image, using: pool!.application.renderer)
+        let new = try SDLTexturePtr(for: image, using: pool!.getRenderer()!)
         imageBuffer[image] = new
         return new
     }
@@ -24,7 +24,7 @@ final class TextureBuffer {
             return result
         }
 
-        let new = try SDLTexturePtr(for: sheet, using: pool!.application.renderer)
+        let new = try SDLTexturePtr(for: sheet, using: pool!.getRenderer()!)
         sheetBuffer[sheet] = new
         return new
     }

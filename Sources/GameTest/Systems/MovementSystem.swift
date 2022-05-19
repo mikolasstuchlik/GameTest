@@ -1,11 +1,5 @@
-final class MovementSystem: System {
-    weak var pool: Pool!
-
-    init(pool: Pool) {
-        self.pool = pool
-    }
-
-    func update(with context: UpdateContext) throws {
+final class MovementSystem: SDLSystem {
+    override func update(with context: UpdateContext) throws {
         let storage = pool.storage(for: MovableObjectComponent.self)
 
         for i in 0..<storage.buffer.count where storage.buffer[i].isValid {
@@ -15,9 +9,5 @@ final class MovementSystem: System {
                 + storage.buffer[i].velocity
                 * ( Float(context.timePassedInMs) / 1000.0)  
         }
-    }
-
-    func render(with context: RenderContext) throws { 
-
     }
 }

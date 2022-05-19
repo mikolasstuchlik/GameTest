@@ -1,7 +1,7 @@
 extension EntityFactory {
     @discardableResult
-    static func mapTile(pool: Pool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, categoryBitmask: UInt32) -> Entity {
-        let newTile = Entity(pool: pool)
+    static func mapTile(pool: SDLPool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, categoryBitmask: UInt32) -> Entity {
+        let newTile = Entity(dataManager: pool)
         try! newTile.assign(
             component: SpriteComponent.self, 
             arguments: (

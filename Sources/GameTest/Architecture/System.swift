@@ -1,25 +1,13 @@
-import CSDL2
+class System<UpdateContext, RenderContext>: LoopItem {
+    weak var pool: Pool<UpdateContext, RenderContext>!
 
-enum InputEvent {
-    case keyDown(SDL_KeyboardEvent)
-    case keyUp(SDL_KeyboardEvent)
-}
+    init(pool: Pool<UpdateContext, RenderContext>) {
+        self.pool = pool
+    }
 
-struct UpdateContext {
-    let currentTime: UInt32
-    let timePassedInMs: UInt32
-    let events: [InputEvent]
-}
+    func update(with context: UpdateContext) throws {
+    }
 
-struct RenderContext {
-
-}
-
-protocol LoopItem {
-    func update(with context: UpdateContext) throws
-    func render(with context: RenderContext) throws
-}
-
-protocol System: AnyObject, LoopItem {
-    var pool: Pool! { get }
+    func render(with context: RenderContext) throws {
+    }
 }

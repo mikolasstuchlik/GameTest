@@ -2,7 +2,7 @@ protocol CollisionSystemDelegate: AnyObject {
     func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity)
 }
 
-final class AABBCollisionSystem: System {
+final class AABBCollisionSystem: SDLSystem {
     private enum CollisionType {
         case none, notify, collide, collideNotify
 
@@ -30,14 +30,10 @@ final class AABBCollisionSystem: System {
         }
     }
 
-    weak var pool: Pool!
     weak var delegate: CollisionSystemDelegate?
 
-    init(pool: Pool) {
-        self.pool = pool
-    }
 
-    func update(with context: UpdateContext) throws {
+    override func update(with context: UpdateContext) throws {
         let movable = pool.storage(for: MovableObjectComponent.self)
         let immovable = pool.storage(for: ImmovableObjectComponent.self)
 
@@ -128,8 +124,6 @@ final class AABBCollisionSystem: System {
 
         }
     }
-
-    func render(with context: RenderContext) throws { }
 
     private func determineCollision(
         lCenter: Point<Float>, 

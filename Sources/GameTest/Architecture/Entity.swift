@@ -5,19 +5,18 @@ enum EntityFactory { }
 final class Entity: Hashable {
     struct ComponentReference {
         let type: OpaqueComponent.Type
-        var storage: Int
+        var storage: OpaqueComponentIdentifier
     }
 
-    // Should not be static
-    unowned(unsafe) let pool: Pool
+    unowned(unsafe) let dataManager: EntityComponentDataManager
     private(set) var componentReferences: [ComponentReference] = []
 
     var developerLabel: String?
 
-    init(pool: Pool, developerLabel: String? = nil) {
-        self.pool = pool
+    init(dataManager: EntityComponentDataManager, developerLabel: String? = nil) {
+        self.dataManager = dataManager
         self.developerLabel = developerLabel
-        pool.entities.insert(self)
+        dataManager.entities.insert(self)
     }
 
     static func == (lhs: Entity, rhs: Entity) -> Bool {
@@ -32,29 +31,16 @@ final class Entity: Hashable {
         componentReferences.contains { $0.type == C.self }
     }
 
-    func assign<C: Component>(component: C.Type, arguments: C.InitArguments) throws where C.Categories == Never {
-        let storage = pool.storage(for: C.self)
-        if let index = index(of: C.self) {
-            let old = componentReferences[index]
-            storage.buffer[old.storage].destroy()
-            storage.buffer[old.storage] = try C.init(entity: self, arguments: arguments)
-            return
-        }
-
-        componentReferences.append(
-            ComponentReference(
-                type: C.self, 
-                storage: try storage.allocInit(for: self, with: arguments)
-            )
-        )
+    func assign<C: Component>(component: C.Type, arguments: C.Store.StoredComponent.InitArguments) throws where C.Store.StoreOptions == Void {
+        try assign(component: C.self, options: (), arguments: arguments)
     }
 
-    func assign<C: Component>(component: C.Type, category: C.Categories, arguments: C.InitArguments) throws {
-        let storage = pool.storage(for: C.self)
+    func assign<C: Component>(component: C.Type, options: C.Store.StoreOptions, arguments: C.Store.StoredComponent.InitArguments) throws {
+        let storage = dataManager.storage(for: C.self)
 
         let oldIndex = index(of: C.self)
         destroy(component: C.self)
-        let newIndex = try storage.allocInit(for: self, category: category, with: arguments)
+        let newIndex = try storage.allocInit(for: self, options: options, with: arguments)
 
         if let oldIndex = oldIndex {
             componentReferences[oldIndex].storage = newIndex
@@ -63,12 +49,12 @@ final class Entity: Hashable {
         }
     }
 
-    func access<C: Component, R>(component: C.Type, accessBlock: (inout C) throws -> R ) rethrows -> R? {
+    func access<C: Component, R>(component: C.Type, accessBlock: (inout C.Store.StoredComponent) throws -> R ) rethrows -> R? {
         guard let index = index(of: C.self) else {
             return nil
         }
 
-        return try accessBlock(&pool.storage(for: C.self).buffer[componentReferences[index].storage])
+        return try dataManager.storage(for: C.self).access(at: &componentReferences[index].storage, validityScope: accessBlock)
     }
 
     @discardableResult
@@ -78,7 +64,7 @@ final class Entity: Hashable {
         }
 
         let old = componentReferences.remove(at: index)
-        pool.storage(for: C.self).destroy(at: old.storage)
+        dataManager.storage(for: C.self).destroy(at: old.storage)
         return true
     }
 
@@ -96,7 +82,7 @@ final class Entity: Hashable {
 
     deinit {
         componentReferences.forEach { 
-            pool.destroy(opaque: $0.type, at: $0.storage)
+            dataManager.destroy(opaque: $0.type, at: $0.storage)
         }
     }
 }

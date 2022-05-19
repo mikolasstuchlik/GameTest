@@ -1,9 +1,9 @@
 import CSDL2
 
 final class Map {
-    private unowned(unsafe) let pool: Pool
+    private weak var pool: SDLPool!
 
-    init(pool: Pool, loadFrom file: Assets.Map) throws {
+    init(pool: SDLPool, loadFrom file: Assets.Map) throws {
         self.pool = pool
 
         let parsed = try String.init(contentsOf: file.url)

@@ -1,5 +1,6 @@
 struct AnimationComponent: Component {
-    typealias Categories = Never
+    typealias Store = VectorStorage<Self>
+
     unowned(unsafe) var entity: Entity?
 
     var spriteSheet: SpriteSheet.Type

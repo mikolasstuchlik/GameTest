@@ -3,14 +3,14 @@ import CSDL2
 extension EntityFactory {
     @discardableResult
     static func mob(
-        pool: Pool,
+        pool: SDLPool,
         asset: Assets.Image, 
         position: Point<Float>,
         squareRadius: Size<Float>,
         collisionBitmask: UInt32,
         initialVelocity: Vector<Float>
     ) -> Entity {
-        let mob = Entity(pool: pool)
+        let mob = Entity(dataManager: pool)
         try! mob.assign(
             component: MovableObjectComponent.self, 
             arguments: (

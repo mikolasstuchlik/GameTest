@@ -1,11 +1,5 @@
-final class AnimationSystem: System {
-    weak var pool: Pool!
-
-    init(pool: Pool) {
-        self.pool = pool
-    }
-
-    func update(with context: UpdateContext) throws {
+final class AnimationSystem: SDLSystem {
+    override func update(with context: UpdateContext) throws {
         let storage = pool.storage(for: AnimationComponent.self)
 
         for i in 0..<storage.buffer.count where storage.buffer[i].isValid {
@@ -49,9 +43,5 @@ final class AnimationSystem: System {
         entity.access(component: SpriteComponent.self) { sprite in
             sprite.sourceRect = rect
         }
-    }
-
-    func render(with context: RenderContext) throws { 
-
     }
 }

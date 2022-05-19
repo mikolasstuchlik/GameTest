@@ -29,7 +29,7 @@ final class Application {
             SDL_CreateRenderer(window, -1, 0)
         }
 
-        let newPool = DefaultPool(application: self)
+        let newPool = DefaultPool {[weak self] in self?.renderer }
         newPool.setup()
 
         replaceCurrentPool(by: newPool)
@@ -56,7 +56,7 @@ final class Application {
     }
 
     func update(currentTime: UInt32, timePassedInMs: UInt32, events: [InputEvent]) { 
-        let context = UpdateContext(
+        let context = SDLUpdateContext(
             currentTime: currentTime,
             timePassedInMs: timePassedInMs,
             events: events
@@ -67,7 +67,7 @@ final class Application {
     func render() throws {
         try! renderer!.renderClear()
 
-        let context = RenderContext()
+        let context = SDLRenderContext(renderer: renderer!)
 
         measure("rendering") {
             try! currentPool?.render(with: context)
@@ -87,7 +87,7 @@ final class Application {
         SDL_Quit()
     }
 
-    private func replaceCurrentPool(by newPool: Pool?) {
+    private func replaceCurrentPool(by newPool: SDLPool?) {
         #if DEBUG
         weak var pool = currentPool
         #endif
@@ -99,7 +99,7 @@ final class Application {
         #endif
     }
 
-    private(set) var currentPool: Pool?
+    private(set) var currentPool: SDLPool?
 
     private(set) var isRunning: Bool = false
 

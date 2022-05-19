@@ -1,7 +1,4 @@
-final class DefaultPool: BasePool {
-    override init(application: Application) {
-        super.init(application: application)
-    }
+final class DefaultPool: SDLPool {
 
     func setup() {
         let collisionSystem = AABBCollisionSystem(pool: self)
