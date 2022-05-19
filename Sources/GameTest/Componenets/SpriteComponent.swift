@@ -1,23 +1,30 @@
 import CSDL2
 
-struct SpriteComponent: Component {
-    typealias Store = VectorStorage<Self>
+struct SpriteComponent: CategoryComponent {
+    typealias Store = CategoryVectorStorage<Self>
+    typealias Categories = Layer
+
+    enum Layer: ComponentCategory {
+        case background, enemy, avatar
+    }
+
+    static let placeholder = SpriteComponent(entity: nil, unownedTexture: nil, sourceRect: nil, size: .zero, rendererAssignedCenter: .zero)
 
     unowned(unsafe) var entity: Entity?
 
-    var unownedTexture: SDLTexturePtr
+    var unownedTexture: SDLTexturePtr!
     var sourceRect: SDL_Rect?
     var size: Size<Float>
-    var layer: UInt
     var rendererAssignedCenter: Point<Float> = .zero
 
-    init(entity: Entity, arguments: (unownedTexture: SDLTexturePtr, sourceRect: SDL_Rect?, size: Size<Float>, layer: UInt)) throws {
+    func destroy() { }
+}
+
+extension SpriteComponent {
+    init(entity: Entity, arguments: (unownedTexture: SDLTexturePtr, sourceRect: SDL_Rect?, size: Size<Float>)) throws {
         self.entity = entity
         self.sourceRect = arguments.sourceRect
         self.unownedTexture = arguments.unownedTexture
         self.size = arguments.size
-        self.layer = arguments.layer
     }
-
-    func destroy() { }
 }

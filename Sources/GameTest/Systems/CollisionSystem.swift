@@ -32,96 +32,81 @@ final class AABBCollisionSystem: SDLSystem {
 
     weak var delegate: CollisionSystemDelegate?
 
-
+    private var currentStore: PhysicalObjectComponent.Store!
     override func update(with context: UpdateContext) throws {
-        let movable = pool.storage(for: MovableObjectComponent.self)
-        let immovable = pool.storage(for: ImmovableObjectComponent.self)
+        currentStore = pool.storage(for: PhysicalObjectComponent.self)
+        defer { currentStore = nil }
 
-        for i in 0..<movable.buffer.count where movable.buffer[i].isValid {
-            for other in 0..<immovable.buffer.count where immovable.buffer[i].isValid {
-                let collisionType = CollisionType(
-                    lCategory: movable.buffer[i].categoryBitmask, 
-                    lCollision: movable.buffer[i].collisionBitmask, 
-                    lNotify: movable.buffer[i].notificationBitmask, 
-                    rCategory: immovable.buffer[other].categoryBitmask, 
-                    rCollision: 0, 
-                    rNotify: 0
-                )
+        guard let movable = currentStore.category[.movable] else {
+            return
+        }
+        let immovable = currentStore.category[.immovable] ?? 0..<1
 
-                if 
-                    collisionType == .none
-                    || determineCollision(
-                        lCenter: movable.buffer[i].positionCenter, 
-                        lRadius: movable.buffer[i].squareRadius, 
-                        rCenter: immovable.buffer[other].positionCenter, 
-                        rRadius: immovable.buffer[other].squareRadius
-                    ) == false
-                {
-                    continue
-                }
-
-                switch collisionType {
-                case .notify:
-                    delegate?.notifyCollisionOf(
-                        firstEntity: movable.buffer[i].entity!, 
-                        secondEntity: immovable.buffer[other].entity!
-                    )
-                case .collide:
-                    resolveCollision(movableIndex: i, immovableIndex: other)
-                case .collideNotify:
-                    delegate?.notifyCollisionOf(
-                        firstEntity: movable.buffer[i].entity!, 
-                        secondEntity: immovable.buffer[other].entity!
-                    )
-                    resolveCollision(movableIndex: i, immovableIndex: other)
-                case .none: break
-                }
+        for i in movable where currentStore.buffer[i].isValid {
+            for other in immovable where currentStore.buffer[i].isValid {
+                checkAndResolve(first: i, second: other, secondMovable: false)
             }
 
-            guard i < movable.buffer.count - 1 else {
+            guard movable.contains(i + 1) else {
                 continue
             }
 
-            for other in (i + 1)..<movable.buffer.count where movable.buffer[other].isValid {
-                let collisionType = CollisionType(
-                    lCategory: movable.buffer[i].categoryBitmask, 
-                    lCollision: movable.buffer[i].collisionBitmask, 
-                    lNotify: movable.buffer[i].notificationBitmask, 
-                    rCategory: movable.buffer[other].categoryBitmask, 
-                    rCollision: 0, 
-                    rNotify: 0
-                )
-
-                if 
-                    collisionType == .none
-                    || determineCollision(
-                        lCenter: movable.buffer[i].positionCenter, 
-                        lRadius: movable.buffer[i].squareRadius, 
-                        rCenter: movable.buffer[other].positionCenter, 
-                        rRadius: movable.buffer[other].squareRadius
-                    ) == false
-                {
-                    continue
-                }
-
-                switch collisionType {
-                case .notify:
-                    delegate?.notifyCollisionOf(
-                        firstEntity: movable.buffer[i].entity!, 
-                        secondEntity: movable.buffer[other].entity!
-                    )
-                case .collide:
-                    resolveCollision(movableIndex: i, secondMovableIndex: other)
-                case .collideNotify:
-                    delegate?.notifyCollisionOf(
-                        firstEntity: movable.buffer[i].entity!, 
-                        secondEntity: movable.buffer[other].entity!
-                    )
-                    resolveCollision(movableIndex: i, secondMovableIndex: other)
-                case .none: break
-                }
+            for other in (i + 1)..<movable.upperBound where currentStore.buffer[other].isValid {
+                checkAndResolve(first: i, second: other, secondMovable: true)
             }
 
+        }
+    }
+
+    private func getCollision(first index: Int, second sIndex: Int) -> CollisionType {
+        let collisionType = CollisionType(
+            lCategory: currentStore.buffer[index].categoryBitmask, 
+            lCollision: currentStore.buffer[index].collisionBitmask, 
+            lNotify: currentStore.buffer[index].notificationBitmask, 
+            rCategory: currentStore.buffer[sIndex].categoryBitmask, 
+            rCollision: currentStore.buffer[sIndex].collisionBitmask,
+            rNotify: currentStore.buffer[sIndex].notificationBitmask
+        )
+
+        if 
+            collisionType == .none
+            || determineCollision(
+                lCenter: currentStore.buffer[index].positionCenter, 
+                lRadius: currentStore.buffer[index].squareRadius, 
+                rCenter: currentStore.buffer[sIndex].positionCenter, 
+                rRadius: currentStore.buffer[sIndex].squareRadius
+            ) == false
+        {
+            return .none
+        }
+
+        return collisionType
+    }
+
+    private func checkAndResolve(first index: Int, second sIndex: Int, secondMovable: Bool) {
+        switch getCollision(first: index, second: sIndex) {
+        case .notify:
+            delegate?.notifyCollisionOf(
+                firstEntity: currentStore.buffer[index].entity!, 
+                secondEntity: currentStore.buffer[sIndex].entity!
+            )
+        case .collide where secondMovable:
+            resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
+        case .collide:
+            resolveCollision(movableIndex: index, immovableIndex: sIndex)
+        case .collideNotify:
+            delegate?.notifyCollisionOf(
+                firstEntity: currentStore.buffer[index].entity!, 
+                secondEntity: currentStore.buffer[sIndex].entity!
+            )
+            resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
+        case .collideNotify where secondMovable:
+            delegate?.notifyCollisionOf(
+                firstEntity: currentStore.buffer[index].entity!, 
+                secondEntity: currentStore.buffer[sIndex].entity!
+            )
+            resolveCollision(movableIndex: index, immovableIndex: sIndex)
+        case .none: break
         }
     }
 
@@ -139,13 +124,13 @@ final class AABBCollisionSystem: SDLSystem {
 
     // first entity is always movable
     private func resolveCollision(movableIndex first: Int, secondMovableIndex second: Int) { 
-        let movable = pool.storage(for: MovableObjectComponent.self)
+        let movable = pool.storage(for: PhysicalObjectComponent.self)
         print("Collision \(movable.buffer[first].entity?.developerLabel) and \(movable.buffer[second].entity?.developerLabel): 2 movable not implemented")
     }
 
     private func resolveCollision(movableIndex: Int, immovableIndex: Int) { 
-        let movable = pool.storage(for: MovableObjectComponent.self)
-        let immovable = pool.storage(for: ImmovableObjectComponent.self).buffer[immovableIndex]
+        let movable = pool.storage(for: PhysicalObjectComponent.self)
+        let immovable = pool.storage(for: PhysicalObjectComponent.self).buffer[immovableIndex]
 
         let movementLine = Line(
             from: movable.buffer[movableIndex].startingPosition,

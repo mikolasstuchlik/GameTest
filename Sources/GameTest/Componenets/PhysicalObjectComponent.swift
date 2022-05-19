@@ -1,5 +1,10 @@
-struct MovableObjectComponent: Component {
-    typealias Store = VectorStorage<Self>
+struct PhysicalObjectComponent: CategoryComponent {
+    typealias Store = CategoryVectorStorage<Self>
+    enum Categories: ComponentCategory {
+        case movable, immovable, immaterial
+    }
+
+    static let placeholder = PhysicalObjectComponent.init(entity: nil, startingPosition: .zero, positionCenter: .zero, squareRadius: .zero, categoryBitmask: 0, collisionBitmask: 0, notificationBitmask: 0, velocity: .zero, maxVelocity: 0)
 
     unowned(unsafe) var entity: Entity?
 
@@ -14,6 +19,10 @@ struct MovableObjectComponent: Component {
     var velocity: Vector<Float>
     var maxVelocity: Float
 
+    func destroy() { }
+}
+
+extension PhysicalObjectComponent {
     init(
         entity: Entity, 
         arguments: (
@@ -37,5 +46,4 @@ struct MovableObjectComponent: Component {
         self.maxVelocity = arguments.maxVelocity
     }
 
-    func destroy() { }
 }

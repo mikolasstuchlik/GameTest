@@ -12,8 +12,15 @@ final class DefaultPool: SDLPool {
             RenderSystem(pool: self),
         ]
 
-        try! Map(pool: self, loadFrom: .main).summonEntities()
+        self.storage(for: SpriteComponent.self).initialize(
+            categories: [
+                .avatar: 10, 
+                .background: Map.mapDimensions.height * Map.mapDimensions.width
+            ], 
+            reserve: 0
+        )
 
+        try! Map(pool: self, loadFrom: .main).summonEntities()
         EntityFactory.player(
             schemeArrows: false,
             pool: self,
@@ -33,16 +40,6 @@ final class DefaultPool: SDLPool {
             squareRadius: Size(width: 30, height: 30),
             collisionBitmask: 0b1
         ).developerLabel = "player2"
-
-        // EntityFactory.mob(
-        //     pool: self,
-        //     asset: .evilFish, 
-        //     position: .zero, 
-        //     squareRadius: Size(width: 32, height: 32), 
-        //     collisionBitmask: 0, 
-        //     initialVelocity: Vector(x: 75, y: 75)
-        // ).developerLabel = "enemy"
-
     }
 
     override func update(with context: UpdateContext) throws {

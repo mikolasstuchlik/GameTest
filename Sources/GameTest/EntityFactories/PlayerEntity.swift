@@ -13,7 +13,8 @@ extension EntityFactory {
     ) -> Entity {
         let player = Entity(dataManager: pool)
         try! player.assign(
-            component: MovableObjectComponent.self, 
+            component: PhysicalObjectComponent.self, 
+            options: .movable,
             arguments: (
                 positionCenter: position,
                 squareRadius: squareRadius,
@@ -26,11 +27,11 @@ extension EntityFactory {
         )
         try! player.assign(
             component: SpriteComponent.self, 
+            options: .avatar,
             arguments: (
                 unownedTexture: try! pool.textureBuffer.texture(for: asset), 
                 sourceRect: nil,
-                size: squareRadius * 2, 
-                layer: 1
+                size: squareRadius * 2
             )
         )
         try! player.assign(

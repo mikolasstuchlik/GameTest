@@ -27,17 +27,21 @@ final class CategoryVectorStorage<C: CategoryComponent>: ComponentStore {
 
         // At this point we know, that there is no free space in our category
         var categories = self.category
-        categories[options] = categories[options] ?? 0..<1
+        categories[options] = categories[options] ?? 0..<0
         let sortedCategories = categories.sorted { $0.key < $1.key }
         let myIndex = sortedCategories.firstIndex { $0.key == options }!
         let newRange: Range<Int>
         switch myIndex {
-        case 0 where sortedCategories.count - 1 == myIndex:
-            newRange = 0..<2
+        case 0 where sortedCategories.count == 1:
+            newRange = 0..<(1 + sortedCategories[0].value.upperBound)
         case 0:
             newRange = 0..<(1 + sortedCategories[1].value.lowerBound)
         case let index:
-            newRange = sortedCategories[index].value.lowerBound..<(1 + sortedCategories[index].value.upperBound)
+            newRange = sortedCategories[index - 1].value.upperBound..<(
+                1 
+                + sortedCategories[index - 1].value.upperBound
+                + sortedCategories[index].value.count
+            )
         }
 
         // At this point we know how will the new category look like, we shall insert it and move space
@@ -80,24 +84,25 @@ final class CategoryVectorStorage<C: CategoryComponent>: ComponentStore {
         // Initialize required space
         buffer.append(contentsOf: Array(
             repeating: C.placeholder, 
-            count: min(0, buffer.count - initializedSpace)
+            count: max(0, initializedSpace - buffer.count)
         ))
 
         // Start moving from behind
         let orderedCategories = targetCategoriesSize.sorted { $0.key > $1.key }
         var endIndex = buffer.count
         for (category, space) in orderedCategories { 
-            let newRange = (endIndex - space - 1)..<endIndex
+            let newRange = (endIndex - space)..<(endIndex)
             endIndex = newRange.startIndex
 
             guard let currentSpace = self.category[category] else {
                 self.category[category] = newRange
+                self.categoryFriedIndicies[category] = Array(newRange)
                 continue
             }
 
             self.category[category] = newRange
             unsafeMove(range: currentSpace, toIndex: newRange.startIndex)
-            defragment(category: category)
+            defragment(category: category, updateAllLocations: true)
         }
         assert(endIndex == 0, "End index is not 0 at the end of enlarging")
     }
@@ -119,10 +124,14 @@ final class CategoryVectorStorage<C: CategoryComponent>: ComponentStore {
         let sortedCategories = self.category.sorted { $0.key < $1.key }
         let myIndex = sortedCategories.firstIndex { $0.key == category }!
         let currentRange = sortedCategories[myIndex].value
-        let requiredSpace = nItems 
-            - (categoryFriedIndicies[category]?.count ?? 0)
-            - currentRange.count
-        
+        let freeIndicies = categoryFriedIndicies[category] ?? []
+        let freeIndiciesInResignedSpace = freeIndicies.filter { $0 < currentRange.lowerBound + nItems }
+        let numberOfDisplacedItems = (currentRange.lowerBound..<(currentRange.lowerBound + nItems)).count - freeIndiciesInResignedSpace.count
+        let requiredSpace = numberOfDisplacedItems
+            - (freeIndicies.count - freeIndiciesInResignedSpace.count)
+            
+             
+
         // After this if, we assume that there is enough space to write to
         if requiredSpace > 0 {
             if myIndex < sortedCategories.count - 1 {
@@ -134,7 +143,7 @@ final class CategoryVectorStorage<C: CategoryComponent>: ComponentStore {
 
         let targetRange = (currentRange.lowerBound + nItems)..<(currentRange.upperBound + nItems)
         let additionalIndicies = Array(currentRange.upperBound..<targetRange.upperBound)
-        var targetFreeIndicies = (categoryFriedIndicies[category] ?? []).filter { sortedCategories[myIndex].value.lowerBound + nItems > $0 } + additionalIndicies
+        var targetFreeIndicies = freeIndicies.filter { currentRange.lowerBound + nItems >= $0 } + additionalIndicies
 
         for i in currentRange.lowerBound..<targetRange.lowerBound where buffer[i].isValid {
             let newIndex = targetFreeIndicies.popLast()!
@@ -153,7 +162,7 @@ final class CategoryVectorStorage<C: CategoryComponent>: ComponentStore {
         }
     }
 
-    private func defragment(category: C.Categories) {
+    private func defragment(category: C.Categories, updateAllLocations: Bool = false) {
         guard let range = self.category[category] else {
             return
         }
@@ -161,11 +170,14 @@ final class CategoryVectorStorage<C: CategoryComponent>: ComponentStore {
 
         for i in range {
             if !buffer[i].isValid {
-                firstFreeIndex = min(firstFreeIndex ?? 0, i)
+                firstFreeIndex = min(firstFreeIndex ?? i, i)
                 continue
             }
 
             guard let freeIndex = firstFreeIndex else {
+                if updateAllLocations {
+                    buffer[i].entity?.relocated(component: C.self, to: i)
+                }
                 continue
             }
 
