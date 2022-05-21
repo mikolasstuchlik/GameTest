@@ -1,3 +1,5 @@
+import NoobECS
+
 import CSDL2
 
 enum InputEvent {

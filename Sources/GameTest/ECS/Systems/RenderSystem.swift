@@ -1,4 +1,6 @@
 import CSDL2
+import NoobECS
+import NoobECSStores
 
 final class RenderSystem: SDLSystem {
     override func render(with context: RenderContext) throws {

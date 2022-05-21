@@ -1,3 +1,6 @@
+import NoobECS
+import NoobECSStores
+
 protocol CollisionSystemDelegate: AnyObject {
     func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity)
 }

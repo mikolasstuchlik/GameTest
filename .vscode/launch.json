@@ -8,8 +8,25 @@
             "name": "Launch",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/.build/debug/${workspaceFolderBasename}",
-            //"args": ["-arg1", "-arg2"],
+            "program": "${workspaceFolder}/.build/debug/${workspaceFolderBasename}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug GameTest",
+            "program": "${workspaceFolder:GameTest}/.build/debug/GameTest",
+            "args": [],
+            "cwd": "${workspaceFolder:GameTest}",
+            "preLaunchTask": "swift: Build Debug GameTest"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release GameTest",
+            "program": "${workspaceFolder:GameTest}/.build/release/GameTest",
+            "args": [],
+            "cwd": "${workspaceFolder:GameTest}",
+            "preLaunchTask": "swift: Build Release GameTest"
         }
     ]
 }

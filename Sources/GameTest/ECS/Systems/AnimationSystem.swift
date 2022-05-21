@@ -1,3 +1,6 @@
+import NoobECS
+import NoobECSStores
+
 final class AnimationSystem: SDLSystem {
     override func update(with context: UpdateContext) throws {
         let storage = pool.storage(for: AnimationComponent.self)

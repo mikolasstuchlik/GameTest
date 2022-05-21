@@ -1,4 +1,5 @@
 import CSDL2
+import NoobECS
 
 final class Map {
     private weak var pool: SDLPool!

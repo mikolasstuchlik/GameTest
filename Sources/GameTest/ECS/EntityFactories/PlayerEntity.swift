@@ -1,4 +1,6 @@
 import CSDL2
+import NoobECS
+
 
 extension EntityFactory {
     @discardableResult

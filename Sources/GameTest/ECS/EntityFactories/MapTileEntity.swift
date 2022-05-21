@@ -1,3 +1,5 @@
+import NoobECS
+
 extension EntityFactory {
     @discardableResult
     static func mapTile(pool: SDLPool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, categoryBitmask: UInt32) -> Entity {

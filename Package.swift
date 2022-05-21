@@ -6,6 +6,7 @@ import PackageDescription
 let package = Package(
     name: "GameTest",
     dependencies: [
+        .package(url: "https://github.com/mikolasstuchlik/NoobECS.git", branch: "master")
     ],
     targets: [
         .systemLibrary(
@@ -19,7 +20,9 @@ let package = Package(
         .executableTarget(
             name: "GameTest", 
             dependencies: [
-                "CSDL2"
+                "CSDL2",
+                .product(name: "NoobECS", package: "NoobECS"),
+                .product(name: "NoobECSStores", package: "NoobECS")
             ],
             resources: [
                 .process("Resources")

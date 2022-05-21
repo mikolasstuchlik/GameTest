@@ -1,3 +1,6 @@
+import NoobECS
+import NoobECSStores
+
 struct AnimationComponent: Component {
     typealias Store = VectorStorage<Self>
 

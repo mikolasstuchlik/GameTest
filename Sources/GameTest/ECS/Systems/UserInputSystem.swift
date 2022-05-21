@@ -1,4 +1,6 @@
 import CSDL2
+import NoobECS
+import NoobECSStores
 
 final class UserInputSystem: SDLSystem {
     override func update(with context: UpdateContext) throws {

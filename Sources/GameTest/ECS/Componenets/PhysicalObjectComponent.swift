@@ -1,3 +1,6 @@
+import NoobECS
+import NoobECSStores
+
 struct PhysicalObjectComponent: CategoryComponent {
     typealias Store = CategoryVectorStorage<Self>
     enum Categories: ComponentCategory {

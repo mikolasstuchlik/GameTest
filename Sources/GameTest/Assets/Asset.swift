@@ -1,5 +1,7 @@
 import Foundation
 import CSDL2
+import NoobECS
+
 
 struct Animation {
     let fps: Int

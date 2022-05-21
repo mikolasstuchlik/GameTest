@@ -1,4 +1,7 @@
 import CSDL2
+import NoobECS
+import NoobECSStores
+
 
 struct SpriteComponent: CategoryComponent {
     typealias Store = CategoryVectorStorage<Self>

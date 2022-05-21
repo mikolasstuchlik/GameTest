@@ -1,4 +1,7 @@
-struct InventoryComponent: Component, OpaqueComponentIdentifier {
+import NoobECS
+import NoobECSStores
+
+struct InventoryComponent: Component {
     typealias Store = EntityPrivateStorage<Self>
 
     unowned(unsafe) var entity: Entity?

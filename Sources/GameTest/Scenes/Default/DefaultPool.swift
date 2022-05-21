@@ -1,3 +1,5 @@
+import NoobECS
+
 final class DefaultPool: SDLPool {
 
     func setup() {
@@ -21,6 +23,7 @@ final class DefaultPool: SDLPool {
         )
 
         try! Map(pool: self, loadFrom: .main).summonEntities()
+
         EntityFactory.player(
             schemeArrows: false,
             pool: self,

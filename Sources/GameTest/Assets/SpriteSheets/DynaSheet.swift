@@ -1,3 +1,5 @@
+import NoobECS
+
 enum DynaSheet: SpriteSheet {
     static let defaultTile: Int = 0
     static let mapSize: Size<Int> = Size(width: 5, height: 4)
