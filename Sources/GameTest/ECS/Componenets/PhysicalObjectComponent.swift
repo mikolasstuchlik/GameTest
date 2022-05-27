@@ -3,13 +3,9 @@ import NoobECSStores
 
 struct PhysicalObjectComponent: CategoryComponent {
     typealias Store = CategoryVectorStorage<Self>
-    enum Categories: ComponentCategory {
+    enum Categories: NoobECSStores.Category {
         case movable, immovable, immaterial
     }
-
-    static let placeholder = PhysicalObjectComponent.init(entity: nil, startingPosition: .zero, positionCenter: .zero, squareRadius: .zero, categoryBitmask: 0, collisionBitmask: 0, notificationBitmask: 0, velocity: .zero, maxVelocity: 0)
-
-    unowned(unsafe) var entity: Entity?
 
     var startingPosition: Point<Float>
     var positionCenter: Point<Float>
@@ -22,12 +18,7 @@ struct PhysicalObjectComponent: CategoryComponent {
     var velocity: Vector<Float>
     var maxVelocity: Float
 
-    func destroy() { }
-}
-
-extension PhysicalObjectComponent {
-    init(
-        entity: Entity, 
+     init(
         arguments: (
             positionCenter: Point<Float>,
             squareRadius: Size<Float>,
@@ -38,7 +29,6 @@ extension PhysicalObjectComponent {
             maxVelocity: Float
         )
     ) {
-        self.entity = entity
         self.startingPosition = arguments.positionCenter
         self.positionCenter = arguments.positionCenter
         self.squareRadius = arguments.squareRadius
@@ -49,4 +39,6 @@ extension PhysicalObjectComponent {
         self.maxVelocity = arguments.maxVelocity
     }
 
+
+    func destroy() { }
 }

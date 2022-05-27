@@ -8,11 +8,11 @@ final class MovementSystem: SDLSystem {
             return
         }
 
-        for i in movables where storage.buffer[i].isValid {
-            storage.buffer[i].startingPosition = storage.buffer[i].positionCenter
+        for i in movables where storage.buffer[i] != nil {
+            storage.buffer[i]!.value.startingPosition = storage.buffer[i]!.value.positionCenter
 
-            storage.buffer[i].positionCenter = storage.buffer[i].positionCenter 
-                + storage.buffer[i].velocity
+            storage.buffer[i]!.value.positionCenter = storage.buffer[i]!.value.positionCenter 
+                + storage.buffer[i]!.value.velocity
                 * ( Float(context.timePassedInMs) / 1000.0)  
         }
     }

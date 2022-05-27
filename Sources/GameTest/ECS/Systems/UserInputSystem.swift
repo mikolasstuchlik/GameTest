@@ -21,18 +21,18 @@ final class UserInputSystem: SDLSystem {
 
         let storage = pool.storage(for: ControllerComponent.self)
 
-        for i in 0..<storage.buffer.count where storage.buffer[i].isValid {
+        for i in 0..<storage.buffer.count where storage.buffer[i] != nil {
             guard 
-                storage.buffer[i].respondsTo(key: key, pressed: pressed)
+                storage.buffer[i]!.value.respondsTo(key: key, pressed: pressed)
             else {
                 continue
             }
 
-            let entity = storage.buffer[i].entity!
+            let entity = storage.buffer[i]!.unownedEntity
 
             entity.access(component: PhysicalObjectComponent.self) { positionComponent in
 
-                let controller = storage.buffer[i]
+                let controller = storage.buffer[i]!.value
 
                 positionComponent.velocity.x = 
                     controller.isLeftPressed == controller.isRightPressed ? 0

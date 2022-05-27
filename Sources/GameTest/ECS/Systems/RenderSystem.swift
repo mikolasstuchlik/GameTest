@@ -8,18 +8,18 @@ final class RenderSystem: SDLSystem {
         let renderer = context.renderer
 
         // Render
-        for i in 0..<spriteStore.buffer.count where spriteStore.buffer[i].isValid {
-            let entity = spriteStore.buffer[i].entity!
+        for i in 0..<spriteStore.buffer.count where spriteStore.buffer[i] != nil {
+            let entity = spriteStore.buffer[i]!.unownedEntity
             entity.access(component: PhysicalObjectComponent.self) { immovable in
-                spriteStore.buffer[i].rendererAssignedCenter = immovable.positionCenter
+                spriteStore.buffer[i]!.value.rendererAssignedCenter = immovable.positionCenter
             }
 
             try! renderer.render(
-                spriteStore.buffer[i].unownedTexture, 
-                source: spriteStore.buffer[i].sourceRect, 
+                spriteStore.buffer[i]!.value.unownedTexture, 
+                source: spriteStore.buffer[i]!.value.sourceRect, 
                 destination: SDL_Rect(Rect(
-                    center: spriteStore.buffer[i].rendererAssignedCenter, 
-                    size: spriteStore.buffer[i].size
+                    center: spriteStore.buffer[i]!.value.rendererAssignedCenter, 
+                    size: spriteStore.buffer[i]!.value.size
                 ))
             )
         }

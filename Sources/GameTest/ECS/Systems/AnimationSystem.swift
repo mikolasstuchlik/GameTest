@@ -5,35 +5,35 @@ final class AnimationSystem: SDLSystem {
     override func update(with context: UpdateContext) throws {
         let storage = pool.storage(for: AnimationComponent.self)
 
-        for i in 0..<storage.buffer.count where storage.buffer[i].isValid {
-            let entity = storage.buffer[i].entity!
-            let newAnimation = storage.buffer[i].spriteSheet.nextAnimation(
+        for i in 0..<storage.buffer.count where storage.buffer[i] != nil {
+            let entity = storage.buffer[i]!.unownedEntity
+            let newAnimation = storage.buffer[i]!.value.spriteSheet.nextAnimation(
                 for: entity, 
-                current: storage.buffer[i].currentAnimation
+                current: storage.buffer[i]!.value.currentAnimation
             )
 
-            if storage.buffer[i].currentAnimation != newAnimation {
-                storage.buffer[i].currentAnimation = newAnimation
-                storage.buffer[i].startTime = context.currentTime
+            if storage.buffer[i]!.value.currentAnimation != newAnimation {
+                storage.buffer[i]!.value.currentAnimation = newAnimation
+                storage.buffer[i]!.value.startTime = context.currentTime
             }
 
             guard 
-                let currentName = storage.buffer[i].currentAnimation,
-                let animation = storage.buffer[i].spriteSheet.animations[currentName],
+                let currentName = storage.buffer[i]!.value.currentAnimation,
+                let animation = storage.buffer[i]!.value.spriteSheet.animations[currentName],
                 animation.tiles.count > 0
             else {
-                setFrame(sheet: storage.buffer[i].spriteSheet, tile: nil, to: entity)
+                setFrame(sheet: storage.buffer[i]!.value.spriteSheet, tile: nil, to: entity)
                 continue
             }
 
-            let animationDurationInMs = context.currentTime - storage.buffer[i].startTime
+            let animationDurationInMs = context.currentTime - storage.buffer[i]!.value.startTime
             let milisecsInSecond = 1000
             let frameDuration = milisecsInSecond / animation.fps
             let currentFrame = Int(animationDurationInMs) / frameDuration
             let frameIndex = currentFrame % animation.tiles.count
 
             setFrame(
-                sheet: storage.buffer[i].spriteSheet, 
+                sheet: storage.buffer[i]!.value.spriteSheet, 
                 tile: animation.tiles[frameIndex], 
                 to: entity
             )

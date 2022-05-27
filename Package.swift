@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "GameTest",
+    platforms: [.macOS("10.15")],
     dependencies: [
         .package(url: "https://github.com/mikolasstuchlik/NoobECS.git", branch: "master")
     ],

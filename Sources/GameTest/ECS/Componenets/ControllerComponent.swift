@@ -6,8 +6,6 @@ import NoobECSStores
 struct ControllerComponent: Component {
     typealias Store = VectorStorage<Self>
 
-    unowned(unsafe) var entity: Entity?
-
     var moveTopKey: SDL_Scancode
     var moveRightKey: SDL_Scancode
     var moveBottomKey: SDL_Scancode
@@ -43,7 +41,6 @@ struct ControllerComponent: Component {
     }
 
     init(
-        entity: Entity, 
         arguments: (
             moveTopKey: SDL_Scancode,
             moveRightKey: SDL_Scancode,
@@ -51,7 +48,6 @@ struct ControllerComponent: Component {
             moveLeftKey: SDL_Scancode
         )
     ) {
-        self.entity = entity
         self.moveTopKey = arguments.moveTopKey
         self.moveRightKey = arguments.moveRightKey
         self.moveBottomKey = arguments.moveBottomKey

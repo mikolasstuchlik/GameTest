@@ -45,8 +45,8 @@ final class AABBCollisionSystem: SDLSystem {
         }
         let immovable = currentStore.category[.immovable] ?? 0..<1
 
-        for i in movable where currentStore.buffer[i].isValid {
-            for other in immovable where currentStore.buffer[i].isValid {
+        for i in movable where currentStore.buffer[i] != nil {
+            for other in immovable where currentStore.buffer[i] != nil {
                 checkAndResolve(first: i, second: other, secondMovable: false)
             }
 
@@ -54,7 +54,7 @@ final class AABBCollisionSystem: SDLSystem {
                 continue
             }
 
-            for other in (i + 1)..<movable.upperBound where currentStore.buffer[other].isValid {
+            for other in (i + 1)..<movable.upperBound where currentStore.buffer[other] != nil {
                 checkAndResolve(first: i, second: other, secondMovable: true)
             }
 
@@ -63,21 +63,21 @@ final class AABBCollisionSystem: SDLSystem {
 
     private func getCollision(first index: Int, second sIndex: Int) -> CollisionType {
         let collisionType = CollisionType(
-            lCategory: currentStore.buffer[index].categoryBitmask, 
-            lCollision: currentStore.buffer[index].collisionBitmask, 
-            lNotify: currentStore.buffer[index].notificationBitmask, 
-            rCategory: currentStore.buffer[sIndex].categoryBitmask, 
-            rCollision: currentStore.buffer[sIndex].collisionBitmask,
-            rNotify: currentStore.buffer[sIndex].notificationBitmask
+            lCategory: currentStore.buffer[index]!.value.categoryBitmask, 
+            lCollision: currentStore.buffer[index]!.value.collisionBitmask, 
+            lNotify: currentStore.buffer[index]!.value.notificationBitmask, 
+            rCategory: currentStore.buffer[sIndex]!.value.categoryBitmask, 
+            rCollision: currentStore.buffer[sIndex]!.value.collisionBitmask,
+            rNotify: currentStore.buffer[sIndex]!.value.notificationBitmask
         )
 
         if 
             collisionType == .none
             || determineCollision(
-                lCenter: currentStore.buffer[index].positionCenter, 
-                lRadius: currentStore.buffer[index].squareRadius, 
-                rCenter: currentStore.buffer[sIndex].positionCenter, 
-                rRadius: currentStore.buffer[sIndex].squareRadius
+                lCenter: currentStore.buffer[index]!.value.positionCenter, 
+                lRadius: currentStore.buffer[index]!.value.squareRadius, 
+                rCenter: currentStore.buffer[sIndex]!.value.positionCenter, 
+                rRadius: currentStore.buffer[sIndex]!.value.squareRadius
             ) == false
         {
             return .none
@@ -90,8 +90,8 @@ final class AABBCollisionSystem: SDLSystem {
         switch getCollision(first: index, second: sIndex) {
         case .notify:
             delegate?.notifyCollisionOf(
-                firstEntity: currentStore.buffer[index].entity!, 
-                secondEntity: currentStore.buffer[sIndex].entity!
+                firstEntity: currentStore.buffer[index]!.unownedEntity, 
+                secondEntity: currentStore.buffer[sIndex]!.unownedEntity
             )
         case .collide where secondMovable:
             resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
@@ -99,14 +99,14 @@ final class AABBCollisionSystem: SDLSystem {
             resolveCollision(movableIndex: index, immovableIndex: sIndex)
         case .collideNotify:
             delegate?.notifyCollisionOf(
-                firstEntity: currentStore.buffer[index].entity!, 
-                secondEntity: currentStore.buffer[sIndex].entity!
+                firstEntity: currentStore.buffer[index]!.unownedEntity, 
+                secondEntity: currentStore.buffer[sIndex]!.unownedEntity
             )
             resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
         case .collideNotify where secondMovable:
             delegate?.notifyCollisionOf(
-                firstEntity: currentStore.buffer[index].entity!, 
-                secondEntity: currentStore.buffer[sIndex].entity!
+                firstEntity: currentStore.buffer[index]!.unownedEntity, 
+                secondEntity: currentStore.buffer[sIndex]!.unownedEntity
             )
             resolveCollision(movableIndex: index, immovableIndex: sIndex)
         case .none: break
@@ -128,22 +128,22 @@ final class AABBCollisionSystem: SDLSystem {
     // first entity is always movable
     private func resolveCollision(movableIndex first: Int, secondMovableIndex second: Int) { 
         let movable = pool.storage(for: PhysicalObjectComponent.self)
-        print("Collision \(movable.buffer[first].entity?.developerLabel) and \(movable.buffer[second].entity?.developerLabel): 2 movable not implemented")
+        print("Collision \(movable.buffer[first]!.unownedEntity.developerLabel ?? String(describing: movable.buffer[first]!.unownedEntity)) and \(movable.buffer[second]!.unownedEntity.developerLabel ?? String(describing: movable.buffer[second]!.unownedEntity)): 2 movable not implemented")
     }
 
     private func resolveCollision(movableIndex: Int, immovableIndex: Int) { 
         let movable = pool.storage(for: PhysicalObjectComponent.self)
-        let immovable = pool.storage(for: PhysicalObjectComponent.self).buffer[immovableIndex]
+        let immovable = pool.storage(for: PhysicalObjectComponent.self).buffer[immovableIndex]!.value
 
         let movementLine = Line(
-            from: movable.buffer[movableIndex].startingPosition,
-            to: movable.buffer[movableIndex].positionCenter
+            from: movable.buffer[movableIndex]!.value.startingPosition,
+            to: movable.buffer[movableIndex]!.value.positionCenter
         )
         let immovableBoundingLines = Rect(
             center: immovable.positionCenter,
             size: 
                 immovable.squareRadius * 2 
-                + movable.buffer[movableIndex].squareRadius * 2
+                + movable.buffer[movableIndex]!.value.squareRadius * 2
         ).lines
 
         let intersection = immovableBoundingLines
@@ -160,9 +160,9 @@ final class AABBCollisionSystem: SDLSystem {
         let newPosition = movementLine.origin + movementLine.vector * intersection
 
         if side % 2 == 0 {
-            movable.buffer[movableIndex].positionCenter.y = newPosition.y
+            movable.buffer[movableIndex]!.value.positionCenter.y = newPosition.y
         } else {
-            movable.buffer[movableIndex].positionCenter.x = newPosition.x
+            movable.buffer[movableIndex]!.value.positionCenter.x = newPosition.x
         }
     }
 }
