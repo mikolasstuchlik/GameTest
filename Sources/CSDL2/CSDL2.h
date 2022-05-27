@@ -5,7 +5,13 @@ struct SDL_Texture {};
 struct SDL_Renderer {};
 struct SDL_Window {};
 
+// On M1 mac Homebrew installs the package into separate directory
+#ifdef __aarch64__ && __APPLE__
+#include <SDL.h>
+#include <SDL_image.h>
+#else
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#endif
 
 #endif /* CSDL2_H */
