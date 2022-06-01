@@ -6,26 +6,25 @@ struct Line<Number: Numeric> {
 extension Line where Number: FloatingPoint {
     init(from: Point<Number>, to: Point<Number>) {
         self.origin = from
-        self.vector = Vector(from: from, to: to)
+        self.vector = from → to
     }
 }
 
 extension Line where Number == Float {
-
     func collinear(with line: Line) -> Bool {
-        self.vector * line.vector == 0
-        && Vector(from: self.origin, to: line.origin) * self.vector == 0
+        self.vector ⨯ line.vector == 0
+        && self.origin → line.origin ⨯ self.vector == 0
     }
 
     func parallel(with line: Line) -> Bool {
-        self.vector * line.vector == 0
-        && Vector(from: self.origin, to: line.origin) * self.vector != 0
+        self.vector ⨯ line.vector == 0
+        && self.origin → line.origin ⨯ self.vector != 0
     }
 
     func intersection(with otherLine: Line) -> Number {
-        Vector(from: self.origin, to: otherLine.origin) 
-        * otherLine.vector 
-        / (self.vector * otherLine.vector) 
+        self.origin → otherLine.origin
+        ⨯ otherLine.vector 
+        / (self.vector ⨯ otherLine.vector) 
     }
 }
 

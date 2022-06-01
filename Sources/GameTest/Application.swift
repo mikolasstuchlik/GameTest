@@ -2,8 +2,6 @@ import CSDL2
 import Foundation
 
 final class Application {
-   // private var texture
-
     init() {
     }
 
@@ -67,10 +65,11 @@ final class Application {
     func render() throws {
         try! renderer!.renderClear()
 
-        let context = SDLRenderContext(renderer: renderer!)
-
         measure("rendering") {
-            try! currentPool?.render(with: context)
+            for layer in Layer.allCases  {
+                let context = SDLRenderContext(renderer: renderer!, currentLayer: layer)
+                try! currentPool?.render(with: context)
+            }
         }
 
         renderer!.renderPresent()

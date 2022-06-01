@@ -15,7 +15,7 @@ extension EntityFactory {
     ) -> Entity {
         let player = Entity(dataManager: pool)
         try! player.assign(
-            component: PhysicalObjectComponent.self, 
+            component: BoxObjectComponent.self, 
             options: .movable,
             arguments: (
                 positionCenter: position,

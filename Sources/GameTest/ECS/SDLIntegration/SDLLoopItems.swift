@@ -15,6 +15,7 @@ struct SDLUpdateContext {
 
 struct SDLRenderContext {
     let renderer: SDLRendererPtr
+    let currentLayer: Layer
 }
 
 struct PassedTimeCount {

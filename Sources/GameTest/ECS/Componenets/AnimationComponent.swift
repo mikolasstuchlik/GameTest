@@ -19,6 +19,4 @@ struct AnimationComponent: Component {
         self.startTime = arguments.startTime
         self.currentAnimation = arguments.currentAnimation
     }
-
-    func destroy() { }
 }

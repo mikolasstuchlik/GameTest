@@ -19,6 +19,4 @@ struct InventoryComponent: Component {
         self.bombDeployed = arguments.bombDeployed
         self.flameLength = arguments.flameLength
     }
-
-    func destroy() { }
 }

@@ -35,9 +35,9 @@ final class AABBCollisionSystem: SDLSystem {
 
     weak var delegate: CollisionSystemDelegate?
 
-    private var currentStore: PhysicalObjectComponent.Store!
+    private var currentStore: BoxObjectComponent.Store!
     override func update(with context: UpdateContext) throws {
-        currentStore = pool.storage(for: PhysicalObjectComponent.self)
+        currentStore = pool.storage(for: BoxObjectComponent.self)
         defer { currentStore = nil }
 
         guard let movable = currentStore.category[.movable] else {
@@ -127,17 +127,17 @@ final class AABBCollisionSystem: SDLSystem {
 
     // first entity is always movable
     private func resolveCollision(movableIndex first: Int, secondMovableIndex second: Int) { 
-        let movable = pool.storage(for: PhysicalObjectComponent.self)
+        let movable = pool.storage(for: BoxObjectComponent.self)
         print("Collision \(movable.buffer[first]!.unownedEntity.developerLabel ?? String(describing: movable.buffer[first]!.unownedEntity)) and \(movable.buffer[second]!.unownedEntity.developerLabel ?? String(describing: movable.buffer[second]!.unownedEntity)): 2 movable not implemented")
     }
 
     private func resolveCollision(movableIndex: Int, immovableIndex: Int) { 
-        let movable = pool.storage(for: PhysicalObjectComponent.self)
-        let immovable = pool.storage(for: PhysicalObjectComponent.self).buffer[immovableIndex]!.value
+        let movable = pool.storage(for: BoxObjectComponent.self)
+        let immovable = pool.storage(for: BoxObjectComponent.self).buffer[immovableIndex]!.value
 
         let movementLine = Line(
-            from: movable.buffer[movableIndex]!.value.startingPosition,
-            to: movable.buffer[movableIndex]!.value.positionCenter
+            origin: movable.buffer[movableIndex]!.value.positionCenter - movable.buffer[movableIndex]!.value.frameMovementVector,
+            vector: movable.buffer[movableIndex]!.value.frameMovementVector
         )
         let immovableBoundingLines = Rect(
             center: immovable.positionCenter,

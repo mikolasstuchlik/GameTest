@@ -11,7 +11,7 @@ final class DefaultPool: SDLPool {
             MovementSystem(pool: self),
             AnimationSystem(pool: self),
             collisionSystem,
-            RenderSystem(pool: self),
+            SpriteRenderSystem(pool: self),
         ]
 
         self.storage(for: SpriteComponent.self).initialize(

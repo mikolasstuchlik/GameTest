@@ -2,15 +2,19 @@ import CSDL2
 import NoobECS
 import NoobECSStores
 
-final class RenderSystem: SDLSystem {
+final class SpriteRenderSystem: SDLSystem {
     override func render(with context: RenderContext) throws {
         let spriteStore = pool.storage(for: SpriteComponent.self)
         let renderer = context.renderer
 
+        guard let indicies = spriteStore.category[context.currentLayer] else {
+            return
+        }
+
         // Render
-        for i in 0..<spriteStore.buffer.count where spriteStore.buffer[i] != nil {
+        for i in indicies where spriteStore.buffer[i] != nil {
             let entity = spriteStore.buffer[i]!.unownedEntity
-            entity.access(component: PhysicalObjectComponent.self) { immovable in
+            entity.access(component: BoxObjectComponent.self) { immovable in
                 spriteStore.buffer[i]!.value.rendererAssignedCenter = immovable.positionCenter
             }
 

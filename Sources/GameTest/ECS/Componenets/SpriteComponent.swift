@@ -6,10 +6,6 @@ struct SpriteComponent: CategoryComponent {
     typealias Store = CategoryVectorStorage<Self>
     typealias Categories = Layer
 
-    enum Layer: NoobECSStores.Category {
-        case background, enemy, avatar
-    }
-
     var unownedTexture: SDLTexturePtr!
     var sourceRect: SDL_Rect?
     var size: Size<Float>
@@ -20,6 +16,4 @@ struct SpriteComponent: CategoryComponent {
         self.unownedTexture = arguments.unownedTexture
         self.size = arguments.size
     }
-
-    func destroy() { }
 }

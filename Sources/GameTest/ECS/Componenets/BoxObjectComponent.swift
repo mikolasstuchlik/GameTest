@@ -1,13 +1,12 @@
 import NoobECS
 import NoobECSStores
 
-struct PhysicalObjectComponent: CategoryComponent {
+struct BoxObjectComponent: CategoryComponent {
     typealias Store = CategoryVectorStorage<Self>
     enum Categories: NoobECSStores.Category {
         case movable, immovable, immaterial
     }
 
-    var startingPosition: Point<Float>
     var positionCenter: Point<Float>
     var squareRadius: Size<Float> 
 
@@ -15,6 +14,7 @@ struct PhysicalObjectComponent: CategoryComponent {
     var collisionBitmask: UInt32
     var notificationBitmask: UInt32
 
+    var frameMovementVector: Vector<Float>
     var velocity: Vector<Float>
     var maxVelocity: Float
 
@@ -29,7 +29,6 @@ struct PhysicalObjectComponent: CategoryComponent {
             maxVelocity: Float
         )
     ) {
-        self.startingPosition = arguments.positionCenter
         self.positionCenter = arguments.positionCenter
         self.squareRadius = arguments.squareRadius
         self.categoryBitmask = arguments.categoryBitmask
@@ -37,8 +36,6 @@ struct PhysicalObjectComponent: CategoryComponent {
         self.notificationBitmask = arguments.notificationBitmask
         self.velocity = arguments.velocity
         self.maxVelocity = arguments.maxVelocity
+        self.frameMovementVector = .zero
     }
-
-
-    func destroy() { }
 }

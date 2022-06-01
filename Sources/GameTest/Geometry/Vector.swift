@@ -17,11 +17,6 @@ extension Vector where Number: FloatingPoint {
     var magnitude: Number { 
         sqrt(x * x + y * y)
     }
-
-    init(from: Point<Number>, to: Point<Number>) {
-        x = to.x - from.x
-        y = to.y - from.y
-    }
 }
 
 extension Vector where Number == Float {
@@ -39,8 +34,30 @@ func -<Number: Numeric>(_ lhs: Vector<Number>, _ rhs: Vector<Number>) -> Vector<
     Vector(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
-func *<Number: Numeric>(_ lhs: Vector<Number>, _ rhs: Vector<Number>) -> Number {
+precedencegroup ConstructorPrecedence {
+    associativity: none
+    higherThan: MultiplicationPrecedence
+}
+infix operator →: ConstructorPrecedence
+func →<Number: Numeric>(_ lhs: Point<Number>, _ rhs: Point<Number>) -> Vector<Number> {
+    Vector(x: rhs.x - lhs.x, y: rhs.y - lhs.y)
+}
+
+prefix operator ⟂
+prefix func ⟂<Number: Numeric>(_ vect: Vector<Number>) -> Vector<Number> {
+    Vector(x: vect.y, y: vect.x * (-1 as Number))
+}
+
+infix operator ⨯: MultiplicationPrecedence
+/// Vector "corss product"
+func ⨯<Number: Numeric>(_ lhs: Vector<Number>, _ rhs: Vector<Number>) -> Number {
     lhs.x * rhs.y - lhs.y * rhs.x
+}
+
+infix operator ⊙: MultiplicationPrecedence
+/// Vector "dot product"
+func ⊙<Number: Numeric>(_ lhs: Vector<Number>, _ rhs: Vector<Number>) -> Number {
+    lhs.x * rhs.x + lhs.y * rhs.y
 }
 
 func *<Number: Numeric>(_ lhs: Number, _ rhs: Vector<Number>) -> Vector<Number> {

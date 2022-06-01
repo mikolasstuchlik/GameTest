@@ -53,6 +53,4 @@ struct ControllerComponent: Component {
         self.moveBottomKey = arguments.moveBottomKey
         self.moveLeftKey = arguments.moveLeftKey
     }
-
-    func destroy() { }
 }

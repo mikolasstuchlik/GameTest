@@ -14,7 +14,7 @@ extension EntityFactory {
             )
         )
         try! newTile.assign(
-            component: PhysicalObjectComponent.self,
+            component: BoxObjectComponent.self,
             options: categoryBitmask > 0 ? .immovable : .immaterial,
             arguments: (
                 positionCenter: center,

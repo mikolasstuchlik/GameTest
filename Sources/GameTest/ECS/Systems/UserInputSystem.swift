@@ -30,7 +30,7 @@ final class UserInputSystem: SDLSystem {
 
             let entity = storage.buffer[i]!.unownedEntity
 
-            entity.access(component: PhysicalObjectComponent.self) { positionComponent in
+            entity.access(component: BoxObjectComponent.self) { positionComponent in
 
                 let controller = storage.buffer[i]!.value
 

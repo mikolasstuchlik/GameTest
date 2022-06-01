@@ -18,9 +18,7 @@ enum DynaSheet: SpriteSheet {
 
     static func nextAnimation(for entity: Entity, current animation: String?) -> String? {
         guard
-            let movementVector = entity.access(component: PhysicalObjectComponent.self, accessBlock: { component in
-                return Vector<Float>(from: component.startingPosition, to: component.positionCenter)
-            })
+            let movementVector = entity.access(component: BoxObjectComponent.self, accessBlock: \.frameMovementVector)
         else {
             return animation
         }
