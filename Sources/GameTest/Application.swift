@@ -14,6 +14,10 @@ final class Application {
         try sdlException { 
             SDL_Init(SDLBridges.SDL_INIT_EVERTYHING)  
         }
+
+        try sdlException {
+            TTF_Init()
+        }
         
         let flags = fullscreen
             ? SDL_WINDOW_FULLSCREEN

@@ -2,7 +2,6 @@ import Foundation
 import CSDL2
 import NoobECS
 
-
 struct Animation {
     let fps: Int
     let tiles: [Int]
@@ -54,6 +53,17 @@ enum Assets {
 
         var url: URL {
             Bundle.module.url(forResource: self.rawValue, withExtension: "png")!
+        }
+    }
+
+    enum Font: String {
+        case disposableDroidBold = "DisposableDroidBB_bld"
+        case disposableDroidBoldItalic = "DisposableDroidBB_bldital"
+        case disposableDroidItalic = "DisposableDroidBB_ital"
+        case disposableDroid = "DisposableDroidBB"
+
+        var url: URL {
+            Bundle.module.url(forResource: self.rawValue, withExtension: "ttf")!
         }
     }
 }

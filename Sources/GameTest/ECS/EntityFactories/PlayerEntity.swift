@@ -61,6 +61,20 @@ extension EntityFactory {
                 flameLength: 2
             )
         )
+        try! player.assign(
+            component: LabelComponent.self, 
+            options: .avatar,
+            arguments: (
+                ownedTexture: try! pool.textureBuffer.font(for: .disposableDroid, size: 20).texture(
+                    for: "Player", 
+                    using: pool.getRenderer()!, 
+                    size: Size(width: 64, height: 20),
+                    color: SDL_Color(r: 255, g: 255, b: 255, a: 255)
+                ),
+                position: Vector(x: 0, y: -40),
+                size: Size(width: 64, height: 20)
+            )
+        )
         return player
     }
 }

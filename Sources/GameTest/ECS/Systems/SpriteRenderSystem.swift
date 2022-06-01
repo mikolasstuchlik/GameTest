@@ -14,15 +14,13 @@ final class SpriteRenderSystem: SDLSystem {
         // Render
         for i in indicies where spriteStore.buffer[i] != nil {
             let entity = spriteStore.buffer[i]!.unownedEntity
-            entity.access(component: BoxObjectComponent.self) { immovable in
-                spriteStore.buffer[i]!.value.rendererAssignedCenter = immovable.positionCenter
-            }
+            let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter) ?? .zero
 
             try! renderer.render(
                 spriteStore.buffer[i]!.value.unownedTexture, 
                 source: spriteStore.buffer[i]!.value.sourceRect, 
                 destination: SDL_Rect(Rect(
-                    center: spriteStore.buffer[i]!.value.rendererAssignedCenter, 
+                    center: center, 
                     size: spriteStore.buffer[i]!.value.size
                 ))
             )
