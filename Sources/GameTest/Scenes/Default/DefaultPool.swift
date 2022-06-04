@@ -44,6 +44,16 @@ final class DefaultPool: SDLPool {
             squareRadius: Size(width: 30, height: 30),
             collisionBitmask: 0b1
         ).developerLabel = "player2"
+
+        EntityFactory.player(
+            schemeArrows: true,
+            pool: self,
+            asset: .blue,
+            spriteSheet: DynaSheet.self,
+            position: Point(x: 32, y: 120),
+            squareRadius: Size(width: 30, height: 30),
+            collisionBitmask: 0b1
+        ).developerLabel = "player3"
     }
 
     override func update(with context: UpdateContext) throws {

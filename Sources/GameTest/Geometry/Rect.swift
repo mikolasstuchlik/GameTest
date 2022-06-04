@@ -15,6 +15,13 @@ extension Rect {
     }
 }
 
+extension Rect where Number: BinaryFloatingPoint {
+    init<Other: BinaryFloatingPoint>(_ other: Rect<Other>) {
+        self.origin = Point<Number>(other.origin)
+        self.size = Size<Number>(other.size)
+    }
+}
+
 extension Rect {
     static var zero: Self { .init(origin: .zero, size: .zero) }
 }

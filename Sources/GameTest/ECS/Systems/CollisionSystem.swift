@@ -128,7 +128,53 @@ final class AABBCollisionSystem: SDLSystem {
     // first entity is always movable
     private func resolveCollision(movableIndex first: Int, secondMovableIndex second: Int) { 
         let movable = pool.storage(for: BoxObjectComponent.self)
-        print("Collision \(movable.buffer[first]!.unownedEntity.developerLabel ?? String(describing: movable.buffer[first]!.unownedEntity)) and \(movable.buffer[second]!.unownedEntity.developerLabel ?? String(describing: movable.buffer[second]!.unownedEntity)): 2 movable not implemented")
+
+        let firstBoundingLines = Rect<Double>(Rect(
+            center: movable.buffer[first]!.value.positionCenter,
+            size: movable.buffer[first]!.value.squareRadius * 2
+        )).lines
+
+        let secondBoundingLines = Rect<Double>(Rect(
+            center: movable.buffer[second]!.value.positionCenter,
+            size: movable.buffer[second]!.value.squareRadius * 2 
+        )).lines
+
+        let collisionLine = Line<Double>(Line(
+            from: movable.buffer[first]!.value.positionCenter, 
+            to: movable.buffer[second]!.value.positionCenter
+        ))
+
+        let firstCollisionIntersection = firstBoundingLines
+            .map(collisionLine.intersection(with:))
+            .filter((0...1.0).contains(_:))
+            .first!
+        
+        let secondCollisionIntersection = secondBoundingLines
+            .map(collisionLine.intersection(with:))
+            .filter((0...1.0).contains(_:))
+            .first!
+        
+        let firstCollisionPoint = collisionLine.origin + collisionLine.vector * firstCollisionIntersection
+        let secondCollisionPoint = collisionLine.origin + collisionLine.vector * secondCollisionIntersection
+
+        let collisionVector = firstCollisionPoint → secondCollisionPoint
+        
+        switch collisionVector.degreees {
+        case 316...361, 0..<46, 136.0..<226.0:
+            movable.buffer[first]!.value.frameMovementVector.x += Float(collisionVector.x / 2)
+            movable.buffer[first]!.value.positionCenter.x += Float(collisionVector.x / 2)
+
+            movable.buffer[second]!.value.frameMovementVector.x -= Float(collisionVector.x / 2)
+            movable.buffer[second]!.value.positionCenter.x -= Float(collisionVector.x / 2)
+        case 46.0..<136.0, 226.0..<316.0:
+            movable.buffer[first]!.value.frameMovementVector.y += Float(collisionVector.y / 2)
+            movable.buffer[first]!.value.positionCenter.y += Float(collisionVector.y / 2)
+
+            movable.buffer[second]!.value.frameMovementVector.y -= Float(collisionVector.y / 2)
+            movable.buffer[second]!.value.positionCenter.y -= Float(collisionVector.y / 2)
+        default:
+            fatalError("invalid angle")
+        }
     }
 
     private func resolveCollision(movableIndex: Int, immovableIndex: Int) { 
@@ -158,6 +204,10 @@ final class AABBCollisionSystem: SDLSystem {
         }
 
         let newPosition = movementLine.origin + movementLine.vector * intersection
+
+        movable.buffer[movableIndex]!.value.frameMovementVector = 
+            movable.buffer[movableIndex]!.value.frameMovementVector 
+            + movementLine.vector * intersection
 
         if side % 2 == 0 {
             movable.buffer[movableIndex]!.value.positionCenter.y = newPosition.y

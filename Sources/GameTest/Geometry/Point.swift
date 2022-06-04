@@ -8,6 +8,13 @@ extension Point {
     static var zero: Self { .init(x: 0, y: 0) }
 }
 
+extension Point where Number: BinaryFloatingPoint {
+    init<Other: BinaryFloatingPoint>(_ other: Point<Other>) {
+        self.x = Number(other.x)
+        self.y = Number(other.y)
+    }
+}
+
 extension Point where Number: ExpressibleByFloatLiteral {
     static var zero: Self { .init(x: 0, y: 0) }
 }

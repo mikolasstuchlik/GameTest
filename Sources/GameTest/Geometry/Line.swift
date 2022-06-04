@@ -10,7 +10,14 @@ extension Line where Number: FloatingPoint {
     }
 }
 
-extension Line where Number == Float {
+extension Line where Number: BinaryFloatingPoint {
+    init<Other: BinaryFloatingPoint>(_ other: Line<Other>) {
+        self.origin = Point<Number>(other.origin)
+        self.vector = Vector<Number>(other.vector)
+    }
+}
+
+extension Line where Number: BinaryFloatingPoint {
     func collinear(with line: Line) -> Bool {
         self.vector ⨯ line.vector == 0
         && self.origin → line.origin ⨯ self.vector == 0
@@ -28,9 +35,10 @@ extension Line where Number == Float {
     }
 }
 
-extension Rect where Number: FloatingPoint {
+extension Rect where Number: BinaryFloatingPoint {
 
     /// It is guaranteed, that lines are always in followin order: top, right, bottom, left
+    // TODO: We also might introduce some sort of "CollectionOfFour"
     var lines: [Line<Number>] {
         let points = [
             origin,

@@ -7,6 +7,13 @@ extension Size {
     static var zero: Self { .init(width: 0, height: 0) }
 }
 
+extension Size where Number: BinaryFloatingPoint {
+    init<Other: BinaryFloatingPoint>(_ other: Size<Other>) {
+        self.width = Number(other.width)
+        self.height = Number(other.height)
+    }
+}
+
 extension Size where Number: ExpressibleByFloatLiteral {
     static var zero: Self { .init(width: 0, height: 0) }
 }

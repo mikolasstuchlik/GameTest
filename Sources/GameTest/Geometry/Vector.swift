@@ -13,15 +13,29 @@ extension Vector where Number: ExpressibleByFloatLiteral {
     static var zero: Self { .init(x: 0, y: 0) }
 }
 
-extension Vector where Number: FloatingPoint {
+extension Vector where Number: BinaryFloatingPoint {
     var magnitude: Number { 
         sqrt(x * x + y * y)
+    }
+}
+
+extension Vector where Number: BinaryFloatingPoint {
+    init<Other: BinaryFloatingPoint>(_ other: Vector<Other>) {
+        self.x = Number(other.x)
+        self.y = Number(other.y)
     }
 }
 
 extension Vector where Number == Float {
     var degreees: Float {
         let deg = atan2(y, x) * 180 / Float.pi
+        return deg < 0 ? deg + 360 : deg 
+    }
+}
+
+extension Vector where Number == Double {
+    var degreees: Double {
+        let deg = atan2(y, x) * 180 / Double.pi
         return deg < 0 ? deg + 360 : deg 
     }
 }
