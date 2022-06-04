@@ -35,6 +35,25 @@ extension Line where Number: BinaryFloatingPoint {
     }
 }
 
+extension Line where Number == Float {
+    func rotate(around center: Point<Number>, angle: Number) -> Line<Number> {
+        Line(
+            from: origin.rotated(around: center, angle: angle), 
+            to: (origin + vector).rotated(around: center, angle: angle)
+        )
+    }
+}
+
+extension Array where Element == Line<Float> {
+    func rotated(around center: Point<Float>, angle: Float) -> Self {
+        map { $0.rotate(around: center, angle: angle) }
+    }
+
+    func draw(in renderer: SDLRendererPtr) throws {
+        try forEach(renderer.draw(line:))
+    }
+}
+
 extension Rect where Number: BinaryFloatingPoint {
 
     /// It is guaranteed, that lines are always in followin order: top, right, bottom, left

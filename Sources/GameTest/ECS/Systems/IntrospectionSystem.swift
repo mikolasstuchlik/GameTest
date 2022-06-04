@@ -1,0 +1,102 @@
+import NoobECS
+import NoobECSStores
+import CSDL2
+
+final class IntrospectionSystem: SDLSystem {
+    override func update(with context: UpdateContext) throws {
+        for inputEvent in context.events {
+            guard case let .mouseKeyDown(mouseEvent) = inputEvent else {
+                continue
+            }
+            
+            let point = Point(x: Float(mouseEvent.x), y: Float(mouseEvent.y))
+
+            let store = pool.storage(for: BoxObjectComponent.self)
+            for index in 0..<store.buffer.count where store.buffer[index] != nil {
+                guard 
+                    Rect(
+                        center: store.buffer[index]!.value.positionCenter, 
+                        size: store.buffer[index]!.value.squareRadius * 2
+                    ).contains(point) 
+                else {
+                    continue
+                }
+
+                switch CInt(mouseEvent.button) {
+                case SDL_BUTTON_LEFT where store.buffer[index]!.unownedEntity.has(component: IntrospectionComponent.self):
+                    store.buffer[index]!.unownedEntity.destroy(component: IntrospectionComponent.self)
+                case SDL_BUTTON_LEFT:
+                    try store.buffer[index]!.unownedEntity.assign(component: IntrospectionComponent.self, arguments: SDL_Color.colors.randomElement() ?? .white)
+                case SDL_BUTTON_RIGHT:
+                store.buffer[index]!.unownedEntity.access(component: IntrospectionComponent.self) { intro in
+                    let currentIndex = SDL_Color.colors.firstIndex(of: intro.color) ?? (0..<SDL_Color.colors.count).randomElement() ?? 0
+
+                    let nextIndex = currentIndex + 1 < SDL_Color.colors.count
+                        ? currentIndex + 1
+                        : 0
+                    
+                    intro.color = SDL_Color.colors[nextIndex]
+                }
+                default: continue
+                }
+
+                break 
+            }
+        }
+    }
+
+    override func render(with context: RenderContext) throws {
+        guard case .introspection = context.currentLayer else { return }
+        let store = pool.storage(for: IntrospectionComponent.self)
+
+        for index in 0..<store.buffer.count where store.buffer[index] != nil {
+            let entity = store.buffer[index]!.unownedEntity
+            let introspection = store.buffer[index]!.value
+
+            try context.renderer.setDraw(color: introspection.color)
+
+            for entity in introspection.frameCollidedWith {
+                try entity.access(component: BoxObjectComponent.self) { component in 
+                    try context.renderer.draw(line: Line(
+                        from: component.positionCenter - Vector(x: component.squareRadius.width, y: component.squareRadius.height),
+                        to: component.positionCenter + Vector(x: component.squareRadius.width, y: component.squareRadius.height)
+                    ))
+                    try context.renderer.draw(line: Line(
+                        from: component.positionCenter - Vector(x: component.squareRadius.width, y: -component.squareRadius.height),
+                        to: component.positionCenter + Vector(x: component.squareRadius.width, y: -component.squareRadius.height)
+                    ))
+                }
+            }
+            store.buffer[index]!.value.frameCollidedWith.removeAll()
+
+            try entity.access(component: BoxObjectComponent.self) { component in
+                try context.renderer.draw(
+                    rect: SDL_Rect(Rect(
+                        center: component.positionCenter, 
+                        size: component.squareRadius * 2
+                    ))
+                )
+
+                if component.velocity.magnitude > 0 {
+                    try arrow(
+                        from: component.positionCenter, 
+                        length: component.velocity.magnitude
+                    ).rotated(
+                        around: component.positionCenter, 
+                        angle: component.velocity.angleRad
+                    ).draw(in: context.renderer)
+                }
+            }
+        }
+    }
+
+    private func arrow(from: Point<Float>, length: Float) -> [Line<Float>] {
+        let to = from + Vector(x: length, y: 0)
+        return [
+            Line(from: from, to: to + Vector(x: -8, y: 0)),
+            Line(from: to, to: to + Vector(x: -8, y: -8) ),
+            Line(from: to, to: to + Vector(x: -8, y: +8) ),
+            Line(from: to + Vector(x: -8, y: +8), to: to + Vector(x: -8, y: -8) ),
+        ]
+    }
+}

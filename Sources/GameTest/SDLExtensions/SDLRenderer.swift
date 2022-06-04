@@ -23,6 +23,29 @@ extension SDLRendererPtr {
         }
     }
 
+    func setDraw(color: SDL_Color) throws {
+        try sdlException {
+            SDL_SetRenderDrawColor(self, color.r, color.g, color.b, color.a)
+        }
+    }
+
+    func draw(rect: SDL_Rect) throws {
+        var rect = rect
+        try sdlException { SDL_RenderDrawRect(self, &rect) }
+    }
+
+    func draw(line: Line<Float>) throws {
+        try sdlException {
+            SDL_RenderDrawLine(
+                self, 
+                CInt(line.origin.x),
+                CInt(line.origin.y),
+                CInt((line.origin + line.vector).x),
+                CInt((line.origin + line.vector).y)
+            )
+        }
+    }
+
     func renderClear() throws {
         try sdlException {
             SDL_RenderClear(self) 

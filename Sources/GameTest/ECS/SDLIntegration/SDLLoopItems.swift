@@ -5,6 +5,7 @@ import CSDL2
 enum InputEvent {
     case keyDown(SDL_KeyboardEvent)
     case keyUp(SDL_KeyboardEvent)
+    case mouseKeyDown(SDL_MouseButtonEvent)
 }
 
 struct SDLUpdateContext {

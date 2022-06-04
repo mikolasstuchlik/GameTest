@@ -49,6 +49,8 @@ final class Application {
                 result.append(.keyDown(event.key))
             case SDL_KEYUP:
                 result.append(.keyUp(event.key))
+            case SDL_MOUSEBUTTONDOWN:
+                result.append(.mouseKeyDown(event.button))
             default:
                 break
             }

@@ -31,6 +31,10 @@ extension Vector where Number == Float {
         let deg = atan2(y, x) * 180 / Float.pi
         return deg < 0 ? deg + 360 : deg 
     }
+
+    var angleRad: Float {
+        atan2(y, x)
+    }
 }
 
 extension Vector where Number == Double {

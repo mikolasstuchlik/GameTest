@@ -57,7 +57,6 @@ final class AABBCollisionSystem: SDLSystem {
             for other in (i + 1)..<movable.upperBound where currentStore.buffer[other] != nil {
                 checkAndResolve(first: i, second: other, secondMovable: true)
             }
-
         }
     }
 
@@ -109,8 +108,9 @@ final class AABBCollisionSystem: SDLSystem {
                 secondEntity: currentStore.buffer[sIndex]!.unownedEntity
             )
             resolveCollision(movableIndex: index, immovableIndex: sIndex)
-        case .none: break
+        case .none: return
         }
+        reportIntrospection(first: index, second: sIndex)
     }
 
     private func determineCollision(
@@ -211,6 +211,16 @@ final class AABBCollisionSystem: SDLSystem {
             movable.buffer[first]!.value.positionCenter.y += verticalSpace * orientation
         default:
             fatalError("invalid angle")
+        }
+    }
+
+    private func reportIntrospection(first index: Int, second sIndex: Int) {
+        _ = currentStore.buffer[index]!.unownedEntity.access(component: IntrospectionComponent.self) { comp in
+            comp.frameCollidedWith.insert(currentStore.buffer[sIndex]!.unownedEntity)
+        }
+
+        _ = currentStore.buffer[sIndex]!.unownedEntity.access(component: IntrospectionComponent.self) { comp in
+            comp.frameCollidedWith.insert(currentStore.buffer[index]!.unownedEntity)
         }
     }
 }

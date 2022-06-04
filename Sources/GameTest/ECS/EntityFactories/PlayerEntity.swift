@@ -70,12 +70,14 @@ extension EntityFactory {
                     for: "Player", 
                     using: pool.getRenderer()!, 
                     size: Size(width: 64, height: 20),
-                    color: SDL_Color(r: 255, g: 255, b: 255, a: 255)
+                    color: .white
                 ),
                 position: Vector(x: 0, y: -40),
                 size: Size(width: 64, height: 20)
             )
         )
+
+        try! player.assign(component: IntrospectionComponent.self, arguments: .white)
         return player
     }
 }

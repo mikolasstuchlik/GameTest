@@ -17,6 +17,7 @@ final class UserInputSystem: SDLSystem {
         case let .keyUp(aKey):
             pressed = false
             key = aKey.keysym.scancode
+        default: return
         }
 
         let storage = pool.storage(for: ControllerComponent.self)

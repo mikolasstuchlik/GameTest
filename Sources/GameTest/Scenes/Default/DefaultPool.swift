@@ -13,6 +13,7 @@ final class DefaultPool: SDLPool {
             collisionSystem,
             SpriteRenderSystem(pool: self),
             LabelRenderSystem(pool: self),
+            IntrospectionSystem(pool: self),
         ]
 
         self.storage(for: SpriteComponent.self).initialize(

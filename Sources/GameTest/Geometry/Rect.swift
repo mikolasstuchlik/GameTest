@@ -13,6 +13,13 @@ extension Rect {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
+
+    func contains(_ point: Point<Number>) -> Bool where Number: Comparable {
+        origin.x <= point.x 
+            && origin.x + size.width >= point.x
+            && origin.y <= point.y
+            && origin.y + size.height >= point.y
+    }
 }
 
 extension Rect where Number: BinaryFloatingPoint {

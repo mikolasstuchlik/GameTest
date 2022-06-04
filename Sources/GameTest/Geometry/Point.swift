@@ -1,3 +1,4 @@
+import Foundation
 
 struct Point<Number: Numeric>: Equatable {
     var x: Number
@@ -12,6 +13,16 @@ extension Point where Number: BinaryFloatingPoint {
     init<Other: BinaryFloatingPoint>(_ other: Point<Other>) {
         self.x = Number(other.x)
         self.y = Number(other.y)
+    }
+}
+
+extension Point where Number == Float {
+    /// https://danceswithcode.net/engineeringnotes/rotations_in_2d/rotations_in_2d.html
+    func rotated(around center: Point<Number>, angle: Number) -> Self {
+        Point(
+            x: (x - center.x) * cos(angle) - (y - center.y) * sin(angle) + center.x,
+            y: (x - center.x) * sin(angle) + (y - center.y) * cos(angle) + center.y
+        )
     }
 }
 
