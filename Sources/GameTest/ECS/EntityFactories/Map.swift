@@ -12,7 +12,7 @@ final class Map {
             .map { $0.components(separatedBy: " ") }
 
         self.loadMap { tile in
-            return Int(parsed[tile.y][tile.x])!
+            return UInt(parsed[tile.y][tile.x])!
         }
     }
 
@@ -21,12 +21,14 @@ final class Map {
 
         for x in 0..<Map.mapDimensions.width {
             for y in 0..<Map.mapDimensions.height {
-                let content = map[mapIndex(for: Point(x: x, y: y))]
+                let content = UInt(map[mapIndex(for: Point(x: x, y: y))])
                 tile.origin.x = Map.tileDimensions.width * Float(x)
                 tile.origin.y = Map.tileDimensions.height * Float(y)
-                
+
+                let hasBox: Bool = content & 0b1000 > 0
+
                 let image: Assets.Image
-                switch content {
+                switch content & 0b111 {
                 case 0:
                     image = .plains
                 case 1:
@@ -41,15 +43,24 @@ final class Map {
                     asset: image, 
                     center: tile.center, 
                     squareRadius: tile.size * 0.5, 
-                    categoryBitmask: image == .water ? 0b1 : 0
+                    collision: image == .water
                 ).developerLabel = "mapTile"
+
+                if hasBox {
+                    EntityFactory.box(
+                        pool: pool, 
+                        asset: .crate, 
+                        position: tile.center, 
+                        squareRadius: tile.size * 0.5
+                    ).developerLabel = "box"
+                }
             }
         }
     }
 
     private func mapIndex(for point: Point<Int>) -> Int { point.x + point.y * Map.mapDimensions.width }
 
-    private func loadMap(_ loader: (_ tile: Point<Int>) -> Int) {
+    private func loadMap(_ loader: (_ tile: Point<Int>) -> UInt) {
         for x in 0..<Map.mapDimensions.width {
             for y in 0..<Map.mapDimensions.height {
                 let point = Point(x: x, y: y)
@@ -58,7 +69,7 @@ final class Map {
         } 
     }
 
-    private var map: [Int] = Array(repeating: -1, count: mapDimensions.width * mapDimensions.height)
+    private var map: [UInt] = Array(repeating: UInt.max, count: mapDimensions.width * mapDimensions.height)
 
     static let mapDimensions = Size(width: 25, height: 20)
     static let tileDimensions = Size<Float>(width: 64, height: 64)

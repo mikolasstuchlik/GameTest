@@ -3,6 +3,8 @@ import NoobECS
 
 
 extension EntityFactory {
+    static let playerCategory: UInt32 = 0b10
+
     @discardableResult
     static func player(
         schemeArrows: Bool,
@@ -10,8 +12,7 @@ extension EntityFactory {
         asset: Assets.Sheet,
         spriteSheet: SpriteSheet.Type,
         position: Point<Float>,
-        squareRadius: Size<Float>,
-        collisionBitmask: UInt32
+        squareRadius: Size<Float>
     ) -> Entity {
         let player = Entity(dataManager: pool)
         try! player.assign(
@@ -20,9 +21,9 @@ extension EntityFactory {
             arguments: (
                 positionCenter: position,
                 squareRadius: squareRadius,
-                categoryBitmask: 0b1,
-                collisionBitmask: collisionBitmask,
-                notificationBitmask: 0,
+                categoryBitmask: playerCategory,
+                collisionBitmask: boxCategory | tileCategory,
+                notificationBitmask: playerCategory,
                 velocity: .zero, 
                 maxVelocity: 200.0
             )

@@ -18,6 +18,7 @@ final class DefaultPool: SDLPool {
         self.storage(for: SpriteComponent.self).initialize(
             categories: [
                 .avatar: 10, 
+                .item: 20,
                 .background: Map.mapDimensions.height * Map.mapDimensions.width
             ], 
             reserve: 0
@@ -31,8 +32,7 @@ final class DefaultPool: SDLPool {
             asset: .white,
             spriteSheet: DynaSheet.self,
             position: Point(x: 32, y: 256),
-            squareRadius: Size(width: 30, height: 30),
-            collisionBitmask: 0b1
+            squareRadius: Size(width: 30, height: 30)
         ).developerLabel = "player"
 
         EntityFactory.player(
@@ -41,19 +41,8 @@ final class DefaultPool: SDLPool {
             asset: .green,
             spriteSheet: DynaSheet.self,
             position: Point(x: 32, y: 180),
-            squareRadius: Size(width: 30, height: 30),
-            collisionBitmask: 0b1
+            squareRadius: Size(width: 30, height: 30)
         ).developerLabel = "player2"
-
-        EntityFactory.player(
-            schemeArrows: true,
-            pool: self,
-            asset: .blue,
-            spriteSheet: DynaSheet.self,
-            position: Point(x: 32, y: 120),
-            squareRadius: Size(width: 30, height: 30),
-            collisionBitmask: 0b1
-        ).developerLabel = "player3"
     }
 
     override func update(with context: UpdateContext) throws {
@@ -67,6 +56,6 @@ final class DefaultPool: SDLPool {
 
 extension DefaultPool: CollisionSystemDelegate {
     func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity) {
-        
+        print("Notify: collision of \(firstEntity) with \(secondEntity)")
     }
 }

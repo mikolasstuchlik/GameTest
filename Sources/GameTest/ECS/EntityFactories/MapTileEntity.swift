@@ -1,8 +1,10 @@
 import NoobECS
 
 extension EntityFactory {
+    static let tileCategory: UInt32 = 0b1
+
     @discardableResult
-    static func mapTile(pool: SDLPool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, categoryBitmask: UInt32) -> Entity {
+    static func mapTile(pool: SDLPool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, collision: Bool) -> Entity {
         let newTile = Entity(dataManager: pool)
         try! newTile.assign(
             component: SpriteComponent.self, 
@@ -15,11 +17,11 @@ extension EntityFactory {
         )
         try! newTile.assign(
             component: BoxObjectComponent.self,
-            options: categoryBitmask > 0 ? .immovable : .immaterial,
+            options: collision ? .immovable : .immaterial,
             arguments: (
                 positionCenter: center,
                 squareRadius: squareRadius,
-                categoryBitmask: categoryBitmask,
+                categoryBitmask: collision ? tileCategory : 0,
                 collisionBitmask: 0,
                 notificationBitmask: 0,
                 velocity: .zero,
