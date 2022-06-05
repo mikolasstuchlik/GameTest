@@ -3,7 +3,7 @@ import NoobECSStores
 
 struct BoxObjectComponent: CategoryComponent {
     typealias Store = CategoryVectorStorage<Self>
-    enum Categories: NoobECSStores.Category {
+    enum Categories: Comparable, Hashable {
         case movable, immovable, immaterial
     }
 

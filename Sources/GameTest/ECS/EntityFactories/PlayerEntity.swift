@@ -76,8 +76,6 @@ extension EntityFactory {
                 size: Size(width: 64, height: 20)
             )
         )
-
-        try! player.assign(component: IntrospectionComponent.self, arguments: .white)
         return player
     }
 }
