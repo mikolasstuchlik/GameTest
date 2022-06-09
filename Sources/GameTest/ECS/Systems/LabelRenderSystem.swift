@@ -13,6 +13,7 @@ final class LabelRenderSystem: SDLSystem {
 
         // Render
         for i in indicies where labelStorage.buffer[i] != nil {
+            try labelStorage.buffer[i]!.value.prepareForRender(in: context.renderer)
             let entity = labelStorage.buffer[i]!.unownedEntity
             let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter) ?? .zero
 

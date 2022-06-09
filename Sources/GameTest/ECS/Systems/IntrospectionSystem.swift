@@ -1,48 +1,12 @@
 import NoobECS
 import NoobECSStores
 import CSDL2
+import Foundation
 
 final class IntrospectionSystem: SDLSystem {
     override func update(with context: UpdateContext) throws {
-        for inputEvent in context.events {
-            guard case let .mouseKeyDown(mouseEvent) = inputEvent else {
-                continue
-            }
-            
-            let point = Point(x: Float(mouseEvent.x), y: Float(mouseEvent.y))
-
-            let store = pool.storage(for: BoxObjectComponent.self)
-            for index in 0..<store.buffer.count where store.buffer[index] != nil {
-                guard 
-                    Rect(
-                        center: store.buffer[index]!.value.positionCenter, 
-                        size: store.buffer[index]!.value.squareRadius * 2
-                    ).contains(point) 
-                else {
-                    continue
-                }
-
-                switch CInt(mouseEvent.button) {
-                case SDL_BUTTON_LEFT where store.buffer[index]!.unownedEntity.has(component: IntrospectionComponent.self):
-                    store.buffer[index]!.unownedEntity.destroy(component: IntrospectionComponent.self)
-                case SDL_BUTTON_LEFT:
-                    try store.buffer[index]!.unownedEntity.assign(component: IntrospectionComponent.self, arguments: SDL_Color.colors.randomElement() ?? .white)
-                case SDL_BUTTON_RIGHT:
-                store.buffer[index]!.unownedEntity.access(component: IntrospectionComponent.self) { intro in
-                    let currentIndex = SDL_Color.colors.firstIndex(of: intro.color) ?? (0..<SDL_Color.colors.count).randomElement() ?? 0
-
-                    let nextIndex = currentIndex + 1 < SDL_Color.colors.count
-                        ? currentIndex + 1
-                        : 0
-                    
-                    intro.color = SDL_Color.colors[nextIndex]
-                }
-                default: continue
-                }
-
-                break 
-            }
-        }
+        try handleInputEvents(in: context)
+        try updateLiveDescriptions()
     }
 
     override func render(with context: RenderContext) throws {
@@ -98,5 +62,97 @@ final class IntrospectionSystem: SDLSystem {
             Line(from: to, to: to + Vector(x: -8, y: +8) ),
             Line(from: to + Vector(x: -8, y: +8), to: to + Vector(x: -8, y: -8) ),
         ]
+    }
+
+    private func handleInputEvents(in context: UpdateContext) throws {
+        for inputEvent in context.events {
+            guard case let .mouseKeyDown(mouseEvent) = inputEvent else {
+                continue
+            }
+            
+            let point = Point(x: Float(mouseEvent.x), y: Float(mouseEvent.y))
+
+            let store = pool.storage(for: BoxObjectComponent.self)
+            for index in 0..<store.buffer.count where store.buffer[index] != nil {
+                guard 
+                    Rect(
+                        center: store.buffer[index]!.value.positionCenter, 
+                        size: store.buffer[index]!.value.squareRadius * 2
+                    ).contains(point) 
+                else {
+                    continue
+                }
+
+                switch CInt(mouseEvent.button) {
+                case SDL_BUTTON_LEFT:
+                    try toggleStatus(for: store.buffer[index]!.unownedEntity)
+                case SDL_BUTTON_RIGHT:
+                    selectNewColor(for: store.buffer[index]!.unownedEntity)
+                default: continue
+                }
+
+                break 
+            }
+        }
+    }
+
+    private func updateLiveDescriptions() throws {
+        let store = pool.storage(for: IntrospectionComponent.self)
+        for index in 0..<store.buffer.count where store.buffer[index] != nil {
+            let entity = store.buffer[index]!.unownedEntity
+            var aggregator = ""
+            aggregator += entity.access(component: AnimationComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: BoxObjectComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: ControllerComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: IntrospectionComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: InventoryComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: LabelComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: SpriteComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+
+            let labelWindowEntity = store.buffer[index]!.value.labelWindowEntity
+            labelWindowEntity.access(component: LabelComponent.self) { component in 
+                component.color = store.buffer[index]!.value.color
+                component.string = aggregator
+                let components = aggregator.components(separatedBy: "\n\n")
+                let height = Float(components.count) * 60
+                let width = Float(components.map(\.count).max() ?? 0) * 1.5
+                let size = Size(width: width, height: height)
+                component.wrapLength = UInt32(size.width)
+                component.size = Size<Float>(size)
+                component.position = Vector(x: Float(size.width) / 2, y: Float(size.height) / 2)
+            }
+        }
+    }
+
+    private func toggleStatus(for entity: Entity) throws {
+        guard !entity.has(component: IntrospectionComponent.self) else {
+            entity.access(component: IntrospectionComponent.self) { component in 
+                _ = pool.entities.remove(component.labelWindowEntity)
+            }
+            entity.destroy(component: IntrospectionComponent.self)
+            return
+        }
+
+        let color = SDL_Color.colors.randomElement() ?? .white
+        let labelWindowEntity = EntityFactory.labelBox(pool: pool as! SDLPool, color: color)
+        try entity.assign(
+            component: IntrospectionComponent.self, 
+            arguments: (
+                color: color,
+                labelWindowEntity: labelWindowEntity
+            )
+        )
+    }
+
+    private func selectNewColor(for entity: Entity) {
+        entity.access(component: IntrospectionComponent.self) { intro in
+            let currentIndex = SDL_Color.colors.firstIndex(of: intro.color) ?? (0..<SDL_Color.colors.count).randomElement() ?? 0
+
+            let nextIndex = currentIndex + 1 < SDL_Color.colors.count
+                ? currentIndex + 1
+                : 0
+            
+            intro.color = SDL_Color.colors[nextIndex]
+        }
     }
 }

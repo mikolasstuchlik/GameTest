@@ -14,4 +14,9 @@ extension SDLTexturePtr {
         defer { SDL_FreeSurface(tmpSurface) }
         self = try renderer.createTextureFromSurface(from: tmpSurface!)
     }
+
+    func query(size: Size<CInt>) throws {
+        var mutableSize = size
+        try sdlException { SDL_QueryTexture(self, nil, nil, &mutableSize.width, &mutableSize.height) }
+    }
 }

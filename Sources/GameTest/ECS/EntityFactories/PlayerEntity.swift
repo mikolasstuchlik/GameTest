@@ -66,14 +66,12 @@ extension EntityFactory {
             component: LabelComponent.self, 
             options: .avatar,
             arguments: (
-                ownedTexture: try! pool.textureBuffer.font(for: .disposableDroid, size: 20).texture(
-                    for: "Player", 
-                    using: pool.getRenderer()!, 
-                    size: Size(width: 64, height: 20),
-                    color: .white
-                ),
-                position: Vector(x: 0, y: -40),
-                size: Size(width: 64, height: 20)
+                unownedFont: try! pool.textureBuffer.font(for: .disposableDroid, size: 20), 
+                string: "Player", 
+                color: .white,
+                wrapLength: 0,
+                size: Size(width: 64, height: 20), 
+                position: Vector(x: 0, y: -40)
             )
         )
         return player
