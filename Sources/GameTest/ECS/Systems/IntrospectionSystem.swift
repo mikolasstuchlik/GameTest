@@ -111,15 +111,24 @@ final class IntrospectionSystem: SDLSystem {
 
             let labelWindowEntity = store.buffer[index]!.value.labelWindowEntity
             labelWindowEntity.access(component: LabelComponent.self) { component in 
+                let components = aggregator.components(separatedBy: "\n")
+                let sizePerCharacter = Size<Float>(width: 10, height: 15)
+                let maxWidth = Int(800)
+
+                let numberOfWraps = components.map { 
+                    (Int(sizePerCharacter.width * Float($0.count)) / maxWidth) + 1 
+                }.reduce(0, +)
+
+                let size = Size(
+                    width: min(Float(maxWidth), sizePerCharacter.width * Float(components.map(\.count).max() ?? 0)), 
+                    height: sizePerCharacter.height * Float(numberOfWraps)
+                )
+                
+                component.wrapLength = UInt32(maxWidth)
+                component.size = size
+                component.position = Vector(x: Float(size.width) / 2, y: Float(size.height) / 2)
                 component.color = store.buffer[index]!.value.color
                 component.string = aggregator
-                let components = aggregator.components(separatedBy: "\n\n")
-                let height = Float(components.count) * 60
-                let width = Float(components.map(\.count).max() ?? 0) * 1.5
-                let size = Size(width: width, height: height)
-                component.wrapLength = UInt32(size.width)
-                component.size = Size<Float>(size)
-                component.position = Vector(x: Float(size.width) / 2, y: Float(size.height) / 2)
             }
         }
     }

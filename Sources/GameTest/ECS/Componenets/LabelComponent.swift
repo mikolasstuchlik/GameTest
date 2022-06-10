@@ -7,10 +7,10 @@ struct LabelComponent: CategoryComponent {
     typealias Categories = Layer
 
     private(set) var ownedTexture: SDLTexturePtr!
-    var unownedFont: TTFFontPtr! { didSet { shouldRender = unownedFont != oldValue } }
-    var string: String { didSet { shouldRender = string != oldValue } }
-    var color: SDL_Color { didSet { shouldRender = color != oldValue } }
-    var wrapLength: UInt32 { didSet { shouldRender = wrapLength != oldValue } }
+    var unownedFont: TTFFontPtr! { willSet { shouldRender = unownedFont != newValue } }
+    var string: String { willSet { shouldRender = string != newValue } }
+    var color: SDL_Color { willSet { shouldRender = color != newValue } }
+    var wrapLength: UInt32 { willSet { shouldRender = wrapLength != newValue } }
     var shouldRender: Bool
     var position: Vector<Float>
     var size: Size<Float>

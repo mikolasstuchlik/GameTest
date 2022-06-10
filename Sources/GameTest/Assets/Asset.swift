@@ -61,6 +61,7 @@ enum Assets {
         case disposableDroidBoldItalic = "DisposableDroidBB_bldital"
         case disposableDroidItalic = "DisposableDroidBB_ital"
         case disposableDroid = "DisposableDroidBB"
+        case vcrOsdMono = "VCR_OSD_MONO"
 
         var url: URL {
             Bundle.module.url(forResource: self.rawValue, withExtension: "ttf")!
