@@ -12,13 +12,13 @@ final class TimerSystem: SDLSystem {
         let store = pool.storage(for: TimedEventsComponent.self)
 
         for index in 0..<store.buffer.count where store.buffer[index] != nil {
-            store.buffer[index]!.value.items.filter { item in
+            store.buffer[index]!.value.items.removeAll { item in
                 guard item.fireTime <= context.currentTime else {
-                    return true
+                    return false
                 }
 
                 delegate?.firedTimer(for: store.buffer[index]!.unownedEntity, context: item)
-                return false
+                return true
             }
 
             /// We are not sure, what action was taken in delegate, so we need to check validity again
