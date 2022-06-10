@@ -21,6 +21,9 @@ extension EntityFactory {
                 maxVelocity: 0
             )
         )
+        var black33 = SDL_Color.black
+        black33.a = 255 / 3
+
         try! player.assign(
             component: LabelComponent.self, 
             options: .introspection,
@@ -30,7 +33,8 @@ extension EntityFactory {
                 color: color,
                 wrapLength: 0,
                 size: Size(width: 0, height: 0), 
-                position: .zero
+                position: .zero,
+                background: black33
             )
         )
         return player

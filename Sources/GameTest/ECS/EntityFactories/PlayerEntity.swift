@@ -73,7 +73,8 @@ extension EntityFactory {
                 color: .white,
                 wrapLength: 0,
                 size: Size(width: 64, height: 20), 
-                position: Vector(x: 0, y: -40)
+                position: Vector(x: 0, y: -40),
+                background: .clear
             )
         )
         return player

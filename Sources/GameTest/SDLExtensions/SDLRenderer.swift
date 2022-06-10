@@ -17,6 +17,10 @@ extension SDLRendererPtr {
         }
     }
 
+    func setDraw(blendMode: SDL_BlendMode) throws {
+        try sdlException { SDL_SetRenderDrawBlendMode(self, blendMode) }
+    }
+
     func setDrawColor(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) throws {
         try sdlException {
             SDL_SetRenderDrawColor(self, red, green, blue, alpha)
@@ -27,6 +31,11 @@ extension SDLRendererPtr {
         try sdlException {
             SDL_SetRenderDrawColor(self, color.r, color.g, color.b, color.a)
         }
+    }
+
+    func drawFill(rect: SDL_Rect) throws {
+        var rect = rect
+        try sdlException { SDL_RenderFillRect(self, &rect) }
     }
 
     func draw(rect: SDL_Rect) throws {

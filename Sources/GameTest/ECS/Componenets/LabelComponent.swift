@@ -14,6 +14,7 @@ struct LabelComponent: CategoryComponent {
     var shouldRender: Bool
     var position: Vector<Float>
     var size: Size<Float>
+    var background: SDL_Color
 
     init(arguments: (
         unownedFont: TTFFontPtr, 
@@ -21,7 +22,8 @@ struct LabelComponent: CategoryComponent {
         color: SDL_Color,
         wrapLength: UInt32,
         size: Size<Float>, 
-        position: Vector<Float>
+        position: Vector<Float>,
+        background: SDL_Color
     )) throws {
         self.unownedFont = arguments.unownedFont
         self.string = arguments.string
@@ -30,6 +32,7 @@ struct LabelComponent: CategoryComponent {
         self.wrapLength = arguments.wrapLength
         self.position = arguments.position
         self.shouldRender = true
+        self.background = arguments.background
     }
 
     private func render(in renderer: SDLRendererPtr) throws -> SDLTexturePtr {

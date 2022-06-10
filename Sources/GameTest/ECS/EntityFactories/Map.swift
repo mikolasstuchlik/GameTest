@@ -30,11 +30,9 @@ final class Map {
                 let image: Assets.Image
                 switch content & 0b111 {
                 case 0:
-                    image = .plains
+                    image = .grass
                 case 1:
-                    image = .water
-                case 2:
-                    image = .sand
+                    image = .bricks
                 default: continue
                 }
 
@@ -43,7 +41,7 @@ final class Map {
                     asset: image, 
                     center: tile.center, 
                     squareRadius: tile.size * 0.5, 
-                    collision: image == .water
+                    collision: image == .bricks
                 ).developerLabel = "mapTile"
 
                 if hasBox {
@@ -71,6 +69,6 @@ final class Map {
 
     private var map: [UInt] = Array(repeating: UInt.max, count: mapDimensions.width * mapDimensions.height)
 
-    static let mapDimensions = Size(width: 25, height: 20)
+    static let mapDimensions = Size(width: 18, height: 12)
     static let tileDimensions = Size<Float>(width: 64, height: 64)
 }

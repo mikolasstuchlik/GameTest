@@ -1,6 +1,9 @@
 import CSDL2
 
 extension SDL_Color {
+
+    static let clear = SDL_Color(r: 0, g: 0, b: 0, a: 0)
+
     static let black = SDL_Color(r: 0, g: 0, b: 0, a: 255)
     static let white = SDL_Color(r: 255, g: 255, b: 255, a: 255)
     static let red = SDL_Color(r: 255, g: 0, b: 0, a: 255)

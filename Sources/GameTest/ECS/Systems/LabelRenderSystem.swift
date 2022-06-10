@@ -17,6 +17,14 @@ final class LabelRenderSystem: SDLSystem {
             let entity = labelStorage.buffer[i]!.unownedEntity
             let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter) ?? .zero
 
+            if labelStorage.buffer[i]!.value.background.a > 0 {
+                try renderer.setDraw(color: labelStorage.buffer[i]!.value.background)
+                try renderer.drawFill(rect: SDL_Rect(Rect(
+                    center: center + labelStorage.buffer[i]!.value.position, 
+                    size: labelStorage.buffer[i]!.value.size
+                )))
+            }
+
             try! renderer.render(
                 labelStorage.buffer[i]!.value.ownedTexture, 
                 source: nil, 

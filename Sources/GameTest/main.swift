@@ -4,7 +4,7 @@ let game = Application()
 
 try game.startWindow(
     title: "Fish pond", 
-    dimension: Rect(x: 100, y: 100, width: 1600, height: 1280), 
+    dimension: Rect(x: 100, y: 100, width: 1152, height: 768), 
     fullscreen: false
 )
 
