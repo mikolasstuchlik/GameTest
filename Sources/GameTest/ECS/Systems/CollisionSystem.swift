@@ -2,7 +2,7 @@ import NoobECS
 import NoobECSStores
 
 protocol CollisionSystemDelegate: AnyObject {
-    func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity)
+    func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity, at time: UInt32)
 }
 
 final class AABBCollisionSystem: SDLSystem {
@@ -47,7 +47,7 @@ final class AABBCollisionSystem: SDLSystem {
 
         for i in movable where currentStore.buffer[i] != nil {
             for other in immovable where currentStore.buffer[other] != nil {
-                checkAndResolve(first: i, second: other, secondMovable: false)
+                checkAndResolve(first: i, second: other, secondMovable: false, at: context.currentTime)
             }
 
             guard movable.contains(i + 1) else {
@@ -55,7 +55,7 @@ final class AABBCollisionSystem: SDLSystem {
             }
 
             for other in (i + 1)..<movable.upperBound where currentStore.buffer[other] != nil {
-                checkAndResolve(first: i, second: other, secondMovable: true)
+                checkAndResolve(first: i, second: other, secondMovable: true, at: context.currentTime)
             }
         }
     }
@@ -85,12 +85,13 @@ final class AABBCollisionSystem: SDLSystem {
         return collisionType
     }
 
-    private func checkAndResolve(first index: Int, second sIndex: Int, secondMovable: Bool) {
+    private func checkAndResolve(first index: Int, second sIndex: Int, secondMovable: Bool, at time: UInt32) {
         switch getCollision(first: index, second: sIndex) {
         case .notify:
             delegate?.notifyCollisionOf(
                 firstEntity: currentStore.buffer[index]!.unownedEntity, 
-                secondEntity: currentStore.buffer[sIndex]!.unownedEntity
+                secondEntity: currentStore.buffer[sIndex]!.unownedEntity,
+                at: time
             )
         case .collide where secondMovable:
             resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
@@ -99,13 +100,15 @@ final class AABBCollisionSystem: SDLSystem {
         case .collideNotify:
             delegate?.notifyCollisionOf(
                 firstEntity: currentStore.buffer[index]!.unownedEntity, 
-                secondEntity: currentStore.buffer[sIndex]!.unownedEntity
+                secondEntity: currentStore.buffer[sIndex]!.unownedEntity,
+                at: time
             )
             resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
         case .collideNotify where secondMovable:
             delegate?.notifyCollisionOf(
                 firstEntity: currentStore.buffer[index]!.unownedEntity, 
-                secondEntity: currentStore.buffer[sIndex]!.unownedEntity
+                secondEntity: currentStore.buffer[sIndex]!.unownedEntity,
+                at: time
             )
             resolveCollision(movableIndex: index, immovableIndex: sIndex)
         case .none: return

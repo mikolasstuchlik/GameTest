@@ -12,6 +12,8 @@ extension EntityFactory {
         fireTime: UInt32
     ) -> Entity {
         let bomb = Entity(dataManager: pool)
+        bomb.developerLabel = "bomb"
+
         let squareRadius = Size<Float>(width: 32, height: 32)
 
         try! bomb.assign(
@@ -22,7 +24,7 @@ extension EntityFactory {
                 squareRadius: squareRadius,
                 categoryBitmask: bombCategory,
                 collisionBitmask: boxCategory | playerCategory,
-                notificationBitmask: 0,
+                notificationBitmask: explosionCategory,
                 velocity: .zero, 
                 maxVelocity: 0
             )

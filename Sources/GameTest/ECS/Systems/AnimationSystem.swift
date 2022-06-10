@@ -26,6 +26,7 @@ final class AnimationSystem: SDLSystem {
                 continue
             }
 
+            // This computation is broken
             let animationDurationInMs = context.currentTime - storage.buffer[i]!.value.startTime
             let milisecsInSecond = 1000
             let frameDuration = milisecsInSecond / animation.fps

@@ -13,13 +13,17 @@ enum DynaSheet: SpriteSheet {
         "goLeft"    : Animation(fps: 8, tiles: [7, 6, 8, 6]),
         "idleUp"    : Animation(fps: 1, tiles: [9]),
         "goUp"      : Animation(fps: 8, tiles: [10, 9, 11, 9]),
-        "death"     : Animation(fps: 12, tiles: [13, 14, 15, 16, 17, 18, 19, 20])
+        "death"     : Animation(fps: 8, tiles: [13, 14, 15, 16, 17, 18, 19, 20])
     ]
 
     static func nextAnimation(for entity: Entity, current animation: String?) -> String? {
         guard
             let movementVector = entity.access(component: BoxObjectComponent.self, accessBlock: \.frameMovementVector)
         else {
+            return animation
+        }
+
+        guard animation != "death" else {
             return animation
         }
 

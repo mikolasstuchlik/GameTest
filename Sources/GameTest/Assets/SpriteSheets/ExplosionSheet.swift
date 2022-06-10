@@ -6,7 +6,7 @@ enum ExplosionSheet: SpriteSheet {
     }
 
     static let defaultTile: Int = 0
-    static let mapSize: Size<Int> = Size(width: 5, height: 6)
+    static let mapSize: Size<Int> = Size(width: 6, height: 5)
     static let tileSize: Size<Int> = Size(width: 16, height: 16)
     static let animations: [String : Animation] = [
         Cases.center.rawValue    : Animation(fps: 8, tiles: [3, 2, 1, 0, 1, 2, 3, 4]),

@@ -15,6 +15,7 @@ extension EntityFactory {
         squareRadius: Size<Float>
     ) -> Entity {
         let player = Entity(dataManager: pool)
+        player.developerLabel = "player"
         try! player.assign(
             component: BoxObjectComponent.self, 
             options: .movable,
@@ -23,7 +24,7 @@ extension EntityFactory {
                 squareRadius: squareRadius,
                 categoryBitmask: playerCategory,
                 collisionBitmask: boxCategory | tileCategory | bombCategory,
-                notificationBitmask: playerCategory,
+                notificationBitmask: playerCategory | explosionCategory,
                 velocity: .zero, 
                 maxVelocity: 200.0
             )

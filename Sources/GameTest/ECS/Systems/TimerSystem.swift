@@ -2,7 +2,7 @@ import NoobECS
 import NoobECSStores
 
 protocol TimerSystemDelegate: AnyObject {
-    func firedTimer(for entity: Entity, context: TimedEventsComponent.ScheduledItem)
+    func firedTimer(for entity: Entity, context: TimedEventsComponent.ScheduledItem, at time: UInt32)
 }
 
 final class TimerSystem: SDLSystem {
@@ -11,24 +11,25 @@ final class TimerSystem: SDLSystem {
     override func update(with context: UpdateContext) throws {
         let store = pool.storage(for: TimedEventsComponent.self)
 
+        // Be careful, this section needs to be aware of risk of non-exclusive access
+        var executeItems: [(Entity, TimedEventsComponent.ScheduledItem)] = []
         for index in 0..<store.buffer.count where store.buffer[index] != nil {
-            store.buffer[index]!.value.items.removeAll { item in
+            let filtered = store.buffer[index]!.value.items.filter { item in
                 guard item.fireTime <= context.currentTime else {
-                    return false
+                    return true
                 }
 
-                delegate?.firedTimer(for: store.buffer[index]!.unownedEntity, context: item)
-                return true
+                executeItems.append((store.buffer[index]!.unownedEntity, item))
+                return false
             }
 
-            /// We are not sure, what action was taken in delegate, so we need to check validity again
-            guard store.buffer[index] != nil else {
-                continue
-            }
-
-            if store.buffer[index]!.value.items.count == 0 {
+            if filtered.count == 0 {
                 store.buffer[index]!.unownedEntity.destroy(component: TimedEventsComponent.self)
             }
+        }
+
+        while let toExecute = executeItems.popLast() {
+            delegate?.firedTimer(for: toExecute.0, context: toExecute.1, at: context.currentTime)
         }
     }
 }

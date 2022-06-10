@@ -38,7 +38,7 @@ final class DefaultPool: SDLPool {
             spriteSheet: DynaSheet.self,
             position: Point(x: 32, y: 256),
             squareRadius: Size(width: 30, height: 30)
-        ).developerLabel = "player"
+        )
 
         EntityFactory.player(
             schemeArrows: true,
@@ -47,7 +47,7 @@ final class DefaultPool: SDLPool {
             spriteSheet: DynaSheet.self,
             position: Point(x: 32, y: 180),
             squareRadius: Size(width: 30, height: 30)
-        ).developerLabel = "player2"
+        )
     }
 
     override func update(with context: UpdateContext) throws {
@@ -60,22 +60,83 @@ final class DefaultPool: SDLPool {
 }
 
 extension DefaultPool: CollisionSystemDelegate {
-    func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity) {
-        print("Notify: collision of \(firstEntity) with \(secondEntity)")
+    func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity, at time: UInt32) {
+        switch (firstEntity.developerLabel, secondEntity.developerLabel) {
+        case ("player", "explosion"):
+            killPlayer(entity: firstEntity, at: time)
+        case ("explosion", "player"):
+            killPlayer(entity: secondEntity, at: time)
+        case ("bomb", "explosion"):
+            moveExplosionTime(entity: firstEntity, at: time)
+        case ("explosion", "bomb"):
+            moveExplosionTime(entity: secondEntity, at: time)
+        default:
+            print("Notify: collision of \(firstEntity) with \(secondEntity)")
+        }
+    }
+
+    private func killPlayer(entity: Entity, at time: UInt32) {
+        /// We should probably introduce some component to describe player entity, but this is fine for now
+        let timers = entity.access(component: TimedEventsComponent.self, accessBlock: \.items)
+
+        guard timers?.contains(where: { $0.tag == "dying" }) != true else {
+            return
+        }
+
+        try! entity.assign(component: TimedEventsComponent.self, arguments: ())
+        entity.access(component: TimedEventsComponent.self) { component in 
+            component.items.append(TimedEventsComponent.ScheduledItem(
+                tag: "dying", 
+                fireTime: time + 1000, 
+                associatedEntities: []
+            ))
+        }
+
+        entity.destroy(component: ControllerComponent.self)
+        entity.access(component: BoxObjectComponent.self) { component in
+            component.velocity = .zero
+            component.maxVelocity = 0
+        }
+        
+        entity.access(component: AnimationComponent.self) { component in
+            component.currentAnimation = "death"
+        }
+    }
+
+    private func moveExplosionTime(entity: Entity, at time: UInt32) {
+        entity.access(component: TimedEventsComponent.self) { component in 
+            let index = component.items.firstIndex { $0.tag == "bombExplosionTimer" }!
+
+            component.items[index].fireTime = min(component.items[index].fireTime, time + 100)
+        }
     }
 }
 
 extension DefaultPool: TimerSystemDelegate {
-    func firedTimer(for entity: Entity, context: TimedEventsComponent.ScheduledItem) {
+    func firedTimer(for entity: Entity, context: TimedEventsComponent.ScheduledItem, at time: UInt32) {
         switch context.tag {
         case "bombExplosionTimer":
-            explodeBomb(entity: entity)
+            explodeBomb(entity: entity, at: time)
+        case "explosionExpired":
+            removeExplosion(entity: entity)
+        case "dying":
+            playerDied(entity: entity)
         default: 
             print("Unhandled timer: \(entity), \(context)")
         }
     }
 
-    private func explodeBomb(entity: Entity) {
+    private func playerDied(entity: Entity) {
         entities.remove(entity)
+    }
+
+    private func removeExplosion(entity: Entity) {
+        entities.remove(entity)
+    }
+
+    private func explodeBomb(entity: Entity, at time: UInt32) {
+        let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
+        entities.remove(entity)
+        EntityFactory.summonExplosion(pool: self, center: center, fireTime: time + 500)
     }
 }
