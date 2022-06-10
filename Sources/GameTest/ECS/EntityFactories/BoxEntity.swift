@@ -29,7 +29,7 @@ extension EntityFactory {
                 positionCenter: position,
                 squareRadius: squareRadius,
                 categoryBitmask: boxCategory,
-                collisionBitmask: boxCategory | playerCategory | tileCategory,
+                collisionBitmask: boxCategory | playerCategory | tileCategory | bombCategory,
                 notificationBitmask: 0,
                 velocity: .zero, 
                 maxVelocity: 200.0

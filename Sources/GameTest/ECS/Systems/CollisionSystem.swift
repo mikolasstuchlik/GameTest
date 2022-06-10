@@ -46,7 +46,7 @@ final class AABBCollisionSystem: SDLSystem {
         let immovable = currentStore.category[.immovable] ?? 0..<1
 
         for i in movable where currentStore.buffer[i] != nil {
-            for other in immovable where currentStore.buffer[i] != nil {
+            for other in immovable where currentStore.buffer[other] != nil {
                 checkAndResolve(first: i, second: other, secondMovable: false)
             }
 
@@ -175,9 +175,12 @@ final class AABBCollisionSystem: SDLSystem {
     }
 
     private func resolveCollision(movableIndex first: Int, immovableIndex second: Int) { 
+        guard !collidedBeforeThisFrame(movableIndex: first, immovableIndex: second) else {
+            return
+        }
+
         let movable = pool.storage(for: BoxObjectComponent.self)
         let immovable = pool.storage(for: BoxObjectComponent.self).buffer[second]!.value
-
 
         let collisionVector = 
             movable.buffer[first]!.value.positionCenter
@@ -212,6 +215,18 @@ final class AABBCollisionSystem: SDLSystem {
         default:
             fatalError("invalid angle")
         }
+    }
+
+    private func collidedBeforeThisFrame(movableIndex first: Int, immovableIndex second: Int) -> Bool {
+        let movable = pool.storage(for: BoxObjectComponent.self).buffer[first]!.value
+        let immovable = pool.storage(for: BoxObjectComponent.self).buffer[second]!.value
+
+        return determineCollision(
+            lCenter: movable.positionCenter - movable.frameMovementVector, 
+            lRadius: movable.squareRadius, 
+            rCenter: immovable.positionCenter, 
+            rRadius: immovable.squareRadius
+        )
     }
 
     private func reportIntrospection(first index: Int, second sIndex: Int) {

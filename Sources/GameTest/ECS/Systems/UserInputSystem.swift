@@ -3,8 +3,16 @@ import NoobECS
 import NoobECSStores
 
 final class UserInputSystem: SDLSystem {
+
+    private var storage: ControllerComponent.Store!
     override func update(with context: UpdateContext) throws {
+        self.storage = pool.storage(for: ControllerComponent.self)
+        defer { self.storage = nil }
+
         context.events.forEach(handle(event:))
+        for i in 0..<storage.buffer.count where storage.buffer[i] != nil {
+            handleBombPlant(for: i, currentTime: context.currentTime)
+        }
     }
 
     private func handle(event: InputEvent) {
@@ -20,8 +28,6 @@ final class UserInputSystem: SDLSystem {
         default: return
         }
 
-        let storage = pool.storage(for: ControllerComponent.self)
-
         for i in 0..<storage.buffer.count where storage.buffer[i] != nil {
             guard 
                 storage.buffer[i]!.value.respondsTo(key: key, pressed: pressed)
@@ -29,26 +35,45 @@ final class UserInputSystem: SDLSystem {
                 continue
             }
 
-            let entity = storage.buffer[i]!.unownedEntity
-
-            entity.access(component: BoxObjectComponent.self) { positionComponent in
-
-                let controller = storage.buffer[i]!.value
-
-                positionComponent.velocity.x = 
-                    controller.isLeftPressed == controller.isRightPressed ? 0
-                    : controller.isRightPressed ? 200.0
-                    : -200.0
-
-                positionComponent.velocity.y = 
-                    controller.isTopPressed == controller.isBottomPressed ? 0
-                    : controller.isBottomPressed ? 200.0
-                    : -200.0
-
-                let magnitude = positionComponent.velocity.magnitude
-                let adjust = min(1.0, positionComponent.maxVelocity / magnitude)
-                positionComponent.velocity = positionComponent.velocity * adjust
-            }
+            handleMovementInput(for: i)
         }
+    }
+
+    private func handleMovementInput(for index: Int) {
+        let entity = storage.buffer[index]!.unownedEntity
+
+        entity.access(component: BoxObjectComponent.self) { positionComponent in
+
+            let controller = storage.buffer[index]!.value
+
+            positionComponent.velocity.x = 
+                controller.isLeftPressed == controller.isRightPressed ? 0
+                : controller.isRightPressed ? 200.0
+                : -200.0
+
+            positionComponent.velocity.y = 
+                controller.isTopPressed == controller.isBottomPressed ? 0
+                : controller.isBottomPressed ? 200.0
+                : -200.0
+
+            let magnitude = positionComponent.velocity.magnitude
+            let adjust = min(1.0, positionComponent.maxVelocity / magnitude)
+            positionComponent.velocity = positionComponent.velocity * adjust
+        }
+    }
+
+    private func handleBombPlant(for index: Int, currentTime: UInt32) {
+        guard storage.buffer[index]!.value.shouldSummonBomb else {
+            return
+        }
+
+        storage.buffer[index]!.value.shouldSummonBomb = false
+        let position = storage.buffer[index]!.unownedEntity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
+        
+        EntityFactory.bomb(
+            pool: pool as! SDLPool,
+            position: position, 
+            fireTime: currentTime + 4000
+        )
     }
 }

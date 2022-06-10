@@ -22,7 +22,7 @@ extension EntityFactory {
                 positionCenter: position,
                 squareRadius: squareRadius,
                 categoryBitmask: playerCategory,
-                collisionBitmask: boxCategory | tileCategory,
+                collisionBitmask: boxCategory | tileCategory | bombCategory,
                 notificationBitmask: playerCategory,
                 velocity: .zero, 
                 maxVelocity: 200.0
@@ -51,7 +51,8 @@ extension EntityFactory {
                 moveTopKey:     !schemeArrows ? SDL_SCANCODE_W : SDL_SCANCODE_UP, 
                 moveRightKey:   !schemeArrows ? SDL_SCANCODE_D : SDL_SCANCODE_RIGHT, 
                 moveBottomKey:  !schemeArrows ? SDL_SCANCODE_S : SDL_SCANCODE_DOWN, 
-                moveLeftKey:    !schemeArrows ? SDL_SCANCODE_A : SDL_SCANCODE_LEFT
+                moveLeftKey:    !schemeArrows ? SDL_SCANCODE_A : SDL_SCANCODE_LEFT,
+                summonBomb:     !schemeArrows ? SDL_SCANCODE_Q : SDL_SCANCODE_M
             )
         )
         try! player.assign(

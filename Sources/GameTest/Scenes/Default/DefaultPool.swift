@@ -6,7 +6,11 @@ final class DefaultPool: SDLPool {
         let collisionSystem = AABBCollisionSystem(pool: self)
         collisionSystem.delegate = self
 
+        let timerSystem = TimerSystem(pool: self)
+        timerSystem.delegate = self
+
         systems = [
+            timerSystem,
             UserInputSystem(pool: self),
             MovementSystem(pool: self),
             AnimationSystem(pool: self),
@@ -58,5 +62,20 @@ final class DefaultPool: SDLPool {
 extension DefaultPool: CollisionSystemDelegate {
     func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity) {
         print("Notify: collision of \(firstEntity) with \(secondEntity)")
+    }
+}
+
+extension DefaultPool: TimerSystemDelegate {
+    func firedTimer(for entity: Entity, context: TimedEventsComponent.ScheduledItem) {
+        switch context.tag {
+        case "bombExplosionTimer":
+            explodeBomb(entity: entity)
+        default: 
+            print("Unhandled timer: \(entity), \(context)")
+        }
+    }
+
+    private func explodeBomb(entity: Entity) {
+        entities.remove(entity)
     }
 }

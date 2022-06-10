@@ -10,11 +10,13 @@ struct ControllerComponent: Component {
     var moveRightKey: SDL_Scancode
     var moveBottomKey: SDL_Scancode
     var moveLeftKey: SDL_Scancode
+    var summonBomb: SDL_Scancode
 
     var isTopPressed: Bool = false
     var isRightPressed: Bool = false
     var isBottomPressed: Bool = false
     var isLeftPressed: Bool = false
+    var shouldSummonBomb: Bool = false
 
     mutating func respondsTo(key: SDL_Scancode, pressed: Bool) -> Bool {
         if moveTopKey == key, isTopPressed != pressed {
@@ -37,6 +39,11 @@ struct ControllerComponent: Component {
             return true
         }
 
+        if summonBomb == key, shouldSummonBomb != pressed {
+            shouldSummonBomb = true
+            return true
+        }
+
         return false
     }
 
@@ -45,12 +52,14 @@ struct ControllerComponent: Component {
             moveTopKey: SDL_Scancode,
             moveRightKey: SDL_Scancode,
             moveBottomKey: SDL_Scancode,
-            moveLeftKey: SDL_Scancode
+            moveLeftKey: SDL_Scancode,
+            summonBomb: SDL_Scancode
         )
     ) {
         self.moveTopKey = arguments.moveTopKey
         self.moveRightKey = arguments.moveRightKey
         self.moveBottomKey = arguments.moveBottomKey
         self.moveLeftKey = arguments.moveLeftKey
+        self.summonBomb = arguments.summonBomb
     }
 }
