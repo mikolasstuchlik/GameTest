@@ -28,7 +28,7 @@ extension Vector where Number: BinaryFloatingPoint {
 
 extension Vector where Number == Float {
     var degreees: Float {
-        let deg = atan2(y, x) * 180 / Float.pi
+        let deg = angleRad * 180 / Float.pi
         return deg < 0 ? deg + 360 : deg 
     }
 
@@ -39,8 +39,12 @@ extension Vector where Number == Float {
 
 extension Vector where Number == Double {
     var degreees: Double {
-        let deg = atan2(y, x) * 180 / Double.pi
+        let deg = angleRad * 180 / Double.pi
         return deg < 0 ? deg + 360 : deg 
+    }
+
+    var angleRad: Double {
+        atan2(y, x)
     }
 }
 
