@@ -178,9 +178,9 @@ final class AABBCollisionSystem: SDLSystem {
     }
 
     private func resolveCollision(movableIndex first: Int, immovableIndex second: Int) { 
-        guard !collidedBeforeThisFrame(movableIndex: first, immovableIndex: second) else {
-            return
-        }
+        // guard !collidedBeforeThisFrame(movableIndex: first, immovableIndex: second) else {
+        //     return
+        // }
 
         let movable = pool.storage(for: BoxObjectComponent.self)
         let immovable = pool.storage(for: BoxObjectComponent.self).buffer[second]!.value

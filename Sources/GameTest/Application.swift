@@ -11,13 +11,13 @@ final class Application {
     }
 
     func startWindow(title: String, dimension: Rect<CInt>, fullscreen: Bool) throws {
-        try sdlException { 
-            SDL_Init(SDLBridges.SDL_INIT_EVERTYHING)  
-        }
+        try SDL.`init`(flags: SDL.SDL_INIT_EVERTYHING)
+        try TTF.`init`()
+        try Mix.`init`(flags: MIX_INIT_OGG)
 
-        try sdlException {
-            TTF_Init()
-        }
+        try Mix.openAudio(frequency: 44100, format: MIX_DEFAULT_FORMAT, channels: 2, chunkSize: 2048)
+        let background = try MixMusicPtr(forMus: .stage2)
+        try background.play()
         
         let flags = fullscreen
             ? SDL_WINDOW_FULLSCREEN
@@ -89,6 +89,9 @@ final class Application {
         SDL_DestroyRenderer(renderer)
         renderer = nil
 
+        Mix_CloseAudio()
+        Mix_Quit()
+        TTF_Quit()
         SDL_Quit()
     }
 

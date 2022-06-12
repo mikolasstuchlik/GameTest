@@ -67,4 +67,22 @@ enum Assets {
             Bundle.module.url(forResource: self.rawValue, withExtension: "ttf")!
         }
     }
+
+    enum Music {
+        enum Ogg: String {
+            case stage2
+
+            var url: URL {
+                Bundle.module.url(forResource: self.rawValue, withExtension: "ogg")!
+            }
+        }
+
+        enum Wav: String {
+            case bomb, bonus, dying, gong
+
+            var url: URL {
+                Bundle.module.url(forResource: self.rawValue, withExtension: "wav")!
+            }
+        }
+    }
 }

@@ -12,10 +12,10 @@ let package = Package(
     targets: [
         .systemLibrary(
             name: "CSDL2",
-            pkgConfig: "sdl2 sdl2_image sdl2_ttf",
+            pkgConfig: "SDL2 SDL2_image SDL2_ttf SDL2_mixer",
             providers: [
-                .apt(["libsdl2-dev", "libsdl2-image-dev", "libsdl2-ttf-dev"]),
-                .brew(["sdl2", "sdl2_image", "sdl2_ttf"])
+                .apt(["libsdl2-dev", "libsdl2-image-dev", "libsdl2-ttf-dev", "libsdl2-mixer-dev"]),
+                .brew(["sdl2", "sdl2_image", "sdl2_ttf", "sdl2_mixer"])
             ]
         ),
         .executableTarget(

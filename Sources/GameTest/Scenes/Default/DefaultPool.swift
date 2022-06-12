@@ -104,6 +104,8 @@ extension DefaultPool: CollisionSystemDelegate {
         entity.access(component: AnimationComponent.self) { component in
             component.currentAnimation = "death"
         }
+
+        try! MixChunkPtr(forWav: .dying).playOn(channel: -1)
     }
 
     private func moveExplosionTime(entity: Entity, at time: UInt32) {
@@ -141,5 +143,6 @@ extension DefaultPool: TimerSystemDelegate {
         let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
         entities.remove(entity)
         EntityFactory.summonExplosion(pool: self, center: center, fireTime: time + 500)
+        try! MixChunkPtr(forWav: .bomb).playOn(channel: -1)
     }
 }
