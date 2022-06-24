@@ -1,9 +1,9 @@
 import NoobECS
 import CSDL2
 
-final class DefaultPool: SDLPool {
+final class DefaultPool: SDLPool, Scene {
 
-    func setup() {
+    func assumedWindow() {
         let collisionSystem = AABBCollisionSystem(pool: self)
         collisionSystem.delegate = self
 
@@ -51,6 +51,12 @@ final class DefaultPool: SDLPool {
         )
 
         try! getRenderer()?.setDraw(blendMode: SDL_BLENDMODE_BLEND)
+        try! resourceBuffer.music(for: .stage2).play()
+    }
+
+    func willResignWindow() {
+        Mix_HaltMusic()
+        _ = Mix_HaltChannel(-1)
     }
 
     override func update(with context: UpdateContext) throws {
@@ -105,7 +111,7 @@ extension DefaultPool: CollisionSystemDelegate {
             component.currentAnimation = "death"
         }
 
-        try! MixChunkPtr(forWav: .dying).playOn(channel: -1)
+        try! resourceBuffer.chunk(for: .dying).playOn(channel: -1)
     }
 
     private func moveExplosionTime(entity: Entity, at time: UInt32) {
@@ -143,6 +149,6 @@ extension DefaultPool: TimerSystemDelegate {
         let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
         entities.remove(entity)
         EntityFactory.summonExplosion(pool: self, center: center, fireTime: time + 500)
-        try! MixChunkPtr(forWav: .bomb).playOn(channel: -1)
+        try! resourceBuffer.chunk(for: .bomb).playOn(channel: -1)
     }
 }

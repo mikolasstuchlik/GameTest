@@ -1,5 +1,3 @@
-import CSDL2
-
 let game = Application()
 
 try game.startWindow(

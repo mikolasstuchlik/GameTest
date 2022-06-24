@@ -2,12 +2,14 @@ import CSDL2
 import Foundation
 
 final class Application {
-    init() {
-    }
+    private(set) var currentPool: (SDLPool & Scene)?
 
-    deinit {
-        assert(window == nil)
-        assert(renderer == nil)
+    private(set) var isRunning: Bool = false
+
+    private(set) var window: SDLWindowPtr!
+    private(set) var renderer: SDLRendererPtr!
+
+    init() {
     }
 
     func startWindow(title: String, dimension: Rect<CInt>, fullscreen: Bool) throws {
@@ -16,8 +18,6 @@ final class Application {
         try Mix.`init`(flags: MIX_INIT_OGG)
 
         try Mix.openAudio(frequency: 44100, format: MIX_DEFAULT_FORMAT, channels: 2, chunkSize: 2048)
-        let background = try MixMusicPtr(forMus: .stage2)
-        try background.play()
         
         let flags = fullscreen
             ? SDL_WINDOW_FULLSCREEN
@@ -32,7 +32,6 @@ final class Application {
         }
 
         let newPool = DefaultPool {[weak self] in self?.renderer }
-        newPool.setup()
 
         replaceCurrentPool(by: newPool)
         isRunning = true
@@ -95,22 +94,21 @@ final class Application {
         SDL_Quit()
     }
 
-    private func replaceCurrentPool(by newPool: SDLPool?) {
-        #if DEBUG
-        weak var pool = currentPool
-        #endif
+    private func replaceCurrentPool(by newPool: (SDLPool & Scene)?) {
+        let oldPool = currentPool
+
+        oldPool?.willResignWindow()
+        newPool?.willAssumeWindow()
 
         currentPool = newPool
 
-        #if DEBUG
-        assert(pool == nil, "Removed pool should deallocate!")
-        #endif
+        oldPool?.resignedWindow()
+        newPool?.assumedWindow()
     }
 
-    private(set) var currentPool: SDLPool?
+    deinit {
+        assert(window == nil)
+        assert(renderer == nil)
+    }
 
-    private(set) var isRunning: Bool = false
-
-    private(set) var window: SDLWindowPtr!
-    private(set) var renderer: SDLRendererPtr!
 }

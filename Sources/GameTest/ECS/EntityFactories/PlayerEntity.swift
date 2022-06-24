@@ -33,7 +33,7 @@ extension EntityFactory {
             component: SpriteComponent.self, 
             options: .avatar,
             arguments: (
-                unownedTexture: try! pool.textureBuffer.texture(for: asset), 
+                unownedTexture: try! pool.resourceBuffer.texture(for: asset), 
                 sourceRect: nil,
                 size: squareRadius * 2
             )
@@ -68,7 +68,7 @@ extension EntityFactory {
             component: LabelComponent.self, 
             options: .avatar,
             arguments: (
-                unownedFont: try! pool.textureBuffer.font(for: .disposableDroid, size: 20), 
+                unownedFont: try! pool.resourceBuffer.font(for: .disposableDroid, size: 20), 
                 string: "Player", 
                 color: .white,
                 wrapLength: 0,

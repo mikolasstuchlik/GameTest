@@ -14,7 +14,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug GameTest",
-            "program": "${workspaceFolder:GameTest}/.build/debug/GameTest",
+            "program": ".build/debug/GameTest",
             "args": [],
             "cwd": "${workspaceFolder:GameTest}",
             "preLaunchTask": "swift: Build Debug GameTest"
@@ -23,7 +23,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Release GameTest",
-            "program": "${workspaceFolder:GameTest}/.build/release/GameTest",
+            "program": ".build/release/GameTest",
             "args": [],
             "cwd": "${workspaceFolder:GameTest}",
             "preLaunchTask": "swift: Build Release GameTest"

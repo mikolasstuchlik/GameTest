@@ -28,7 +28,7 @@ extension EntityFactory {
             component: LabelComponent.self, 
             options: .introspection,
             arguments: (
-                unownedFont: try! pool.textureBuffer.font(for: .vcrOsdMono, size: 15), 
+                unownedFont: try! pool.resourceBuffer.font(for: .vcrOsdMono, size: 15), 
                 string: "", 
                 color: color,
                 wrapLength: 0,

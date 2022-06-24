@@ -33,7 +33,7 @@ extension EntityFactory {
             component: SpriteComponent.self, 
             options: .item,
             arguments: (
-                unownedTexture: try! pool.textureBuffer.texture(for: .bomb), 
+                unownedTexture: try! pool.resourceBuffer.texture(for: .bomb), 
                 sourceRect: nil,
                 size: squareRadius * 2
             )
