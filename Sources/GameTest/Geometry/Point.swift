@@ -14,6 +14,10 @@ extension Point where Number: BinaryFloatingPoint {
         self.x = Number(other.x)
         self.y = Number(other.y)
     }
+
+    func distance(to point: Point) -> Number {
+        sqrt( (x - point.x) * (x - point.x) + (y - point.y) * (y - point.y))
+    }
 }
 
 extension Point where Number == Float {
