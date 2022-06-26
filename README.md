@@ -11,7 +11,7 @@ Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux
   - [DONE] Fix incorrect wall stick collision
   - [DONE] Fix bug with audio on game exit
   - [DONE] Add structured solution for playback (deallocate music, etc.)
-  - Fix bug with noclip and mine walking
+  - [DONE] Fix bug with noclip and mine walking
 
 ## Known issues
  - SDL2 Mixer will crash after calling Mix_CloseAudio when in debugging session

@@ -8,6 +8,7 @@ extension EntityFactory {
     @discardableResult
     static func bomb(
         pool: SDLPool,
+        player: Entity,
         position: Point<Float>,
         fireTime: UInt32
     ) -> Entity {
@@ -47,6 +48,14 @@ extension EntityFactory {
             )
         )
         try! bomb.assign(component: TimedEventsComponent.self, arguments: ())
+        let playerComponent = player.access(component: PlayerComponent.self) { $0 }
+        try! bomb.assign(
+            component: BombComponent.self, 
+            arguments: (
+                flameLength: playerComponent!.flameLength,
+                summoningPlayer: ObjectIdentifier(player)
+            )
+        )
 
         bomb.access(component: TimedEventsComponent.self) { timer in
             timer.items.append(TimedEventsComponent.ScheduledItem(
@@ -59,7 +68,7 @@ extension EntityFactory {
         if let collisionSystem = pool.systems.compactMap( { $0 as? AABBCollisionSystem }).first {
             let playerEntities = collisionSystem
                 .collisions(for: bomb)
-                .filter { $0.developerLabel == "player"}
+                .filter { $0.developerLabel == EntityFactory.playerTag }
                 .map { ObjectIdentifier($0) }
             try! bomb.assign(component: CollisionExceptionComponent.self, arguments: Set(playerEntities))
         }

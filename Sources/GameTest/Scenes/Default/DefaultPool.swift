@@ -123,7 +123,7 @@ extension DefaultPool: CollisionSystemDelegate {
         entity.access(component: TimedEventsComponent.self) { component in 
             let index = component.items.firstIndex { $0.tag == "bombExplosionTimer" }!
 
-            component.items[index].fireTime = min(component.items[index].fireTime, time + 100)
+            component.items[index].fireTime = min(component.items[index].fireTime, time + EntityFactory.bombFireAfterHit)
         }
     }
 }
@@ -151,9 +151,13 @@ extension DefaultPool: TimerSystemDelegate {
     }
 
     private func explodeBomb(entity: Entity, at time: UInt32) {
+        let player = entity.access(component: BombComponent.self, accessBlock: \.summoningPlayer)
+        player.flatMap { entities[$0] }?.access(component: PlayerComponent.self) { component in
+            component.bombDeployed -= 1
+        }
         let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
         entities.removeValue(forKey: ObjectIdentifier(entity))
-        EntityFactory.summonExplosion(pool: self, center: center, fireTime: time + 500)
+        EntityFactory.summonExplosion(pool: self, center: center, fireTime: time + EntityFactory.explosionDuration)
         try! resourceBuffer.chunk(for: .bomb).playOn(channel: -1)
     }
 }

@@ -1,18 +1,18 @@
 import NoobECS
 import NoobECSStores
 
-struct InventoryComponent: Component {
+struct PlayerComponent: Component {
     typealias Store = EntityPrivateStorage<Self>
 
-    var bombLimit: UInt8
-    var bombDeployed: UInt8
-    var flameLength: UInt8
+    var bombLimit: Int
+    var bombDeployed: Int
+    var flameLength: Int
 
     init(
         arguments: (
-            bombLimit: UInt8,
-            bombDeployed: UInt8,
-            flameLength: UInt8
+            bombLimit: Int,
+            bombDeployed: Int,
+            flameLength: Int
         )
     ) {
         self.bombLimit = arguments.bombLimit

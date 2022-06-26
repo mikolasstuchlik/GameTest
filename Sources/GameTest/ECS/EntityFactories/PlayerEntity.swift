@@ -4,6 +4,7 @@ import NoobECS
 
 extension EntityFactory {
     static let playerCategory: UInt32 = 0b10
+    static let playerTag = "player"
 
     @discardableResult
     static func player(
@@ -15,7 +16,8 @@ extension EntityFactory {
         squareRadius: Size<Float>
     ) -> Entity {
         let player = Entity(dataManager: pool)
-        player.developerLabel = "player"
+        player.developerLabel = EntityFactory.playerTag
+
         try! player.assign(
             component: BoxObjectComponent.self, 
             options: .movable,
@@ -57,11 +59,11 @@ extension EntityFactory {
             )
         )
         try! player.assign(
-            component: InventoryComponent.self, 
+            component: PlayerComponent.self, 
             arguments: (
                 bombLimit: 1,
                 bombDeployed: 0,
-                flameLength: 2
+                flameLength: 3
             )
         )
         try! player.assign(

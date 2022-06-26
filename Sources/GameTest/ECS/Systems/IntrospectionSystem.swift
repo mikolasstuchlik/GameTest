@@ -105,7 +105,7 @@ final class IntrospectionSystem: SDLSystem {
             aggregator += entity.access(component: BoxObjectComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: ControllerComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: IntrospectionComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
-            aggregator += entity.access(component: InventoryComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            // aggregator += entity.access(component: InventoryComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: LabelComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: SpriteComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
 

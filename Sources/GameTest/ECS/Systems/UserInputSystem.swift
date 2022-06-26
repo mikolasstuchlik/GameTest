@@ -63,17 +63,27 @@ final class UserInputSystem: SDLSystem {
     }
 
     private func handleBombPlant(for index: Int, currentTime: UInt32) {
-        guard storage.buffer[index]!.value.shouldSummonBomb else {
-            return
-        }
+        guard  storage.buffer[index]!.value.shouldSummonBomb else { return }
 
         storage.buffer[index]!.value.shouldSummonBomb = false
         let position = storage.buffer[index]!.unownedEntity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
         
+        let canDeploy = storage.buffer[index]!.unownedEntity.access(component: PlayerComponent.self) { component -> Bool in 
+            guard component.bombDeployed < component.bombLimit else {
+                return false
+            }
+
+            component.bombDeployed += 1
+            return true
+        }
+
+        guard canDeploy == true else { return }
+
         EntityFactory.bomb(
             pool: pool as! SDLPool,
+            player: storage.buffer[index]!.unownedEntity,
             position: position, 
-            fireTime: currentTime + 4000
+            fireTime: currentTime + EntityFactory.bombFireTime
         )
     }
 }

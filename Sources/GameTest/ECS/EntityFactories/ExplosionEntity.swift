@@ -4,6 +4,7 @@ import NoobECS
 
 extension EntityFactory {
     static let explosionCategory: UInt32 = 0b10000
+    static let explosionDuration: UInt32 = 500
 
     static func summonExplosion(
         pool: SDLPool,
