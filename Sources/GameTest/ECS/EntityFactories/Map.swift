@@ -42,6 +42,8 @@ final class Map {
                 tile.origin.y = Map.tileDimensions.height * Float(y)
 
                 let hasBox: Bool = content & 0b1000 > 0
+                let hasBombBonus: Bool = content & 0b10000 > 0
+                let hasFlameBonus: Bool = content & 0b100000 > 0
 
                 let image: Assets.Image
                 switch content & 0b111 {
@@ -67,6 +69,14 @@ final class Map {
                         position: tile.center, 
                         squareRadius: tile.size * 0.5
                     )
+                }
+
+                if hasBombBonus {
+                    EntityFactory.BonusKind.bonusBomb.addTo(pool: pool, position: tile.center)
+                }
+
+                if hasFlameBonus {
+                    EntityFactory.BonusKind.bonusFlame.addTo(pool: pool, position: tile.center)
                 }
             }
         }

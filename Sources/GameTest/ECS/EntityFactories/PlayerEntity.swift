@@ -26,7 +26,7 @@ extension EntityFactory {
                 squareRadius: squareRadius,
                 categoryBitmask: playerCategory,
                 collisionBitmask: boxCategory | tileCategory | bombCategory,
-                notificationBitmask: playerCategory | explosionCategory,
+                notificationBitmask: playerCategory | explosionCategory | bonusCategory,
                 velocity: .zero, 
                 maxVelocity: 200.0
             )
@@ -61,9 +61,9 @@ extension EntityFactory {
         try! player.assign(
             component: PlayerComponent.self, 
             arguments: (
-                bombLimit: 2,
+                bombLimit: 1,
                 bombDeployed: 0,
-                flameLength: 3
+                flameLength: 2
             )
         )
         try! player.assign(

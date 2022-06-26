@@ -100,6 +100,8 @@ extension EntityFactory {
                 return true
             case EntityFactory.boxTag:
                 return true
+            case EntityFactory.bonusTag:
+                return true
             default:
                 return false
             }

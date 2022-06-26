@@ -160,7 +160,7 @@ final class AABBCollisionSystem: SDLSystem {
             )
         case .none: return
         }
-        reportIntrospection(first: lIndex, second: rIndex)
+        reportIntrospection(lIndex, rIndex)
     }
 
     private func resolveCollision(_ lIndex: Int, _ rIndex: Int, distributionRatio: Float) { 
@@ -234,13 +234,16 @@ final class AABBCollisionSystem: SDLSystem {
         resolutionQueue.removeAll()
     }
 
-    private func reportIntrospection(first index: Int, second sIndex: Int) {
-        _ = currentStore.buffer[index]!.unownedEntity.access(component: IntrospectionComponent.self) { comp in
-            comp.frameCollidedWith.insert(currentStore.buffer[sIndex]!.unownedEntity)
+    private func reportIntrospection(_ lIndex: Int, _ rIndex: Int) {
+        guard currentStore.buffer[lIndex] != nil, currentStore.buffer[rIndex] != nil else {
+            return
+        }
+        _ = currentStore.buffer[lIndex]!.unownedEntity.access(component: IntrospectionComponent.self) { comp in
+            comp.frameCollidedWith.insert(currentStore.buffer[rIndex]!.unownedEntity)
         }
 
-        _ = currentStore.buffer[sIndex]!.unownedEntity.access(component: IntrospectionComponent.self) { comp in
-            comp.frameCollidedWith.insert(currentStore.buffer[index]!.unownedEntity)
+        _ = currentStore.buffer[rIndex]!.unownedEntity.access(component: IntrospectionComponent.self) { comp in
+            comp.frameCollidedWith.insert(currentStore.buffer[lIndex]!.unownedEntity)
         }
     }
 }

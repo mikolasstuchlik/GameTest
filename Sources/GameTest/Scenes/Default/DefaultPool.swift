@@ -75,6 +75,10 @@ extension DefaultPool: CollisionSystemDelegate {
             killPlayer(entity: firstEntity, at: time)
         case (EntityFactory.explosionTag, EntityFactory.playerTag):
             killPlayer(entity: secondEntity, at: time)
+        case (EntityFactory.bonusTag, EntityFactory.playerTag):
+            consume(bonus: firstEntity, by: secondEntity)
+        case (EntityFactory.playerTag, EntityFactory.bonusTag):
+            consume(bonus: secondEntity, by: firstEntity)
         default:
             print("Notify: collision of \(firstEntity) with \(secondEntity)")
         }
@@ -115,6 +119,17 @@ extension DefaultPool: CollisionSystemDelegate {
         try! resourceBuffer.chunk(for: .dying).playOn(channel: -1)
     }
 
+    private func consume(bonus entity: Entity, by player: Entity) {
+        let bonusComponent = entity.access(component: BonusComponent.self) { $0 }
+
+        player.access(component: PlayerComponent.self) { component in 
+            component.bombLimit += bonusComponent!.bombLimit
+            component.flameLength += bonusComponent!.flameLength
+        }
+
+        entities.removeValue(forKey: ObjectIdentifier(entity))
+        try! resourceBuffer.chunk(for: .bonus).playOn(channel: -1)
+    }
 }
 
 extension DefaultPool: TimerSystemDelegate {
@@ -126,6 +141,10 @@ extension DefaultPool: TimerSystemDelegate {
             removeExplosion(entity: entity)
         case "dying":
             playerDied(entity: entity)
+        case EntityFactory.bonusBurningEffectTimerTag:
+            removeBonusEffect(entity: entity)
+        case EntityFactory.bonusBurningTimerTag:
+            removeBonus(entity: entity)
         default: 
             print("Unhandled timer: \(entity), \(context)")
         }
@@ -136,6 +155,14 @@ extension DefaultPool: TimerSystemDelegate {
     }
 
     private func removeExplosion(entity: Entity) {
+        entities.removeValue(forKey: ObjectIdentifier(entity))
+    }
+
+    private func removeBonus(entity: Entity) {
+        entities.removeValue(forKey: ObjectIdentifier(entity))
+    }
+
+    private func removeBonusEffect(entity: Entity) {
         entities.removeValue(forKey: ObjectIdentifier(entity))
     }
 
@@ -152,7 +179,8 @@ extension DefaultPool: TimerSystemDelegate {
             switch entity.developerLabel {
             case EntityFactory.bombTag:
                 moveExplosionTime(entity: entity, at: time)
-            // TODO: Bonus remove
+            case EntityFactory.bonusTag:
+                burnBonus(entity: entity, at: time)
             default: break
             }
         }
@@ -165,6 +193,25 @@ extension DefaultPool: TimerSystemDelegate {
             let index = component.items.firstIndex { $0.tag == "bombExplosionTimer" }!
 
             component.items[index].fireTime = min(component.items[index].fireTime, time + EntityFactory.bombFireAfterHit)
+        }
+    }
+
+    private func burnBonus(entity: Entity, at time: UInt32) {
+        let center = entity.access(component: BoxObjectComponent.self) { component -> Point<Float> in
+            component.collisionBitmask = 0
+            component.notificationBitmask = 0
+            component.categoryBitmask = 0
+            return component.positionCenter
+        }!
+        EntityFactory.burningBonusOverlay(pool: self, position: center, now: time)
+
+        try! entity.assign(component: TimedEventsComponent.self, arguments: ())
+        entity.access(component: TimedEventsComponent.self) { component in
+            component.items.append(TimedEventsComponent.ScheduledItem(
+                tag: EntityFactory.bonusBurningTimerTag,
+                fireTime: time + EntityFactory.bonusBurningTime,
+                associatedEntities: []
+            ))
         }
     }
 }
