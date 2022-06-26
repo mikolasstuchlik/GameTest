@@ -1,7 +1,6 @@
 import CSDL2
 import NoobECS
 
-
 extension EntityFactory {
     static let boxCategory: UInt32 = 0b100
     static let boxTag = "box"
@@ -9,7 +8,6 @@ extension EntityFactory {
     @discardableResult
     static func box(
         pool: SDLPool,
-        asset: Assets.Image,
         position: Point<Float>,
         squareRadius: Size<Float>
     ) -> Entity {
@@ -18,7 +16,7 @@ extension EntityFactory {
             component: SpriteComponent.self, 
             options: .item,
             arguments: (
-                unownedTexture: try! pool.resourceBuffer.texture(for: asset), 
+                unownedTexture: try! pool.resourceBuffer.texture(for: .bricks), 
                 sourceRect: nil,
                 size: squareRadius * 2
             )

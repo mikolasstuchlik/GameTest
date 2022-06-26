@@ -1,3 +1,4 @@
+import CSDL2
 import NoobECS
 
 extension EntityFactory {
@@ -6,14 +7,21 @@ extension EntityFactory {
     static let groundTag = "ground"
 
     @discardableResult
-    static func mapTile(pool: SDLPool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, collision: Bool) -> Entity {
+    static func mapTile(
+        pool: SDLPool, 
+        asset: Assets.Image, 
+        center: Point<Float>, 
+        squareRadius: Size<Float>, 
+        collision: Bool,
+        sourceRect: SDL_Rect? = nil
+    ) -> Entity {
         let newTile = Entity(dataManager: pool)
         try! newTile.assign(
             component: SpriteComponent.self, 
             options: .background,
             arguments: (
                 unownedTexture: try! pool.resourceBuffer.texture(for: asset),
-                sourceRect: nil,
+                sourceRect: sourceRect,
                 size: squareRadius * 2
             )
         )

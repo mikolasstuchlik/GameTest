@@ -25,7 +25,7 @@ final class Map {
 
         let parsed = try String.init(contentsOf: file.url)
             .components(separatedBy: "\n")
-            .map { $0.components(separatedBy: " ") }
+            .map { line in line.components(separatedBy: " ").filter { !$0.isEmpty } }
 
         self.loadMap { tile in
             return UInt(parsed[tile.y][tile.x])!
@@ -41,31 +41,23 @@ final class Map {
                 tile.origin.x = Map.tileDimensions.width * Float(x)
                 tile.origin.y = Map.tileDimensions.height * Float(y)
 
-                let hasBox: Bool = content & 0b1000 > 0
-                let hasBombBonus: Bool = content & 0b10000 > 0
-                let hasFlameBonus: Bool = content & 0b100000 > 0
+                let hasBox: Bool = content & 0b100000 > 0 // 32
+                let hasBombBonus: Bool = content & 0b1000000 > 0 //64
+                let hasFlameBonus: Bool = content & 0b10000000 > 0 //128
 
-                let image: Assets.Image
-                switch content & 0b111 {
+                switch content & 0b11111 {
                 case 0:
-                    image = .grass
+                    EntityFactory.mapTile(pool: pool, asset: .grass, center: tile.center, squareRadius: tile.size * 0.5, collision: false)
                 case 1:
-                    image = .bricks
+                    EntityFactory.mapTile(pool: pool, asset: .pillar, center: tile.center, squareRadius: tile.size * 0.5, collision: true)
+                case 2...17:
+                    wallTile(at: tile.center, squareRadius: tile.size * 0.5, type: (content & 0b11111) - 3 )
                 default: continue
                 }
-
-                EntityFactory.mapTile(
-                    pool: pool,
-                    asset: image, 
-                    center: tile.center, 
-                    squareRadius: tile.size * 0.5, 
-                    collision: image == .bricks
-                )
 
                 if hasBox {
                     EntityFactory.box(
                         pool: pool, 
-                        asset: .crate, 
                         position: tile.center, 
                         squareRadius: tile.size * 0.5
                     )
@@ -82,6 +74,18 @@ final class Map {
         }
     }
 
+    func wallTile(at point: Point<Float>, squareRadius: Size<Float>, type: UInt) {
+        EntityFactory.mapTile(
+            pool: pool, 
+            asset: .wall, 
+            center: point, 
+            squareRadius: squareRadius, 
+            collision: true,
+            sourceRect: WallSheet.rectFor(tileIndex: Int(type))
+        )
+    }
+    
+
     private func mapIndex(for point: Point<Int>) -> Int { point.x + point.y * Map.mapDimensions.width }
 
     private func loadMap(_ loader: (_ tile: Point<Int>) -> UInt) {
@@ -92,6 +96,7 @@ final class Map {
             }
         } 
     }
+
 
     private var map: [UInt] = Array(repeating: UInt.max, count: mapDimensions.width * mapDimensions.height)
 

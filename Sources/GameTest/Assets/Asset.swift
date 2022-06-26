@@ -33,7 +33,7 @@ extension SpriteSheet {
 
 enum Assets { 
     enum Image: String {
-        case fish, evilFish, water, sand, plains, crate, grass, bricks
+        case fish, evilFish, water, sand, plains, crate, grass, bricks, wall, pillar
 
         var url: URL {
             Bundle.module.url(forResource: self.rawValue, withExtension: "png")!
