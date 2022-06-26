@@ -18,7 +18,7 @@ struct BoxObjectComponent: CategoryComponent {
     var velocity: Vector<Float>
     var maxVelocity: Float
 
-     init(
+    init(
         arguments: (
             positionCenter: Point<Float>,
             squareRadius: Size<Float>,

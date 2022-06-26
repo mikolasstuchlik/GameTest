@@ -56,6 +56,14 @@ extension EntityFactory {
             ))
         }
 
+        if let collisionSystem = pool.systems.compactMap( { $0 as? AABBCollisionSystem }).first {
+            let playerEntities = collisionSystem
+                .collisions(for: bomb)
+                .filter { $0.developerLabel == "player"}
+                .map { ObjectIdentifier($0) }
+            try! bomb.assign(component: CollisionExceptionComponent.self, arguments: Set(playerEntities))
+        }
+
         return bomb
     }
 }

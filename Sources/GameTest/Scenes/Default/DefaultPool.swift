@@ -69,7 +69,7 @@ final class DefaultPool: SDLPool, Scene {
 }
 
 extension DefaultPool: CollisionSystemDelegate {
-    func notifyCollisionOf(firstEntity: Entity, secondEntity: Entity, at time: UInt32) {
+    func notifyCollisionOf(in system: AABBCollisionSystem, firstEntity: Entity, secondEntity: Entity, at time: UInt32) {
         switch (firstEntity.developerLabel, secondEntity.developerLabel) {
         case ("player", "explosion"):
             killPlayer(entity: firstEntity, at: time)
@@ -82,6 +82,11 @@ extension DefaultPool: CollisionSystemDelegate {
         default:
             print("Notify: collision of \(firstEntity) with \(secondEntity)")
         }
+    }
+
+    func reaffirmExceptions(in system: AABBCollisionSystem, for entity: Entity, exceptionComponent: inout Set<ObjectIdentifier>) {
+        let collisions = Set(system.collisions(for: entity).map { ObjectIdentifier($0) })
+        exceptionComponent.formIntersection(collisions)
     }
 
     private func killPlayer(entity: Entity, at time: UInt32) {
@@ -138,16 +143,16 @@ extension DefaultPool: TimerSystemDelegate {
     }
 
     private func playerDied(entity: Entity) {
-        entities.remove(entity)
+        entities.removeValue(forKey: ObjectIdentifier(entity))
     }
 
     private func removeExplosion(entity: Entity) {
-        entities.remove(entity)
+        entities.removeValue(forKey: ObjectIdentifier(entity))
     }
 
     private func explodeBomb(entity: Entity, at time: UInt32) {
         let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
-        entities.remove(entity)
+        entities.removeValue(forKey: ObjectIdentifier(entity))
         EntityFactory.summonExplosion(pool: self, center: center, fireTime: time + 500)
         try! resourceBuffer.chunk(for: .bomb).playOn(channel: -1)
     }

@@ -136,7 +136,7 @@ final class IntrospectionSystem: SDLSystem {
     private func toggleStatus(for entity: Entity) throws {
         guard !entity.has(component: IntrospectionComponent.self) else {
             entity.access(component: IntrospectionComponent.self) { component in 
-                _ = pool.entities.remove(component.labelWindowEntity)
+                _ = pool.entities.removeValue(forKey: ObjectIdentifier(component.labelWindowEntity))
             }
             entity.destroy(component: IntrospectionComponent.self)
             return
