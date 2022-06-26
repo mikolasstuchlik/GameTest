@@ -75,10 +75,6 @@ extension DefaultPool: CollisionSystemDelegate {
             killPlayer(entity: firstEntity, at: time)
         case (EntityFactory.explosionTag, EntityFactory.playerTag):
             killPlayer(entity: secondEntity, at: time)
-        case (EntityFactory.bombTag, EntityFactory.explosionTag):
-            moveExplosionTime(entity: firstEntity, at: time)
-        case (EntityFactory.explosionTag, EntityFactory.bombTag):
-            moveExplosionTime(entity: secondEntity, at: time)
         default:
             print("Notify: collision of \(firstEntity) with \(secondEntity)")
         }
@@ -119,13 +115,6 @@ extension DefaultPool: CollisionSystemDelegate {
         try! resourceBuffer.chunk(for: .dying).playOn(channel: -1)
     }
 
-    private func moveExplosionTime(entity: Entity, at time: UInt32) {
-        entity.access(component: TimedEventsComponent.self) { component in 
-            let index = component.items.firstIndex { $0.tag == "bombExplosionTimer" }!
-
-            component.items[index].fireTime = min(component.items[index].fireTime, time + EntityFactory.bombFireAfterHit)
-        }
-    }
 }
 
 extension DefaultPool: TimerSystemDelegate {
@@ -156,8 +145,26 @@ extension DefaultPool: TimerSystemDelegate {
             component.bombDeployed -= 1
         }
         let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
+        let flameLength = entity.access(component: BombComponent.self, accessBlock: \.flameLength)!
         entities.removeValue(forKey: ObjectIdentifier(entity))
-        EntityFactory.summonExplosion(pool: self, center: center, fireTime: time + EntityFactory.explosionDuration)
+
+        EntityFactory.summonExplosion(pool: self, flameLength: flameLength, center: center, fireTime: time + EntityFactory.explosionDuration) { entity in
+            switch entity.developerLabel {
+            case EntityFactory.bombTag:
+                moveExplosionTime(entity: entity, at: time)
+            // TODO: Bonus remove
+            default: break
+            }
+        }
+
         try! resourceBuffer.chunk(for: .bomb).playOn(channel: -1)
+    }
+
+    private func moveExplosionTime(entity: Entity, at time: UInt32) {
+        entity.access(component: TimedEventsComponent.self) { component in 
+            let index = component.items.firstIndex { $0.tag == "bombExplosionTimer" }!
+
+            component.items[index].fireTime = min(component.items[index].fireTime, time + EntityFactory.bombFireAfterHit)
+        }
     }
 }

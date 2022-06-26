@@ -7,6 +7,8 @@ extension EntityFactory {
     static let bombTag = "bomb"
     static let bombExplosionTimerTag = "bombExplosionTimer"
     static let bombSquareRadius = Size<Float>(width: 32, height: 32)
+    static let bombFireTime: UInt32 = 4000
+    static let bombFireAfterHit: UInt32 = 100
 
     @discardableResult
     static func bomb(

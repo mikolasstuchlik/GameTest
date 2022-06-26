@@ -2,6 +2,8 @@ import NoobECS
 
 extension EntityFactory {
     static let tileCategory: UInt32 = 0b1
+    static let mapWallTag = "wall"
+    static let groundTag = "ground"
 
     @discardableResult
     static func mapTile(pool: SDLPool, asset: Assets.Image, center: Point<Float>, squareRadius: Size<Float>, collision: Bool) -> Entity {
@@ -28,6 +30,10 @@ extension EntityFactory {
                 maxVelocity: 0
             )
         )
+        newTile.developerLabel = collision
+            ? EntityFactory.mapWallTag
+            : EntityFactory.groundTag
+
         return newTile
     }
 }

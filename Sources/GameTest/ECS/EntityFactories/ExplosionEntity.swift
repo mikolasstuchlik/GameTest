@@ -10,32 +10,104 @@ extension EntityFactory {
 
     static func summonExplosion(
         pool: SDLPool,
+        flameLength: Int,
         center: Point<Float>,
-        fireTime: UInt32
+        fireTime: UInt32,
+        onExplosionHit: (Entity) -> Void
     ) {
         let horizontalVector = Vector<Float>(x: explosionSquareRadius.width * 2, y: 0)
         let verticalVector = Vector<Float>(x: 0, y: explosionSquareRadius.height * 2)
 
         explosion(pool: pool, type: .center, position: center, fireTime: fireTime)
 
-        explosion(pool: pool, type: .horiz, position: center + horizontalVector * 1, fireTime: fireTime)
-        explosion(pool: pool, type: .horiz, position: center + horizontalVector * 2, fireTime: fireTime)
-        explosion(pool: pool, type: .rightTip, position: center + horizontalVector * 3, fireTime: fireTime)
+        // leaf right
+        for i in 1...flameLength {
+            let position = center + horizontalVector * Float(i)
+            let entites = explostionShouldBeStoppedByEntity(pool: pool, position: position)
+            guard entites.isEmpty else {
+                entites.forEach(onExplosionHit)
+                break
+            }
+            explosion(
+                pool: pool, 
+                type: i == flameLength ? .rightTip : .horiz, 
+                position: position, 
+                fireTime: fireTime
+            )
+        }
 
-        explosion(pool: pool, type: .horiz, position: center + horizontalVector * -1, fireTime: fireTime)
-        explosion(pool: pool, type: .horiz, position: center + horizontalVector * -2, fireTime: fireTime)
-        explosion(pool: pool, type: .leftTip, position: center + horizontalVector * -3, fireTime: fireTime)
+        for i in 1...flameLength {
+            let position = center + verticalVector * Float(i)
+            let entites = explostionShouldBeStoppedByEntity(pool: pool, position: position)
+            guard entites.isEmpty else {
+                entites.forEach(onExplosionHit)
+                break
+            }
+            explosion(
+                pool: pool, 
+                type: i == flameLength ? .downTip : .vert, 
+                position: position, 
+                fireTime: fireTime
+            )
+        }
 
-        explosion(pool: pool, type: .vert, position: center + verticalVector * 1, fireTime: fireTime)
-        explosion(pool: pool, type: .vert, position: center + verticalVector * 2, fireTime: fireTime)
-        explosion(pool: pool, type: .downTip, position: center + verticalVector * 3, fireTime: fireTime)
+        for i in ((-flameLength)...(-1)).reversed() {
+            let position = center + horizontalVector * Float(i)
+            let entites = explostionShouldBeStoppedByEntity(pool: pool, position: position)
+            guard entites.isEmpty else {
+                entites.forEach(onExplosionHit)
+                break
+            }
+            explosion(
+                pool: pool, 
+                type: i == -flameLength ? .leftTip : .horiz, 
+                position: position, 
+                fireTime: fireTime
+            )
+        }
 
-        explosion(pool: pool, type: .vert, position: center + verticalVector * -1, fireTime: fireTime)
-        explosion(pool: pool, type: .vert, position: center + verticalVector * -2, fireTime: fireTime)
-        explosion(pool: pool, type: .upTip, position: center + verticalVector * -3, fireTime: fireTime)
+        for i in ((-flameLength)...(-1)).reversed() {
+            let position = center + verticalVector * Float(i)
+            let entites = explostionShouldBeStoppedByEntity(pool: pool, position: position)
+            guard entites.isEmpty else {
+                entites.forEach(onExplosionHit)
+                break
+            }
+            explosion(
+                pool: pool, 
+                type: i == -flameLength ? .upTip : .vert, 
+                position: position, 
+                fireTime: fireTime
+            )
+        }
+    }
+
+    private static func explostionShouldBeStoppedByEntity(pool: SDLPool, position center: Point<Float>) -> [Entity] {
+        guard let collisionSystem = pool.systems.compactMap({ $0 as? AABBCollisionSystem }).first else {
+            return []
+        }
+
+        let collidingEntites = collisionSystem.entities(in: Rect(
+            center: center,
+            radius: explosionCollisionRadius
+        ))
+
+        return collidingEntites.filter { entity -> Bool in
+            switch entity.developerLabel {
+            case EntityFactory.bombTag:
+                return true
+            case EntityFactory.mapWallTag:
+                return true
+            case EntityFactory.boxTag:
+                return true
+            default:
+                return false
+            }
+        }
     }
 
     private static let explosionSquareRadius = Size<Float>(width: 32, height: 32)
+    private static let explosionCollisionRadius = Size<Float>(width: 28, height: 28)
 
     @discardableResult
     private static func explosion(
@@ -47,15 +119,13 @@ extension EntityFactory {
         let explosion = Entity(dataManager: pool)
         explosion.developerLabel = EntityFactory.explosionTag
 
-        let squareRadius = explosionSquareRadius
-
         try! explosion.assign(
             component: BoxObjectComponent.self, 
             // Explosion isnt really going to move, but I need the collision resolution
             options: .movable,
             arguments: (
                 positionCenter: position,
-                squareRadius: squareRadius,
+                squareRadius: explosionCollisionRadius,
                 categoryBitmask: explosionCategory,
                 collisionBitmask: 0,
                 notificationBitmask: bombCategory | playerCategory,
@@ -69,7 +139,7 @@ extension EntityFactory {
             arguments: (
                 unownedTexture: try! pool.resourceBuffer.texture(for: .explosion), 
                 sourceRect: nil,
-                size: squareRadius * 2
+                size: explosionSquareRadius * 2
             )
         )
         try! explosion.assign(

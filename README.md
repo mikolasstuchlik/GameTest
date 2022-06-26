@@ -4,7 +4,7 @@ Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux
 
 ## TODO
 - Level:
-  - Add player inventory and mine replenishment
+  - [DONE] Add player inventory and mine replenishment
   - Add bonuses
 - Fixes:
   - Fix incorrect animation timing

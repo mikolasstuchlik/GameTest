@@ -58,7 +58,7 @@ final class Map {
                     center: tile.center, 
                     squareRadius: tile.size * 0.5, 
                     collision: image == .bricks
-                ).developerLabel = "mapTile"
+                )
 
                 if hasBox {
                     EntityFactory.box(
@@ -66,7 +66,7 @@ final class Map {
                         asset: .crate, 
                         position: tile.center, 
                         squareRadius: tile.size * 0.5
-                    ).developerLabel = "box"
+                    )
                 }
             }
         }

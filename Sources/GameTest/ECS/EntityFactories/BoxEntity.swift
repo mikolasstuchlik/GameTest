@@ -4,8 +4,7 @@ import NoobECS
 
 extension EntityFactory {
     static let boxCategory: UInt32 = 0b100
-    static let bombFireTime: UInt32 = 4000
-    static let bombFireAfterHit: UInt32 = 100
+    static let boxTag = "box"
 
     @discardableResult
     static func box(
@@ -37,6 +36,7 @@ extension EntityFactory {
                 maxVelocity: 200.0
             )
         )
+        box.developerLabel = boxTag
         return box
     }
 }
