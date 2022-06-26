@@ -3,6 +3,8 @@
 Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux.
 
 ## TODO
+- Movement:
+  - Add spliperry corners (or solve aggressive corners)
 - Level:
   - [DONE] Add player inventory and mine replenishment
   - Add bonuses
