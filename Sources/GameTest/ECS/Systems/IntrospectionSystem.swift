@@ -102,12 +102,16 @@ final class IntrospectionSystem: SDLSystem {
             let entity = store.buffer[index]!.unownedEntity
             var aggregator = ""
             aggregator += entity.access(component: AnimationComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: BombComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: BonusComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: BoxObjectComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: CollisionExceptionComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: ControllerComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: IntrospectionComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
-            // aggregator += entity.access(component: InventoryComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: LabelComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: PlayerComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: SpriteComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
+            aggregator += entity.access(component: TimedEventsComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
 
             let labelWindowEntity = store.buffer[index]!.value.labelWindowEntity
             labelWindowEntity.access(component: LabelComponent.self) { component in 

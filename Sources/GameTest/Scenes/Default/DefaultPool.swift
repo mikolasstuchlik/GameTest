@@ -37,7 +37,7 @@ final class DefaultPool: SDLPool, Scene {
             pool: self,
             asset: .white,
             spriteSheet: DynaSheet.self,
-            position: Point(x: 64 + 32, y: 64 + 32),
+            position: Map.pointFrom(gridPosition: Point(x: 1, y: 1)),
             squareRadius: Size(width: 30, height: 30)
         )
 
@@ -46,7 +46,7 @@ final class DefaultPool: SDLPool, Scene {
             pool: self,
             asset: .green,
             spriteSheet: DynaSheet.self,
-            position: Point(x: 64 + 32, y: 64 + 64 + 64 + 32),
+            position: Map.pointFrom(gridPosition: Point(x: 16, y: 1)),
             squareRadius: Size(width: 30, height: 30)
         )
 

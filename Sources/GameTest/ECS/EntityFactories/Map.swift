@@ -11,6 +11,13 @@ final class Map {
         )
     }
 
+    static func pointFrom(gridPosition point: Point<Int>) -> Point<Float> {
+        Point(
+            x: tileDimensions.width / 2 + tileDimensions.width * Float(point.x), 
+            y: tileDimensions.height / 2 + tileDimensions.height * Float(point.y)
+        )
+    }
+
     static func alignToGrid(point: Point<Float>) -> Point<Float> {
         let gridPosition = gridPosition(point: point)
 
