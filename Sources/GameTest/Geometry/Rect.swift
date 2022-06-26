@@ -44,4 +44,20 @@ extension Rect where Number: FloatingPoint {
         self.origin = center - Vector(x: size.width, y: size.height) / 2
         self.size = size
     }
+
+    init(center: Point<Number>, radius: Size<Number>) {
+        self.origin = center - Vector(x: radius.width, y: radius.height)
+        self.size = radius * 2
+    }
 }
+
+extension Rect {
+    func intersects(with rect: Rect) -> Bool where Number: Comparable {
+           x            < rect.x + rect.width
+        && x + width    > rect.x
+        && y            < rect.y + rect.height
+        && y + height   > rect.y
+    }
+}
+
+    

@@ -9,17 +9,10 @@ final class AABBCollisionSystem: SDLSystem {
     private enum CollisionType {
         case none, notify, collide, collideNotify
 
-        init(
-            lCategory: UInt32, 
-            lCollision: UInt32, 
-            lNotify: UInt32,
-            rCategory: UInt32,
-            rCollision: UInt32,
-            rNotify: UInt32
-        ) {
+        init(_ lhs: BoxObjectComponent, _ rhs: BoxObjectComponent) {
             switch (
-                (lCategory & rCollision) > 0 || (rCategory & lCollision) > 0,
-                (lCategory & rNotify ) > 0 || (rCategory & lNotify) > 0
+                (lhs.categoryBitmask & rhs.collisionBitmask) > 0 || (rhs.categoryBitmask & lhs.collisionBitmask) > 0,
+                (lhs.categoryBitmask & rhs.notificationBitmask ) > 0 || (rhs.categoryBitmask & lhs.notificationBitmask) > 0
             ) {
             case (false, false):
                 self = .none
@@ -47,7 +40,7 @@ final class AABBCollisionSystem: SDLSystem {
 
         for i in movable where currentStore.buffer[i] != nil {
             for other in immovable where currentStore.buffer[other] != nil {
-                checkAndResolve(first: i, second: other, secondMovable: false, at: context.currentTime)
+                checkAndResolve(i, other, secondMovable: false, at: context.currentTime)
             }
 
             guard movable.contains(i + 1) else {
@@ -55,29 +48,25 @@ final class AABBCollisionSystem: SDLSystem {
             }
 
             for other in (i + 1)..<movable.upperBound where currentStore.buffer[other] != nil {
-                checkAndResolve(first: i, second: other, secondMovable: true, at: context.currentTime)
+                checkAndResolve(i, other, secondMovable: true, at: context.currentTime)
             }
         }
     }
 
-    private func getCollision(first index: Int, second sIndex: Int) -> CollisionType {
-        let collisionType = CollisionType(
-            lCategory: currentStore.buffer[index]!.value.categoryBitmask, 
-            lCollision: currentStore.buffer[index]!.value.collisionBitmask, 
-            lNotify: currentStore.buffer[index]!.value.notificationBitmask, 
-            rCategory: currentStore.buffer[sIndex]!.value.categoryBitmask, 
-            rCollision: currentStore.buffer[sIndex]!.value.collisionBitmask,
-            rNotify: currentStore.buffer[sIndex]!.value.notificationBitmask
-        )
+    private func getCollision(_ lIndex: Int, _ rIndex: Int) -> CollisionType {
+        let collisionType = CollisionType(currentStore.buffer[lIndex]!.value, currentStore.buffer[rIndex]!.value)
 
         if 
             collisionType == .none
-            || determineCollision(
-                lCenter: currentStore.buffer[index]!.value.positionCenter, 
-                lRadius: currentStore.buffer[index]!.value.squareRadius, 
-                rCenter: currentStore.buffer[sIndex]!.value.positionCenter, 
-                rRadius: currentStore.buffer[sIndex]!.value.squareRadius
-            ) == false
+            || !Rect(
+                center: currentStore.buffer[lIndex]!.value.positionCenter, 
+                radius: currentStore.buffer[lIndex]!.value.squareRadius
+            ).intersects(
+                with: Rect(
+                    center: currentStore.buffer[rIndex]!.value.positionCenter, 
+                    radius: currentStore.buffer[rIndex]!.value.squareRadius
+                )
+            )
         {
             return .none
         }
@@ -85,47 +74,35 @@ final class AABBCollisionSystem: SDLSystem {
         return collisionType
     }
 
-    private func checkAndResolve(first index: Int, second sIndex: Int, secondMovable: Bool, at time: UInt32) {
-        switch getCollision(first: index, second: sIndex) {
+    private func checkAndResolve(_ lIndex: Int, _ rIndex: Int, secondMovable: Bool, at time: UInt32) {
+        switch getCollision(lIndex, rIndex) {
         case .notify:
             delegate?.notifyCollisionOf(
-                firstEntity: currentStore.buffer[index]!.unownedEntity, 
-                secondEntity: currentStore.buffer[sIndex]!.unownedEntity,
+                firstEntity: currentStore.buffer[lIndex]!.unownedEntity, 
+                secondEntity: currentStore.buffer[rIndex]!.unownedEntity,
                 at: time
             )
         case .collide where secondMovable:
-            resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
+            resolveCollision(movableIndex: lIndex, secondMovableIndex: rIndex)
         case .collide:
-            resolveCollision(movableIndex: index, immovableIndex: sIndex)
+            resolveCollision(movableIndex: lIndex, immovableIndex: rIndex)
         case .collideNotify:
             delegate?.notifyCollisionOf(
-                firstEntity: currentStore.buffer[index]!.unownedEntity, 
-                secondEntity: currentStore.buffer[sIndex]!.unownedEntity,
+                firstEntity: currentStore.buffer[lIndex]!.unownedEntity, 
+                secondEntity: currentStore.buffer[rIndex]!.unownedEntity,
                 at: time
             )
-            resolveCollision(movableIndex: index, secondMovableIndex: sIndex)
+            resolveCollision(movableIndex: lIndex, secondMovableIndex: rIndex)
         case .collideNotify where secondMovable:
             delegate?.notifyCollisionOf(
-                firstEntity: currentStore.buffer[index]!.unownedEntity, 
-                secondEntity: currentStore.buffer[sIndex]!.unownedEntity,
+                firstEntity: currentStore.buffer[lIndex]!.unownedEntity, 
+                secondEntity: currentStore.buffer[rIndex]!.unownedEntity,
                 at: time
             )
-            resolveCollision(movableIndex: index, immovableIndex: sIndex)
+            resolveCollision(movableIndex: lIndex, immovableIndex: rIndex)
         case .none: return
         }
-        reportIntrospection(first: index, second: sIndex)
-    }
-
-    private func determineCollision(
-        lCenter: Point<Float>, 
-        lRadius: Size<Float>,
-        rCenter: Point<Float>,
-        rRadius: Size<Float>
-    ) -> Bool {
-           lCenter.x - lRadius.width  < rCenter.x + rRadius.width
-        && lCenter.x + lRadius.width  > rCenter.x - rRadius.width
-        && lCenter.y - lRadius.height < rCenter.y + rRadius.height
-        && lCenter.y + lRadius.height > rCenter.y - rRadius.height
+        reportIntrospection(first: lIndex, second: rIndex)
     }
 
     // first entity is always movable
@@ -220,17 +197,17 @@ final class AABBCollisionSystem: SDLSystem {
         }
     }
 
-    private func collidedBeforeThisFrame(movableIndex first: Int, immovableIndex second: Int) -> Bool {
-        let movable = pool.storage(for: BoxObjectComponent.self).buffer[first]!.value
-        let immovable = pool.storage(for: BoxObjectComponent.self).buffer[second]!.value
+    // private func collidedBeforeThisFrame(movableIndex first: Int, immovableIndex second: Int) -> Bool {
+    //     let movable = pool.storage(for: BoxObjectComponent.self).buffer[first]!.value
+    //     let immovable = pool.storage(for: BoxObjectComponent.self).buffer[second]!.value
 
-        return determineCollision(
-            lCenter: movable.positionCenter - movable.frameMovementVector, 
-            lRadius: movable.squareRadius, 
-            rCenter: immovable.positionCenter, 
-            rRadius: immovable.squareRadius
-        )
-    }
+    //     return determineCollision(
+    //         lCenter: movable.positionCenter - movable.frameMovementVector, 
+    //         lRadius: movable.squareRadius, 
+    //         rCenter: immovable.positionCenter, 
+    //         rRadius: immovable.squareRadius
+    //     )
+    // }
 
     private func reportIntrospection(first index: Int, second sIndex: Int) {
         _ = currentStore.buffer[index]!.unownedEntity.access(component: IntrospectionComponent.self) { comp in
