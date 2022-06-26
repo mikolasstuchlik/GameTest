@@ -55,6 +55,7 @@ final class AABBCollisionSystem: SDLSystem {
             }
 
             guard movable.contains(i + 1) else {
+                resolve()
                 continue
             }
 
@@ -173,52 +174,39 @@ final class AABBCollisionSystem: SDLSystem {
 
         switch collisionOrientation {
         case 316...361, 0..<46, 136.0..<226.0:
-            let lHorizontalSpace = 
+            let horizontalSpace = 
                 (
                     currentStore.buffer[lIndex]!.value.squareRadius.width
                     + currentStore.buffer[rIndex]!.value.squareRadius.width
                     - abs(collisionVector.x)
-                ) * (1.0 - distributionRatio)
-            
-            let rHorizontalSpace = 
-                (
-                    currentStore.buffer[lIndex]!.value.squareRadius.width
-                    + currentStore.buffer[rIndex]!.value.squareRadius.width
-                    - abs(collisionVector.x)
-                ) * distributionRatio
+                )
 
             let orientation: Float = (136.0..<226.0).contains(collisionOrientation)
                 ? 1.0
                 : -1.0
 
-            currentStore.buffer[lIndex]!.value.frameMovementVector.x += lHorizontalSpace * orientation
-            currentStore.buffer[lIndex]!.value.positionCenter.x += lHorizontalSpace * orientation
+            currentStore.buffer[lIndex]!.value.frameMovementVector.x += horizontalSpace * (1 - distributionRatio) * orientation
+            currentStore.buffer[lIndex]!.value.positionCenter.x += horizontalSpace * (1 - distributionRatio) * orientation
 
-            currentStore.buffer[rIndex]!.value.frameMovementVector.x += rHorizontalSpace * -orientation
-            currentStore.buffer[rIndex]!.value.positionCenter.x += rHorizontalSpace * -orientation
+            currentStore.buffer[rIndex]!.value.frameMovementVector.x += horizontalSpace * distributionRatio * -orientation
+            currentStore.buffer[rIndex]!.value.positionCenter.x += horizontalSpace * distributionRatio * -orientation
         case 46.0..<136.0, 226.0..<316.0:
-            let lVerticalSpace = 
+            let verticalSpace = 
                 (
                     currentStore.buffer[lIndex]!.value.squareRadius.height
                     + currentStore.buffer[rIndex]!.value.squareRadius.height
                     - abs(collisionVector.y)
-                ) * ( 1.0 - distributionRatio )
-            let rVerticalSpace = 
-                (
-                    currentStore.buffer[lIndex]!.value.squareRadius.height
-                    + currentStore.buffer[rIndex]!.value.squareRadius.height
-                    - abs(collisionVector.y)
-                ) * distributionRatio
-            
+                )
+
             let orientation: Float = (226.0..<316.0).contains(collisionOrientation)
                 ? 1.0
                 : -1.0
 
-            currentStore.buffer[lIndex]!.value.frameMovementVector.y += lVerticalSpace * orientation 
-            currentStore.buffer[lIndex]!.value.positionCenter.y += lVerticalSpace * orientation
+            currentStore.buffer[lIndex]!.value.frameMovementVector.y += verticalSpace * (1.0 - distributionRatio) * orientation 
+            currentStore.buffer[lIndex]!.value.positionCenter.y += verticalSpace * (1.0 - distributionRatio) * orientation
 
-            currentStore.buffer[rIndex]!.value.frameMovementVector.y += rVerticalSpace * -orientation
-            currentStore.buffer[rIndex]!.value.positionCenter.y += rVerticalSpace * -orientation
+            currentStore.buffer[rIndex]!.value.frameMovementVector.y += verticalSpace * distributionRatio * -orientation
+            currentStore.buffer[rIndex]!.value.positionCenter.y += verticalSpace * distributionRatio * -orientation
         default:
             fatalError("invalid angle")
         }

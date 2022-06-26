@@ -8,7 +8,6 @@ Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux
   - Adjust speed
   - Adjust animation timings
 - Fixes:
-  - Fix green player and box stuttering
   - Investigate why introspection does not disappear on removal
 
 

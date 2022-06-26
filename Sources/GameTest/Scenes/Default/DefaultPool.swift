@@ -27,7 +27,7 @@ final class DefaultPool: SDLPool, Scene {
                 .item: 20,
                 .background: Map.mapDimensions.height * Map.mapDimensions.width
             ], 
-            reserve: 0
+            reserve: 100
         )
 
         try! Map(pool: self, loadFrom: .main).summonEntities()
