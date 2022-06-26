@@ -61,7 +61,7 @@ extension EntityFactory {
         try! player.assign(
             component: PlayerComponent.self, 
             arguments: (
-                bombLimit: 1,
+                bombLimit: 2,
                 bombDeployed: 0,
                 flameLength: 3
             )

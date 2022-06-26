@@ -4,6 +4,22 @@ import NoobECS
 final class Map {
     private weak var pool: SDLPool!
 
+    static func gridPosition(point: Point<Float>) -> Point<Int> {
+        Point(
+            x: Int(point.x / tileDimensions.width), 
+            y: Int(point.y / tileDimensions.height)
+        )
+    }
+
+    static func alignToGrid(point: Point<Float>) -> Point<Float> {
+        let gridPosition = gridPosition(point: point)
+
+        return Point(
+            x: tileDimensions.width / 2 + tileDimensions.width * Float(gridPosition.x), 
+            y: tileDimensions.height / 2 + tileDimensions.height * Float(gridPosition.y)
+        )
+    }
+
     init(pool: SDLPool, loadFrom file: Assets.Map) throws {
         self.pool = pool
 

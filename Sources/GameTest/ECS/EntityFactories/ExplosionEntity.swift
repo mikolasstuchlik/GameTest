@@ -5,6 +5,8 @@ import NoobECS
 extension EntityFactory {
     static let explosionCategory: UInt32 = 0b10000
     static let explosionDuration: UInt32 = 500
+    static let explosionTag = "explosion"
+    static let explosionExpiredTag = "explosionExpired"
 
     static func summonExplosion(
         pool: SDLPool,
@@ -43,7 +45,7 @@ extension EntityFactory {
         fireTime: UInt32
     ) -> Entity {
         let explosion = Entity(dataManager: pool)
-        explosion.developerLabel = "explosion"
+        explosion.developerLabel = EntityFactory.explosionTag
 
         let squareRadius = explosionSquareRadius
 
@@ -82,7 +84,7 @@ extension EntityFactory {
 
         explosion.access(component: TimedEventsComponent.self) { timer in
             timer.items.append(TimedEventsComponent.ScheduledItem(
-                tag: "explosionExpired", 
+                tag: EntityFactory.explosionExpiredTag, 
                 fireTime: fireTime, 
                 associatedEntities: []
             ))

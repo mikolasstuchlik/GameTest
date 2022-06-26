@@ -4,6 +4,9 @@ import NoobECS
 
 extension EntityFactory {
     static let bombCategory: UInt32 = 0b1000
+    static let bombTag = "bomb"
+    static let bombExplosionTimerTag = "bombExplosionTimer"
+    static let bombSquareRadius = Size<Float>(width: 32, height: 32)
 
     @discardableResult
     static func bomb(
@@ -13,16 +16,14 @@ extension EntityFactory {
         fireTime: UInt32
     ) -> Entity {
         let bomb = Entity(dataManager: pool)
-        bomb.developerLabel = "bomb"
-
-        let squareRadius = Size<Float>(width: 32, height: 32)
+        bomb.developerLabel = EntityFactory.bombTag
 
         try! bomb.assign(
             component: BoxObjectComponent.self, 
             options: .immovable,
             arguments: (
                 positionCenter: position,
-                squareRadius: squareRadius,
+                squareRadius: EntityFactory.bombSquareRadius,
                 categoryBitmask: bombCategory,
                 collisionBitmask: boxCategory | playerCategory,
                 notificationBitmask: explosionCategory,
@@ -36,7 +37,7 @@ extension EntityFactory {
             arguments: (
                 unownedTexture: try! pool.resourceBuffer.texture(for: .bomb), 
                 sourceRect: nil,
-                size: squareRadius * 2
+                size: EntityFactory.bombSquareRadius * 2
             )
         )
         try! bomb.assign(
@@ -59,7 +60,7 @@ extension EntityFactory {
 
         bomb.access(component: TimedEventsComponent.self) { timer in
             timer.items.append(TimedEventsComponent.ScheduledItem(
-                tag: "bombExplosionTimer", 
+                tag: EntityFactory.bombExplosionTimerTag, 
                 fireTime: fireTime, 
                 associatedEntities: []
             ))

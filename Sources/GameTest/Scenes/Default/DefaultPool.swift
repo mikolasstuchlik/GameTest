@@ -71,13 +71,13 @@ final class DefaultPool: SDLPool, Scene {
 extension DefaultPool: CollisionSystemDelegate {
     func notifyCollisionOf(in system: AABBCollisionSystem, firstEntity: Entity, secondEntity: Entity, at time: UInt32) {
         switch (firstEntity.developerLabel, secondEntity.developerLabel) {
-        case ("player", "explosion"):
+        case (EntityFactory.playerTag, EntityFactory.explosionTag):
             killPlayer(entity: firstEntity, at: time)
-        case ("explosion", "player"):
+        case (EntityFactory.explosionTag, EntityFactory.playerTag):
             killPlayer(entity: secondEntity, at: time)
-        case ("bomb", "explosion"):
+        case (EntityFactory.bombTag, EntityFactory.explosionTag):
             moveExplosionTime(entity: firstEntity, at: time)
-        case ("explosion", "bomb"):
+        case (EntityFactory.explosionTag, EntityFactory.bombTag):
             moveExplosionTime(entity: secondEntity, at: time)
         default:
             print("Notify: collision of \(firstEntity) with \(secondEntity)")
@@ -131,7 +131,7 @@ extension DefaultPool: CollisionSystemDelegate {
 extension DefaultPool: TimerSystemDelegate {
     func firedTimer(for entity: Entity, context: TimedEventsComponent.ScheduledItem, at time: UInt32) {
         switch context.tag {
-        case "bombExplosionTimer":
+        case EntityFactory.bombExplosionTimerTag:
             explodeBomb(entity: entity, at: time)
         case "explosionExpired":
             removeExplosion(entity: entity)

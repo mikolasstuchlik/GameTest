@@ -63,11 +63,25 @@ final class UserInputSystem: SDLSystem {
     }
 
     private func handleBombPlant(for index: Int, currentTime: UInt32) {
-        guard  storage.buffer[index]!.value.shouldSummonBomb else { return }
+        guard  
+            storage.buffer[index]!.value.shouldSummonBomb,
+            let collisionSystem = pool.systems.compactMap({ $0 as? AABBCollisionSystem }).first 
+        else { return }
 
         storage.buffer[index]!.value.shouldSummonBomb = false
-        let position = storage.buffer[index]!.unownedEntity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
+        let position = Map.alignToGrid(point:
+            storage.buffer[index]!.unownedEntity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
+        )
         
+        let collidingEntites = collisionSystem.entities(in: Rect(
+            center: position,
+            radius: EntityFactory.bombSquareRadius
+        ))
+
+        guard !collidingEntites.contains(where: { $0.has(component: BombComponent.self) }) else {
+            return
+        } 
+
         let canDeploy = storage.buffer[index]!.unownedEntity.access(component: PlayerComponent.self) { component -> Bool in 
             guard component.bombDeployed < component.bombLimit else {
                 return false
