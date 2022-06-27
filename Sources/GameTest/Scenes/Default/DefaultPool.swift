@@ -66,6 +66,14 @@ final class DefaultPool: SDLPool, Scene {
             }
         }
     }
+
+    override func willDestroy(entity: Entity) {
+        if 
+            let hasIntrospectionEntity = entity.access(component: IntrospectionComponent.self, accessBlock: \.labelWindowEntity)
+        {
+            entities.removeValue(forKey: hasIntrospectionEntity)
+        }
+    }
 }
 
 extension DefaultPool: CollisionSystemDelegate {

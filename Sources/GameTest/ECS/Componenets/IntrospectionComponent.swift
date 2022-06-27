@@ -7,12 +7,12 @@ struct IntrospectionComponent: Component {
 
     var color: SDL_Color
     var frameCollidedWith: Set<Entity> = []
-    var labelWindowEntity: Entity
+    var labelWindowEntity: ObjectIdentifier
 
     init(
         arguments: (
             color: SDL_Color,
-            labelWindowEntity: Entity
+            labelWindowEntity: ObjectIdentifier
         )
     ) {
         self.color = arguments.color

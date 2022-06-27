@@ -113,7 +113,9 @@ final class IntrospectionSystem: SDLSystem {
             aggregator += entity.access(component: SpriteComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
             aggregator += entity.access(component: TimedEventsComponent.self, accessBlock: { $0 } ).flatMap(String.init(describing:)).flatMap { $0 + "\n\n"} ?? ""
 
-            let labelWindowEntity = store.buffer[index]!.value.labelWindowEntity
+            guard let labelWindowEntity = pool.entities[store.buffer[index]!.value.labelWindowEntity] else {
+                return
+            }
             labelWindowEntity.access(component: LabelComponent.self) { component in 
                 let components = aggregator.components(separatedBy: "\n")
                 let sizePerCharacter = Size<Float>(width: 10, height: 15)
@@ -140,7 +142,7 @@ final class IntrospectionSystem: SDLSystem {
     private func toggleStatus(for entity: Entity) throws {
         guard !entity.has(component: IntrospectionComponent.self) else {
             entity.access(component: IntrospectionComponent.self) { component in 
-                _ = pool.entities.removeValue(forKey: ObjectIdentifier(component.labelWindowEntity))
+                _ = pool.entities.removeValue(forKey: component.labelWindowEntity)
             }
             entity.destroy(component: IntrospectionComponent.self)
             return
@@ -152,7 +154,7 @@ final class IntrospectionSystem: SDLSystem {
             component: IntrospectionComponent.self, 
             arguments: (
                 color: color,
-                labelWindowEntity: labelWindowEntity
+                labelWindowEntity: ObjectIdentifier(labelWindowEntity)
             )
         )
     }

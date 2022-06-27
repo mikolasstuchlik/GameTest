@@ -7,8 +7,6 @@ Demonstrator for simle game in Swift using SDL2. Should build on macOS and Linux
   - Add spliperry corners (or solve aggressive corners)
   - Adjust speed
   - Adjust animation timings
-- Fixes:
-  - Investigate why introspection does not disappear on removal
 
 
 ## Known issues
