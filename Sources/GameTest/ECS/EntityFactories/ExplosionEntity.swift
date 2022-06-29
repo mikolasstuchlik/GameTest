@@ -87,9 +87,9 @@ extension EntityFactory {
             return []
         }
 
-        let collidingEntites = collisionSystem.entities(in: Rect(
+        let collidingEntites = collisionSystem.entities(in: CenterRect(
             center: center,
-            radius: explosionCollisionRadius
+            range: explosionCollisionRadius
         ))
 
         return collidingEntites.filter { entity -> Bool in
@@ -101,6 +101,8 @@ extension EntityFactory {
             case EntityFactory.boxTag:
                 return true
             case EntityFactory.bonusTag:
+                return true
+            case EntityFactory.explosionTag:
                 return true
             default:
                 return false

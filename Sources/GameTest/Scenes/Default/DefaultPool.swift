@@ -205,6 +205,10 @@ extension DefaultPool: TimerSystemDelegate {
     }
 
     private func burnBonus(entity: Entity, at time: UInt32) {
+        guard !entity.has(component: TimedEventsComponent.self) else {
+            return
+        }
+
         let center = entity.access(component: BoxObjectComponent.self) { component -> Point<Float> in
             component.collisionBitmask = 0
             component.notificationBitmask = 0

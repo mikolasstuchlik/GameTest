@@ -40,7 +40,7 @@ final class Map {
     }
 
     func summonEntities() {
-        var tile = Rect<Float>(origin: .zero, size: Map.tileDimensions)
+        var tile = AxisRect<Float>(origin: .zero, size: Map.tileDimensions)
 
         for x in 0..<Map.mapDimensions.width {
             for y in 0..<Map.mapDimensions.height {
@@ -54,28 +54,28 @@ final class Map {
 
                 switch content & 0b11111 {
                 case 0:
-                    EntityFactory.mapTile(pool: pool, asset: .grass, center: tile.center, squareRadius: tile.size * 0.5, collision: false)
+                    EntityFactory.mapTile(pool: pool, asset: .grass, center: Point(x: tile.midX, y: tile.midY), squareRadius: tile.size * 0.5, collision: false)
                 case 1:
-                    EntityFactory.mapTile(pool: pool, asset: .pillar, center: tile.center, squareRadius: tile.size * 0.5, collision: true)
+                    EntityFactory.mapTile(pool: pool, asset: .pillar, center: Point(x: tile.midX, y: tile.midY), squareRadius: tile.size * 0.5, collision: true)
                 case 2...17:
-                    wallTile(at: tile.center, squareRadius: tile.size * 0.5, type: (content & 0b11111) - 3 )
+                    wallTile(at: Point(x: tile.midX, y: tile.midY), squareRadius: tile.size * 0.5, type: (content & 0b11111) - 3 )
                 default: continue
                 }
 
                 if hasBox {
                     EntityFactory.box(
                         pool: pool, 
-                        position: tile.center, 
+                        position: Point(x: tile.midX, y: tile.midY), 
                         squareRadius: tile.size * 0.5
                     )
                 }
 
                 if hasBombBonus {
-                    EntityFactory.BonusKind.bonusBomb.addTo(pool: pool, position: tile.center)
+                    EntityFactory.BonusKind.bonusBomb.addTo(pool: pool, position: Point(x: tile.midX, y: tile.midY))
                 }
 
                 if hasFlameBonus {
-                    EntityFactory.BonusKind.bonusFlame.addTo(pool: pool, position: tile.center)
+                    EntityFactory.BonusKind.bonusFlame.addTo(pool: pool, position: Point(x: tile.midX, y: tile.midY))
                 }
             }
         }

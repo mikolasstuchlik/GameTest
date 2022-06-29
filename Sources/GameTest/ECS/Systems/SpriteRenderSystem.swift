@@ -19,9 +19,9 @@ final class SpriteRenderSystem: SDLSystem {
             try! renderer.render(
                 spriteStore.buffer[i]!.value.unownedTexture, 
                 source: spriteStore.buffer[i]!.value.sourceRect, 
-                destination: SDL_Rect(Rect(
+                destination: SDL_Rect(CenterRect(
                     center: center, 
-                    size: spriteStore.buffer[i]!.value.size
+                    range: spriteStore.buffer[i]!.value.size * 0.5
                 ))
             )
         }

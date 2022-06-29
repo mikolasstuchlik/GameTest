@@ -1,19 +1,19 @@
 import CSDL2
 
 extension SDL_Rect {
-    init<T: SignedInteger>(_ rect: Rect<T>) {
+    init<R: Rect>(_ rect: R) where R.Number: BinaryFloatingPoint {
         self.init(
-            x: CInt(rect.x), 
-            y: CInt(rect.y), 
+            x: CInt(rect.minX), 
+            y: CInt(rect.minY), 
             w: CInt(rect.width), 
             h: CInt(rect.height)
         )
     }
 
-    init<T: BinaryFloatingPoint>(_ rect: Rect<T>) {
+    init<R: Rect>(_ rect: R) where R.Number: BinaryInteger {
         self.init(
-            x: CInt(rect.x), 
-            y: CInt(rect.y), 
+            x: CInt(rect.minX), 
+            y: CInt(rect.minY), 
             w: CInt(rect.width), 
             h: CInt(rect.height)
         )

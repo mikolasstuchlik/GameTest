@@ -35,9 +35,9 @@ final class IntrospectionSystem: SDLSystem {
 
             try entity.access(component: BoxObjectComponent.self) { component in
                 try context.renderer.draw(
-                    rect: SDL_Rect(Rect(
+                    rect: SDL_Rect(CenterRect(
                         center: component.positionCenter, 
-                        size: component.squareRadius * 2
+                        range: component.squareRadius * 2
                     ))
                 )
 
@@ -75,9 +75,9 @@ final class IntrospectionSystem: SDLSystem {
             let store = pool.storage(for: BoxObjectComponent.self)
             for index in 0..<store.buffer.count where store.buffer[index] != nil {
                 guard 
-                    Rect(
+                    CenterRect(
                         center: store.buffer[index]!.value.positionCenter, 
-                        size: store.buffer[index]!.value.squareRadius * 2
+                        range: store.buffer[index]!.value.squareRadius * 2
                     ).contains(point) 
                 else {
                     continue

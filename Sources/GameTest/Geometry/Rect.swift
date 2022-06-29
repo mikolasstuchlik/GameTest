@@ -1,63 +1,48 @@
-struct Rect<Number: Numeric>: Equatable {
-    var origin: Point<Number>
-    var size: Size<Number>
+protocol Rect {
+    associatedtype Number: Numeric
 
-    var x: Number { origin.x }
-    var y: Number { origin.y }
-    var width: Number { size.width }
-    var height: Number { size.height }
+    var minX: Number { get }
+    var minY: Number { get }
+
+    var maxX: Number { get }
+    var maxY: Number { get }
+
+    var width: Number { get }
+    var height: Number { get }
+
+    init(x: Number, y: Number, width: Number, height: Number)
 }
 
 extension Rect {
-    init(x: Number, y: Number, width: Number, height: Number) {
-        self.origin = Point(x: x, y: y)
-        self.size = Size(width: width, height: height)
+    static var zero: Self { .init(x: .zero, y: .zero, width: .zero, height: .zero) }
+}
+
+extension Rect where Number: Comparable {
+    func intersects<R: Rect>(with rect: R) -> Bool where Number == R.Number {
+        minX < rect.maxX && maxX > rect.minX && minY < rect.maxY && maxY > rect.minY
     }
 
-    func contains(_ point: Point<Number>) -> Bool where Number: Comparable {
-        origin.x <= point.x 
-            && origin.x + size.width >= point.x
-            && origin.y <= point.y
-            && origin.y + size.height >= point.y
+    func contains(_ point: Point<Number>) -> Bool {
+        minX <= point.x && maxX >= point.x && minY <= point.y && maxY >= point.y
     }
 }
 
 extension Rect where Number: BinaryFloatingPoint {
-    init<Other: BinaryFloatingPoint>(_ other: Rect<Other>) {
-        self.origin = Point<Number>(other.origin)
-        self.size = Size<Number>(other.size)
+    init<R: Rect>(_ other: R) where R.Number: BinaryFloatingPoint {
+        self = .init(x: Number(other.minX), y: Number(other.minY), width: Number(other.width), height: Number(other.height))
+    }
+
+    init<R: Rect>(_ other: R) where R.Number: BinaryInteger {
+        self = .init(x: Number(other.minX), y: Number(other.minY), width: Number(other.width), height: Number(other.height))
     }
 }
 
-extension Rect {
-    static var zero: Self { .init(origin: .zero, size: .zero) }
-}
-
-extension Rect where Number: ExpressibleByFloatLiteral {
-    static var zero: Self { .init(origin: .zero, size: .zero) }
-}
-
-extension Rect where Number: FloatingPoint {
-    var center: Point<Number> { origin + Vector(x: size.width, y: size.height) / 2 }
-
-    init(center: Point<Number>, size: Size<Number>) {
-        self.origin = center - Vector(x: size.width, y: size.height) / 2
-        self.size = size
+extension Rect where Number: BinaryInteger {
+    init<R: Rect>(_ other: R) where R.Number: BinaryFloatingPoint {
+        self = .init(x: Number(other.minX), y: Number(other.minY), width: Number(other.width), height: Number(other.height))
     }
 
-    init(center: Point<Number>, radius: Size<Number>) {
-        self.origin = center - Vector(x: radius.width, y: radius.height)
-        self.size = radius * 2
+    init<R: Rect>(_ other: R) where R.Number: BinaryInteger {
+        self = .init(x: Number(other.minX), y: Number(other.minY), width: Number(other.width), height: Number(other.height))
     }
 }
-
-extension Rect {
-    func intersects(with rect: Rect) -> Bool where Number: Comparable {
-           x            < rect.x + rect.width
-        && x + width    > rect.x
-        && y            < rect.y + rect.height
-        && y + height   > rect.y
-    }
-}
-
-    

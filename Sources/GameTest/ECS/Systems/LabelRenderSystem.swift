@@ -19,18 +19,18 @@ final class LabelRenderSystem: SDLSystem {
 
             if labelStorage.buffer[i]!.value.background.a > 0 {
                 try renderer.setDraw(color: labelStorage.buffer[i]!.value.background)
-                try renderer.drawFill(rect: SDL_Rect(Rect(
+                try renderer.drawFill(rect: SDL_Rect(CenterRect(
                     center: center + labelStorage.buffer[i]!.value.position, 
-                    size: labelStorage.buffer[i]!.value.size
+                    range: labelStorage.buffer[i]!.value.size * 0.5
                 )))
             }
 
             try! renderer.render(
                 labelStorage.buffer[i]!.value.ownedTexture, 
                 source: nil, 
-                destination: SDL_Rect(Rect(
+                destination: SDL_Rect(CenterRect(
                     center: center + labelStorage.buffer[i]!.value.position, 
-                    size: labelStorage.buffer[i]!.value.size
+                    range: labelStorage.buffer[i]!.value.size * 0.5
                 ))
             )
         }

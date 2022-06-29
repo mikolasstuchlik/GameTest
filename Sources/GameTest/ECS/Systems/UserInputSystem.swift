@@ -73,9 +73,9 @@ final class UserInputSystem: SDLSystem {
             storage.buffer[index]!.unownedEntity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
         )
         
-        let collidingEntites = collisionSystem.entities(in: Rect(
+        let collidingEntites = collisionSystem.entities(in: CenterRect(
             center: position,
-            radius: EntityFactory.bombSquareRadius
+            range: EntityFactory.bombSquareRadius
         ))
 
         guard !collidingEntites.contains(where: { $0.has(component: BombComponent.self) }) else {

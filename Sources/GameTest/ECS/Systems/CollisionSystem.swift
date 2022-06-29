@@ -80,13 +80,13 @@ final class AABBCollisionSystem: SDLSystem {
     }
 
     private func collides(_ lIndex: Int, _ rIndex: Int) -> Bool {
-        Rect(
+        CenterRect(
             center: currentStore.buffer[lIndex]!.value.positionCenter, 
-            radius: currentStore.buffer[lIndex]!.value.squareRadius
+            range: currentStore.buffer[lIndex]!.value.squareRadius
         ).intersects(
-            with: Rect(
+            with: CenterRect(
                 center: currentStore.buffer[rIndex]!.value.positionCenter, 
-                radius: currentStore.buffer[rIndex]!.value.squareRadius
+                range: currentStore.buffer[rIndex]!.value.squareRadius
             )
         )
     }
@@ -258,15 +258,15 @@ extension AABBCollisionSystem {
         return result
     }
 
-    func entities(in rect: Rect<Float>) -> [Entity] {
+    func entities<R: Rect>(in rect: R) -> [Entity] where R.Number == Float {
         currentStore = pool.storage(for: BoxObjectComponent.self)
 
         var result = [Entity]()
         for i in 0..<currentStore.buffer.count where currentStore.buffer[i] != nil {
             if 
-                rect.intersects(with: Rect(
+                rect.intersects(with: CenterRect(
                     center: currentStore.buffer[i]!.value.positionCenter, 
-                    radius: currentStore.buffer[i]!.value.squareRadius
+                    range: currentStore.buffer[i]!.value.squareRadius
                 ))
             {
                 result.append(currentStore.buffer[i]!.unownedEntity)

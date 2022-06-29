@@ -12,7 +12,7 @@ final class Application {
     init() {
     }
 
-    func startWindow(title: String, dimension: Rect<CInt>, fullscreen: Bool) throws {
+    func startWindow(title: String, dimension: AxisRect<CInt>, fullscreen: Bool) throws {
         try SDL.`init`(flags: SDL.SDL_INIT_EVERTYHING)
         try TTF.`init`()
         try Mix.`init`(flags: MIX_INIT_OGG)
@@ -24,7 +24,7 @@ final class Application {
             : SDL_WindowFlags(0)
 
         window = try sdlException {
-            SDL_CreateWindow(title, dimension.x , dimension.y, dimension.width, dimension.height, flags.rawValue)
+            SDL_CreateWindow(title, dimension.minX , dimension.minY, dimension.width, dimension.height, flags.rawValue)
         }
 
         renderer = try sdlException {

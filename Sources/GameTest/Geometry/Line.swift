@@ -60,10 +60,10 @@ extension Rect where Number: BinaryFloatingPoint {
     // TODO: We also might introduce some sort of "CollectionOfFour"
     var lines: [Line<Number>] {
         let points = [
-            origin,
-            Point(x: origin.x + size.width, y: origin.y),
-            Point(x: origin.x + size.width, y: origin.y + size.height),
-            Point(x: origin.x, y: origin.y + size.height),
+            Point(x: minX, y: minY),
+            Point(x: maxX, y: minY),
+            Point(x: maxX, y: maxY),
+            Point(x: minX, y: maxY),
         ]
 
         return [
