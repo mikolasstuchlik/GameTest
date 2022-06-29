@@ -53,8 +53,7 @@ extension EntityFactory {
                 component: BoxObjectComponent.self, 
                 options: .immovable,
                 arguments: (
-                    positionCenter: position,
-                    squareRadius: EntityFactory.bonusCollisionRadius,
+                    centerRect: CenterRect(center: position, range: EntityFactory.bonusCollisionRadius),
                     categoryBitmask: EntityFactory.bonusCategory,
                     collisionBitmask: 0,
                     notificationBitmask: EntityFactory.playerCategory,
@@ -101,8 +100,7 @@ extension EntityFactory {
             component: BoxObjectComponent.self, 
             options: .immaterial,
             arguments: (
-                positionCenter: position,
-                squareRadius: EntityFactory.bonusCollisionRadius,
+                centerRect: CenterRect(center: position, range: EntityFactory.bonusCollisionRadius),
                 categoryBitmask: 0,
                 collisionBitmask: 0,
                 notificationBitmask: 0,

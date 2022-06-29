@@ -128,8 +128,7 @@ extension EntityFactory {
             // Explosion isnt really going to move, but I need the collision resolution
             options: .movable,
             arguments: (
-                positionCenter: position,
-                squareRadius: explosionCollisionRadius,
+                centerRect: CenterRect(center: position, range: explosionCollisionRadius),
                 categoryBitmask: explosionCategory,
                 collisionBitmask: 0,
                 notificationBitmask: bombCategory | playerCategory,

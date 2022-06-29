@@ -80,14 +80,8 @@ final class AABBCollisionSystem: SDLSystem {
     }
 
     private func collides(_ lIndex: Int, _ rIndex: Int) -> Bool {
-        CenterRect(
-            center: currentStore.buffer[lIndex]!.value.positionCenter, 
-            range: currentStore.buffer[lIndex]!.value.squareRadius
-        ).intersects(
-            with: CenterRect(
-                center: currentStore.buffer[rIndex]!.value.positionCenter, 
-                range: currentStore.buffer[rIndex]!.value.squareRadius
-            )
+        currentStore.buffer[lIndex]!.value.centerRect.intersects(
+            with: currentStore.buffer[rIndex]!.value.centerRect
         )
     }
 
@@ -119,8 +113,8 @@ final class AABBCollisionSystem: SDLSystem {
     }
 
     private func checkAndNotify(_ lIndex: Int, _ rIndex: Int, secondMovable: Bool, at time: UInt32) {
-        let distance = currentStore.buffer[lIndex]!.value.positionCenter.distance(
-            to: currentStore.buffer[rIndex]!.value.positionCenter
+        let distance = currentStore.buffer[lIndex]!.value.centerRect.center.distance(
+            to: currentStore.buffer[rIndex]!.value.centerRect.center
         )
 
         switch getCollision(lIndex, rIndex) {
@@ -168,16 +162,16 @@ final class AABBCollisionSystem: SDLSystem {
         assert(distributionRatio >= 0.0 && distributionRatio <= 1.0, "Ratio is not in interval [0.0, 1.0]")
 
         let collisionVector = 
-            currentStore.buffer[lIndex]!.value.positionCenter
-            → currentStore.buffer[rIndex]!.value.positionCenter
+            currentStore.buffer[lIndex]!.value.centerRect.center
+            → currentStore.buffer[rIndex]!.value.centerRect.center
         let collisionOrientation = collisionVector.degreees
 
         switch collisionOrientation {
         case 316...361, 0..<46, 136.0..<226.0:
             let horizontalSpace = 
                 (
-                    currentStore.buffer[lIndex]!.value.squareRadius.width
-                    + currentStore.buffer[rIndex]!.value.squareRadius.width
+                    currentStore.buffer[lIndex]!.value.centerRect.horizontalRange
+                    + currentStore.buffer[rIndex]!.value.centerRect.horizontalRange
                     - abs(collisionVector.x)
                 )
 
@@ -186,15 +180,15 @@ final class AABBCollisionSystem: SDLSystem {
                 : -1.0
 
             currentStore.buffer[lIndex]!.value.frameMovementVector.x += horizontalSpace * (1 - distributionRatio) * orientation
-            currentStore.buffer[lIndex]!.value.positionCenter.x += horizontalSpace * (1 - distributionRatio) * orientation
+            currentStore.buffer[lIndex]!.value.centerRect.center.x += horizontalSpace * (1 - distributionRatio) * orientation
 
             currentStore.buffer[rIndex]!.value.frameMovementVector.x += horizontalSpace * distributionRatio * -orientation
-            currentStore.buffer[rIndex]!.value.positionCenter.x += horizontalSpace * distributionRatio * -orientation
+            currentStore.buffer[rIndex]!.value.centerRect.center.x += horizontalSpace * distributionRatio * -orientation
         case 46.0..<136.0, 226.0..<316.0:
             let verticalSpace = 
                 (
-                    currentStore.buffer[lIndex]!.value.squareRadius.height
-                    + currentStore.buffer[rIndex]!.value.squareRadius.height
+                    currentStore.buffer[lIndex]!.value.centerRect.verticalRange
+                    + currentStore.buffer[rIndex]!.value.centerRect.verticalRange
                     - abs(collisionVector.y)
                 )
 
@@ -203,10 +197,10 @@ final class AABBCollisionSystem: SDLSystem {
                 : -1.0
 
             currentStore.buffer[lIndex]!.value.frameMovementVector.y += verticalSpace * (1.0 - distributionRatio) * orientation 
-            currentStore.buffer[lIndex]!.value.positionCenter.y += verticalSpace * (1.0 - distributionRatio) * orientation
+            currentStore.buffer[lIndex]!.value.centerRect.center.y += verticalSpace * (1.0 - distributionRatio) * orientation
 
             currentStore.buffer[rIndex]!.value.frameMovementVector.y += verticalSpace * distributionRatio * -orientation
-            currentStore.buffer[rIndex]!.value.positionCenter.y += verticalSpace * distributionRatio * -orientation
+            currentStore.buffer[rIndex]!.value.centerRect.center.y += verticalSpace * distributionRatio * -orientation
         default:
             fatalError("invalid angle")
         }
@@ -263,12 +257,7 @@ extension AABBCollisionSystem {
 
         var result = [Entity]()
         for i in 0..<currentStore.buffer.count where currentStore.buffer[i] != nil {
-            if 
-                rect.intersects(with: CenterRect(
-                    center: currentStore.buffer[i]!.value.positionCenter, 
-                    range: currentStore.buffer[i]!.value.squareRadius
-                ))
-            {
+            if rect.intersects(with: currentStore.buffer[i]!.value.centerRect) {
                 result.append(currentStore.buffer[i]!.unownedEntity)
             }
         }

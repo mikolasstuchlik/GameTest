@@ -70,7 +70,7 @@ final class UserInputSystem: SDLSystem {
 
         storage.buffer[index]!.value.shouldSummonBomb = false
         let position = Map.alignToGrid(point:
-            storage.buffer[index]!.unownedEntity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
+            storage.buffer[index]!.unownedEntity.access(component: BoxObjectComponent.self, accessBlock: \.centerRect.center)!
         )
         
         let collidingEntites = collisionSystem.entities(in: CenterRect(

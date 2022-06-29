@@ -179,7 +179,7 @@ extension DefaultPool: TimerSystemDelegate {
         player.flatMap { entities[$0] }?.access(component: PlayerComponent.self) { component in
             component.bombDeployed -= 1
         }
-        let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter)!
+        let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.centerRect.center)!
         let flameLength = entity.access(component: BombComponent.self, accessBlock: \.flameLength)!
         entities.removeValue(forKey: ObjectIdentifier(entity))
 
@@ -213,7 +213,7 @@ extension DefaultPool: TimerSystemDelegate {
             component.collisionBitmask = 0
             component.notificationBitmask = 0
             component.categoryBitmask = 0
-            return component.positionCenter
+            return component.centerRect.center
         }!
         EntityFactory.burningBonusOverlay(pool: self, position: center, now: time)
 

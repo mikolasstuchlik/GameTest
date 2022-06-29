@@ -7,8 +7,7 @@ struct BoxObjectComponent: CategoryComponent {
         case movable, immovable, immaterial
     }
 
-    var positionCenter: Point<Float>
-    var squareRadius: Size<Float> 
+    var centerRect: CenterRect<Float>
 
     var categoryBitmask: UInt32
     var collisionBitmask: UInt32
@@ -20,8 +19,7 @@ struct BoxObjectComponent: CategoryComponent {
 
     init(
         arguments: (
-            positionCenter: Point<Float>,
-            squareRadius: Size<Float>,
+            centerRect: CenterRect<Float>,
             categoryBitmask: UInt32,
             collisionBitmask: UInt32,
             notificationBitmask: UInt32,
@@ -29,8 +27,7 @@ struct BoxObjectComponent: CategoryComponent {
             maxVelocity: Float
         )
     ) {
-        self.positionCenter = arguments.positionCenter
-        self.squareRadius = arguments.squareRadius
+        self.centerRect = arguments.centerRect
         self.categoryBitmask = arguments.categoryBitmask
         self.collisionBitmask = arguments.collisionBitmask
         self.notificationBitmask = arguments.notificationBitmask

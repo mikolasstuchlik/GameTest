@@ -15,7 +15,7 @@ final class LabelRenderSystem: SDLSystem {
         for i in indicies where labelStorage.buffer[i] != nil {
             try labelStorage.buffer[i]!.value.prepareForRender(in: context.renderer)
             let entity = labelStorage.buffer[i]!.unownedEntity
-            let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter) ?? .zero
+            let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.centerRect.center) ?? .zero
 
             if labelStorage.buffer[i]!.value.background.a > 0 {
                 try renderer.setDraw(color: labelStorage.buffer[i]!.value.background)

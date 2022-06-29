@@ -24,8 +24,7 @@ extension EntityFactory {
             component: BoxObjectComponent.self, 
             options: .immovable,
             arguments: (
-                positionCenter: position,
-                squareRadius: EntityFactory.bombSquareRadius,
+                centerRect: CenterRect(center: position, range: EntityFactory.bombSquareRadius),
                 categoryBitmask: bombCategory,
                 collisionBitmask: boxCategory | playerCategory,
                 notificationBitmask: explosionCategory,

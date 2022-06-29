@@ -29,8 +29,7 @@ extension EntityFactory {
             component: BoxObjectComponent.self,
             options: collision ? .immovable : .immaterial,
             arguments: (
-                positionCenter: center,
-                squareRadius: squareRadius,
+                centerRect: CenterRect(center: center, range: squareRadius),
                 categoryBitmask: collision ? tileCategory : 0,
                 collisionBitmask: 0,
                 notificationBitmask: 0,

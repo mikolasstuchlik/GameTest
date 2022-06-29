@@ -22,8 +22,7 @@ extension EntityFactory {
             component: BoxObjectComponent.self, 
             options: .movable,
             arguments: (
-                positionCenter: position,
-                squareRadius: squareRadius,
+                centerRect: CenterRect(center: position, range: squareRadius),
                 categoryBitmask: playerCategory,
                 collisionBitmask: boxCategory | tileCategory | bombCategory,
                 notificationBitmask: playerCategory | explosionCategory | bonusCategory,

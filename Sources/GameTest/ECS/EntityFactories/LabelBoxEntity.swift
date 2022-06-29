@@ -12,8 +12,7 @@ extension EntityFactory {
             component: BoxObjectComponent.self, 
             options: .immaterial,
             arguments: (
-                positionCenter: .zero,
-                squareRadius: .zero,
+                centerRect: .zero,
                 categoryBitmask: 0,
                 collisionBitmask: 0,
                 notificationBitmask: 0,

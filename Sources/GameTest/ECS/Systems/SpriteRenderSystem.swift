@@ -14,7 +14,7 @@ final class SpriteRenderSystem: SDLSystem {
         // Render
         for i in indicies where spriteStore.buffer[i] != nil {
             let entity = spriteStore.buffer[i]!.unownedEntity
-            let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.positionCenter) ?? .zero
+            let center = entity.access(component: BoxObjectComponent.self, accessBlock: \.centerRect.center) ?? .zero
 
             try! renderer.render(
                 spriteStore.buffer[i]!.value.unownedTexture, 

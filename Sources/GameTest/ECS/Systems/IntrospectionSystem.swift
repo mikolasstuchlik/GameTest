@@ -22,12 +22,12 @@ final class IntrospectionSystem: SDLSystem {
             for entity in introspection.frameCollidedWith {
                 try entity.access(component: BoxObjectComponent.self) { component in 
                     try context.renderer.draw(line: Line(
-                        from: component.positionCenter - Vector(x: component.squareRadius.width, y: component.squareRadius.height),
-                        to: component.positionCenter + Vector(x: component.squareRadius.width, y: component.squareRadius.height)
+                        from: Point(x: component.centerRect.minX, y: component.centerRect.minY),
+                        to: Point(x: component.centerRect.maxX, y: component.centerRect.maxY)
                     ))
                     try context.renderer.draw(line: Line(
-                        from: component.positionCenter - Vector(x: component.squareRadius.width, y: -component.squareRadius.height),
-                        to: component.positionCenter + Vector(x: component.squareRadius.width, y: -component.squareRadius.height)
+                        from: Point(x: component.centerRect.maxX, y: component.centerRect.minY),
+                        to: Point(x: component.centerRect.maxX, y: component.centerRect.minY)
                     ))
                 }
             }
@@ -35,18 +35,15 @@ final class IntrospectionSystem: SDLSystem {
 
             try entity.access(component: BoxObjectComponent.self) { component in
                 try context.renderer.draw(
-                    rect: SDL_Rect(CenterRect(
-                        center: component.positionCenter, 
-                        range: component.squareRadius * 2
-                    ))
+                    rect: SDL_Rect(component.centerRect)
                 )
 
                 if component.velocity.magnitude > 0 {
                     try arrow(
-                        from: component.positionCenter, 
+                        from: component.centerRect.center, 
                         length: component.velocity.magnitude
                     ).rotated(
-                        around: component.positionCenter, 
+                        around: component.centerRect.center, 
                         angle: component.velocity.angleRad
                     ).draw(in: context.renderer)
                 }
@@ -74,12 +71,7 @@ final class IntrospectionSystem: SDLSystem {
 
             let store = pool.storage(for: BoxObjectComponent.self)
             for index in 0..<store.buffer.count where store.buffer[index] != nil {
-                guard 
-                    CenterRect(
-                        center: store.buffer[index]!.value.positionCenter, 
-                        range: store.buffer[index]!.value.squareRadius * 2
-                    ).contains(point) 
-                else {
+                guard store.buffer[index]!.value.centerRect.contains(point) else {
                     continue
                 }
 

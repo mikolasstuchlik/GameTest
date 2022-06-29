@@ -13,8 +13,8 @@ final class MovementSystem: SDLSystem {
                 storage.buffer[i]!.value.velocity 
                 * ( Float(context.timePassedInMs) / 1000.0)  
 
-            storage.buffer[i]!.value.positionCenter = 
-                storage.buffer[i]!.value.positionCenter 
+            storage.buffer[i]!.value.centerRect.center = 
+                storage.buffer[i]!.value.centerRect.center 
                 + storage.buffer[i]!.value.frameMovementVector
         }
     }
